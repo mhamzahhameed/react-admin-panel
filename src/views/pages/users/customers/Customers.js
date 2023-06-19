@@ -1,4 +1,4 @@
-import { cilPenAlt, cilSpeedometer, cilTrash } from '@coreui/icons'
+import { cilPenAlt, cilTrash } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
 import React, { useEffect, useState } from 'react'
 const Customers = () => {
@@ -109,6 +109,7 @@ const Customers = () => {
   ]
   useEffect(() => {
     fetchData()
+    // eslint-disable-next-line
   }, [searchValue])
   const fetchData = async () => {
     try {
@@ -262,7 +263,7 @@ const Customers = () => {
                 </button>
               </li>
 
-              {pageNumbers.map((pageNumber,index) => {
+              {pageNumbers.map((pageNumber, index) => {
                 return (
                   <li
                     className={currentPage === pageNumber ? 'active page-item' : 'page-item'}
