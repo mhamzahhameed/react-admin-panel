@@ -17,8 +17,8 @@ import UserListByPackage from './views/pages/sehrPackages/userListbyPackage/User
 import ShopListByPackage from './views/pages/sehrPackages/shopListByPackage/ShopListByPackage'
 import Division from './views/pages/address/division/Division'
 import Province from './views/pages/address/province/Province'
-import AllBlogs from './views/pages/blog/allBlogs/AllBlogs'
 import PostBlog from './views/pages/blog/postBlog/PostBlog'
+import AllBlogs from './views/pages/blog/allBlogs/AllBlogs'
 
 
 const Dashboard = React.lazy(() => import('./views/dashboard/Dashboard'))
