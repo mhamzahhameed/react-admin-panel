@@ -66,7 +66,7 @@ const _nav = [
   {
     component: CNavItem,
     name: 'Limited Sehr Shops',
-    to: '/limited-users/seher-shops',
+    to: '/limited-users/sehr-shops',
     icon: <CIcon icon={cilUser} customClassName="nav-icon" />,
   },
   {
