@@ -3,8 +3,8 @@ import CIcon from '@coreui/icons-react'
 import {
   cilAddressBook,
   cilAlignLeft,
-  cilBabyCarriage,
   cilBold,
+  cilCart,
   cilDescription,
   cilEducation,
   cilSpeedometer,
@@ -77,13 +77,13 @@ const _nav = [
     component: CNavItem,
     name: 'Pusrchasing by Customer',
     to: '/purchasing/purchasing-by-customer',
-    icon: <CIcon icon={cilBabyCarriage} customClassName="nav-icon" />,
+    icon: <CIcon icon={cilCart} customClassName="nav-icon" />,
   },
   {
     component: CNavItem,
     name: 'Pusrchasing by Shops',
     to: '/purchasing/purchasing-by-Shops',
-    icon: <CIcon icon={cilBabyCarriage} customClassName="nav-icon" />,
+    icon: <CIcon icon={cilCart} customClassName="nav-icon" />,
   },
   {
     component: CNavTitle,
