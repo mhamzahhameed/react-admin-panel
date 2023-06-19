@@ -10,6 +10,7 @@ const Customers = () => {
   const [perPage, setPerPage] = useState(10)
   const [searchValue, setSearchValue] = useState('')
   const [editModalVisible, setEditModalVisible] = useState(false)
+  const [editFormData, setEditFormData] = useState({});
   const [dummyData,setDummyData] = useState([
     {
       id: 1,
@@ -168,7 +169,11 @@ const Customers = () => {
       setCurrentPage(currentPage + 1)
     }
   }
-  const EditModal = (id)=>{
+  const EditModal = (index)=>{
+    setEditFormData({
+      ...dummyData[index],
+      index,
+    });
     setEditModalVisible(true);
   }
   const handleDelete = (id)=>{
@@ -190,6 +195,33 @@ const Customers = () => {
       }
     });
   }
+  // Handle Save Changes button onclicking
+  const handleSaveChanges = () => {
+    const updatedData = dummyData.map((item, index) => {
+      if (index === editFormData.index) {
+        // Update the specific row with the new form values
+        return {
+          ...item,
+          name: editFormData.name || item.name,
+          gender: editFormData.gender || item.gender,
+          role: editFormData.role || item.role,
+          mobile: editFormData.mobile || item.mobile,
+          cnic: editFormData.cnic || item.cnic,
+          province: editFormData.province || item.province,
+          division: editFormData.division || item.division,
+          district: editFormData.district || item.district,
+          tehsil: editFormData.tehsil || item.tehsil,
+          active: editFormData.active || item.active,
+        };
+      }
+      return item;
+    });
+  
+    setDummyData(updatedData);
+    setEditModalVisible(false);
+    setEditFormData({});
+  };
+  
   // Render the current page's records
   const renderData = () => {
     const currentPageData = getCurrentPageData()
@@ -249,55 +281,81 @@ const Customers = () => {
     id="name"
     label="Name"
     aria-describedby="name"
+    value={editFormData.name || ''}
+  onChange={(e) => setEditFormData({ ...editFormData, name: e.target.value })}
   />
   <div className='my-3'>
     <p>Gender</p>
-  <CFormCheck type="radio" name="flexRadioDefault" id="flexRadioDefault1" label="Male" value="male"/>
-<CFormCheck type="radio" name="flexRadioDefault" id="flexRadioDefault2" label="Female" value="female"/>
+  <CFormCheck type="radio" name="flexRadioDefault" id="mele" label="Male" value="male" checked={editFormData.gender === 'male'}
+  onChange={(e) =>
+    setEditFormData({ ...editFormData, gender: e.target.value })
+  }/>
+<CFormCheck type="radio" name="flexRadioDefault" id="female" label="Female" value="female" checked={editFormData.gender === 'female'}
+  onChange={(e) =>
+    setEditFormData({ ...editFormData, gender: e.target.value })
+  }/>
   </div>
-  <CFormSelect aria-label="role" >
-  <option value="1">Admin</option>
-  <option value="2">Customer</option>
+  <CFormSelect aria-label="role" value={editFormData.role || ''}
+  onChange={(e) =>
+    setEditFormData({ ...editFormData, role: e.target.value })
+  } >
+  <option id='role' value="admin">Admin</option>
+  <option id='role' value="customer">Customer</option>
 </CFormSelect>
   <CFormInput
     type="tel"
     id="mobile"
     label="Mobile Number"
     aria-describedby="name"
+    value={editFormData.mobile || ''}
+  onChange={(e) => setEditFormData({ ...editFormData, mobile: e.target.value })}
   />
   <CFormInput
     type="text"
     id="cnic"
     label="CNIC"
     aria-describedby="name"
+    value={editFormData.cnic || ''}
+  onChange={(e) => setEditFormData({ ...editFormData, cnic: e.target.value })}
   />
   <CFormInput
     type="text"
     id="province"
     label="Province"
     aria-describedby="name"
+    value={editFormData.province || ''}
+  onChange={(e) => setEditFormData({ ...editFormData, province: e.target.value })}
   />
   <CFormInput
     type="text"
     id="division"
     label="Division"
     aria-describedby="name"
+    value={editFormData.division || ''}
+  onChange={(e) => setEditFormData({ ...editFormData, division: e.target.value })}
   />
   <CFormInput
     type="text"
     id="district"
     label="District"
     aria-describedby="name"
+    value={editFormData.district || ''}
+  onChange={(e) => setEditFormData({ ...editFormData, district: e.target.value })}
   />
   <CFormInput
     type="text"
     id="tehsil"
     label="Tehsil"
     aria-describedby="name"
+    value={editFormData.tehsil || ''}
+  onChange={(e) => setEditFormData({ ...editFormData, tehsil: e.target.value })}
   />
   <div className='my-2'>
     <p className='mb-2'>Active</p>
-  <CFormSwitch id="formSwitchCheckChecked" defaultChecked/>
+  <CFormSwitch id="formSwitchCheckChecked" defaultChecked={editFormData.active}
+    onChange={(e) =>
+      setEditFormData({ ...editFormData, active: e.target.checked })
+    }/>
   </div>
 </CForm>
       </CModalBody>
@@ -305,11 +363,11 @@ const Customers = () => {
         <CButton color="secondary" onClick={() => setEditModalVisible(false)}>
           Close
         </CButton>
-        <CButton color="primary">Save changes</CButton>
+        <CButton color="primary" onClick={handleSaveChanges}>Save changes</CButton>
       </CModalFooter>
     </CModal>
       <div className="card">
-        <div className="card-header">Table</div>
+        <div className="card-header">Customers</div>
         <div className="card-body">
           <div>
             <div className="d-flex my-2 justify-content-end">

@@ -1,4 +1,25 @@
 import React from 'react'
+import Shopkeepers from './views/pages/users/shopkeepers/Shopkeepers'
+import SehrShops from './views/pages/users/sehrShops/SehrShops'
+import LimitedCustomers from './views/pages/limitedUsers/limitedCustomers/LimitedCustomers'
+import LimitedSehrShops from './views/pages/limitedUsers/limitedSehrShops/LimitedSehrShops'
+import PurchasingByCustomers from './views/pages/purchasing/purchasingByCustomers/PurchasingByCustomers'
+import PurchasingByShops from './views/pages/purchasing/purchasingByShops/PurchasingByShops'
+import SehrCodeRequests from './views/pages/requests/sehrCodeRequests/SehrCodeRequests'
+import PaymentRequests from './views/pages/requests/paymentRequests/PaymentRequests'
+import Education from './views/pages/education/education/Education'
+import UserByEducation from './views/pages/education/userByEduction/UserByEducation'
+import Category from './views/pages/category/category/Category'
+import CategoryCommission from './views/pages/category/categoryCommission/CategoryCommission'
+import ShopListByCategory from './views/pages/category/shopListByCategory/ShopListByCategory'
+import PackagesDetail from './views/pages/sehrPackages/packagesDetail/PackagesDetail'
+import UserListByPackage from './views/pages/sehrPackages/userListbyPackage/UserListByPackage'
+import ShopListByPackage from './views/pages/sehrPackages/shopListByPackage/ShopListByPackage'
+import Division from './views/pages/address/division/Division'
+import Province from './views/pages/address/province/Province'
+import AllBlogs from './views/pages/blog/allBlogs/AllBlogs'
+import PostBlog from './views/pages/blog/postBlog/PostBlog'
+
 
 const Dashboard = React.lazy(() => import('./views/dashboard/Dashboard'))
 const Colors = React.lazy(() => import('./views/theme/colors/Colors'))
@@ -54,6 +75,27 @@ const routes = [
   { path: '/dashboard', name: 'Dashboard', element: Dashboard },
   { path: '/dashboard', name: 'Dashboard', element: Dashboard },
   { path: '/users/customers', name: 'Customers', element: Customers, exact: true },
+  { path: '/users/shopkeepers', name: 'Shopkeepers', element: Shopkeepers, exact: true },
+  { path: '/users/sehr-shop', name: 'SEHR Shops', element: SehrShops, exact: true },
+  { path: '/limited-users/customers', name: 'Limited Customers', element: LimitedCustomers, exact: true },
+  { path: '/limited-users/sehr-shops', name: 'Limited Sehr Shops', element: LimitedSehrShops, exact: true },
+  { path: '/purchasing/purchasing-by-customer', name: 'Pusrchasing by Customer', element: PurchasingByCustomers, exact: true },
+  { path: '/purchasing/purchasing-by-shops', name: 'Pusrchasing by Shops', element: PurchasingByShops, exact: true },
+  { path: '/request/sehr-code-request', name: 'Sehr Code Request', element: SehrCodeRequests, exact: true },
+  { path: '/request/payment-request', name: 'Payment Request', element: PaymentRequests, exact: true },
+  { path: '/education/education', name: 'Education', element: Education, exact: true },
+  { path: '/education/user-by-education', name: 'User by Education', element: UserByEducation, exact: true },
+  { path: '/category/category', name: 'Category', element: Category, exact: true },
+  { path: '/category/category-commission', name: 'Category Commission', element: CategoryCommission, exact: true },
+  { path: '/category/shop-list-by-category', name: 'Shop List by Category', element: ShopListByCategory, exact: true },
+  { path: '/packages/packages-detail', name: 'Packages Detail', element: PackagesDetail, exact: true },
+  { path: '/packages/user-list', name: 'User List by Packeges', element: UserListByPackage, exact: true },
+  { path: '/packages/shop-list', name: 'Shop List by Packeges', element: ShopListByPackage, exact: true },
+  { path: '/address/division', name: 'Division', element: Division, exact: true },
+  { path: '/address/province', name: 'Province', element: Province, exact: true },
+  { path: '/blog/all-blogs', name: 'All Blogs', element: AllBlogs, exact: true },
+  { path: '/blog/post-blog', name: 'Post Blog', element: PostBlog, exact: true },
+
   { path: '/theme/colors', name: 'Colors', element: Colors },
   { path: '/theme/typography', name: 'Typography', element: Typography },
   { path: '/base', name: 'Base', element: Cards, exact: true },

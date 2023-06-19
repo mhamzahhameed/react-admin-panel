@@ -37,7 +37,7 @@ const _nav = [
   },
   {
     component: CNavItem,
-    name: 'SEHR Shop',
+    name: 'SEHR Shops',
     to: '/users/sehr-shop',
     icon: <CIcon icon={cilUser} customClassName="nav-icon" />,
   },
@@ -66,7 +66,7 @@ const _nav = [
   {
     component: CNavItem,
     name: 'Limited Sehr Shops',
-    to: '/limited-Sehr-shops/customers',
+    to: '/limited-users/seher-shops',
     icon: <CIcon icon={cilUser} customClassName="nav-icon" />,
   },
   {
@@ -82,7 +82,7 @@ const _nav = [
   {
     component: CNavItem,
     name: 'Pusrchasing by Shops',
-    to: '/purchasing/purchasing-by-Shops',
+    to: '/purchasing/purchasing-by-shops',
     icon: <CIcon icon={cilCart} customClassName="nav-icon" />,
   },
   {
@@ -135,7 +135,7 @@ const _nav = [
   },
   {
     component: CNavItem,
-    name: 'Shop list by Category',
+    name: 'Shop List by Category',
     to: '/category/shop-list-by-category',
     icon: <CIcon icon={cilAlignLeft} customClassName="nav-icon" />,
   },

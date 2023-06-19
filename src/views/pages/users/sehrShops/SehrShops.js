@@ -3,7 +3,7 @@ import CIcon from '@coreui/icons-react'
 import { CButton, CForm, CFormCheck, CFormInput, CFormSelect, CFormSwitch, CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle } from '@coreui/react'
 import React, { useEffect, useState } from 'react'
 import Swal from 'sweetalert2'
-const CategoryCommission = () => {
+const SehrShops = () => {
   const [title, setTitle] = useState([])
   const [data, setData] = useState([])
   const [currentPage, setCurrentPage] = useState(1)
@@ -367,7 +367,7 @@ const CategoryCommission = () => {
       </CModalFooter>
     </CModal>
       <div className="card">
-        <div className="card-header">Category Commission</div>
+        <div className="card-header">Sehr Shops</div>
         <div className="card-body">
           <div>
             <div className="d-flex my-2 justify-content-end">
@@ -455,4 +455,4 @@ const CategoryCommission = () => {
     </div>
   )
 }
-export default CategoryCommission
+export default SehrShops
