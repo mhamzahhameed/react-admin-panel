@@ -117,8 +117,8 @@ const AllBlogs = () => {
     }, [ searchValue, dummyData ])
   const fetchData = async () => {
     try {
-      //   const response = await axios.get(`https://dummyjson.com/products`)
-      //   response.data.products[0] = { ...response.data.products[0], Action: '' }
+      // const response = await axios.get(`https://dummyjson.com/products`)
+      // response.data.products[0] = { ...response.data.products[0], Action: '' }
       dummyData[0] = { ...dummyData[0], action: '' }
       setTitle(Object.keys(dummyData[0]))
       const fetchedData = dummyData
@@ -227,7 +227,7 @@ const AllBlogs = () => {
     const currentPageData = getCurrentPageData()
 
     return currentPageData.map((item, index) => (
-      <tr key={index}>
+      <tr key={ index }>
         <th scope="row">{item.id}</th>
         <td>{item.name}</td>
         <td>{item.gender}</td>
