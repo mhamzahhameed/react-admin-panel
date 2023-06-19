@@ -41,7 +41,8 @@
     "react-redux": "^8.0.5",
     "react-router-dom": "^6.8.2",
     "redux": "4.2.1",
-    "simplebar-react": "^2.4.3"
+    "simplebar-react": "^2.4.3",
+    "sweetalert2": "^11.7.12"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^5.16.5",

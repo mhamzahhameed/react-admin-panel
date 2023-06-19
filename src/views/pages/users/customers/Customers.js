@@ -1,13 +1,16 @@
-import { cilPenAlt, cilSpeedometer, cilTrash } from '@coreui/icons'
+import { cilPenAlt, cilTrash } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
+import { CButton, CForm, CFormCheck, CFormInput, CFormSelect, CFormSwitch, CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle } from '@coreui/react'
 import React, { useEffect, useState } from 'react'
+import Swal from 'sweetalert2'
 const Customers = () => {
   const [title, setTitle] = useState([])
   const [data, setData] = useState([])
   const [currentPage, setCurrentPage] = useState(1)
   const [perPage, setPerPage] = useState(10)
   const [searchValue, setSearchValue] = useState('')
-  const dummyData = [
+  const [editModalVisible, setEditModalVisible] = useState(false)
+  const [dummyData,setDummyData] = useState([
     {
       id: 1,
       name: 'Shahab Imtiaz',
@@ -55,13 +58,13 @@ const Customers = () => {
       name: 'Adnan Abid',
       gender: 'male',
       created_at: '25 Jan 2023',
-      role: 'admin',
+      role: 'customer',
       mobile: '03009876543',
       cnic: '303109870122',
       province: 'punjab',
-      division: 'lahore',
-      district: '',
-      tehsil: 'abcdef',
+      division: 'karachi',
+      district: 'lllll',
+      tehsil: 'bbcc',
       active: true,
     },
     {
@@ -98,18 +101,18 @@ const Customers = () => {
       gender: 'male',
       created_at: '25 Jan 2023',
       role: 'admin',
-      mobile: '03009876543',
-      cnic: '303109870122',
+      mobile: '032209876543',
+      cnic: '31303109870122',
       province: 'punjab',
       division: 'lahore',
       district: '',
       tehsil: 'abcdef',
       active: true,
     },
-  ]
+  ])
   useEffect(() => {
     fetchData()
-  }, [searchValue])
+  }, [searchValue,dummyData])
   const fetchData = async () => {
     try {
       //   const response = await axios.get(`https://dummyjson.com/products`)
@@ -118,7 +121,19 @@ const Customers = () => {
       setTitle(Object.keys(dummyData[0]))
       const fetchedData = dummyData
       const filteredData = searchValue
-        ? fetchedData.filter((item) => item.name.toLowerCase().includes(searchValue.toLowerCase()))
+        ? fetchedData.filter((item) => {
+          
+         return item.name.toLowerCase().includes(searchValue) ||
+          item.mobile.toLowerCase().includes(searchValue) ||
+          item.cnic.toLowerCase().includes(searchValue) ||
+          item.created_at.toLowerCase().includes(searchValue) ||
+          item.tehsil.toLowerCase().includes(searchValue) ||
+          item.district.toLowerCase().includes(searchValue) ||
+          item.division.toLowerCase().includes(searchValue) ||
+          item.province.toLowerCase().includes(searchValue) ||
+          item.role.toLowerCase().includes(searchValue) ||
+          item.gender.toLowerCase().includes(searchValue)
+        })
         : fetchedData
 
       setData(filteredData)
@@ -152,6 +167,28 @@ const Customers = () => {
       setCurrentPage(currentPage + 1)
     }
   }
+  const EditModal = (id)=>{
+    setEditModalVisible(true);
+  }
+  const handleDelete = (id)=>{
+    Swal.fire({
+      title: 'Are you sure?',
+      text: 'You won\'t be able to revert this!',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, delete it!',
+      cancelButtonText: 'Cancel',
+      reverseButtons: true,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Perform the delete operation
+        console.log(id)
+        const newData = [...dummyData];
+        newData.splice(id, 1);
+        setDummyData(newData)
+      }
+    });
+  }
   // Render the current page's records
   const renderData = () => {
     const currentPageData = getCurrentPageData()
@@ -182,10 +219,10 @@ const Customers = () => {
           </div>
         </td>
         <td>
-          <button className="btn btn-success text-light">
+          <button className="btn btn-success text-light" onClick={()=>EditModal(index)}>
             <CIcon icon={cilPenAlt} size="sm" />
           </button>
-          <button className="btn btn-danger ms-2 text-light">
+          <button className="btn btn-danger ms-2 text-light" onClick={()=> handleDelete(index)}>
             <CIcon icon={cilTrash} size="sm" />
           </button>
         </td>
@@ -197,8 +234,79 @@ const Customers = () => {
   const totalPages = Math.ceil(data.length / perPage)
   // Generate an array of page numbers
   const pageNumbers = Array.from({ length: totalPages }, (_, index) => index + 1)
+  
   return (
     <div className="container">
+    <CModal alignment="center" visible={editModalVisible} onClose={() => setEditModalVisible(false)}>
+      <CModalHeader>
+        <CModalTitle>Edit Customer Details</CModalTitle>
+      </CModalHeader>
+      <CModalBody>
+      <CForm>
+  <CFormInput
+    type="text"
+    id="name"
+    label="Name"
+    aria-describedby="name"
+  />
+  <div className='my-3'>
+    <p>Gender</p>
+  <CFormCheck type="radio" name="flexRadioDefault" id="flexRadioDefault1" label="Male" value="male"/>
+<CFormCheck type="radio" name="flexRadioDefault" id="flexRadioDefault2" label="Female" value="female"/>
+  </div>
+  <CFormSelect aria-label="role" >
+  <option value="1">Admin</option>
+  <option value="2">Customer</option>
+</CFormSelect>
+  <CFormInput
+    type="tel"
+    id="mobile"
+    label="Mobile Number"
+    aria-describedby="name"
+  />
+  <CFormInput
+    type="text"
+    id="cnic"
+    label="CNIC"
+    aria-describedby="name"
+  />
+  <CFormInput
+    type="text"
+    id="province"
+    label="Province"
+    aria-describedby="name"
+  />
+  <CFormInput
+    type="text"
+    id="division"
+    label="Division"
+    aria-describedby="name"
+  />
+  <CFormInput
+    type="text"
+    id="district"
+    label="District"
+    aria-describedby="name"
+  />
+  <CFormInput
+    type="text"
+    id="tehsil"
+    label="Tehsil"
+    aria-describedby="name"
+  />
+  <div className='my-2'>
+    <p className='mb-2'>Active</p>
+  <CFormSwitch id="formSwitchCheckChecked" defaultChecked/>
+  </div>
+</CForm>
+      </CModalBody>
+      <CModalFooter>
+        <CButton color="secondary" onClick={() => setEditModalVisible(false)}>
+          Close
+        </CButton>
+        <CButton color="primary">Save changes</CButton>
+      </CModalFooter>
+    </CModal>
       <div className="card">
         <div className="card-header">Table</div>
         <div className="card-body">
@@ -212,6 +320,7 @@ const Customers = () => {
                   value={searchValue}
                   onChange={(e) => setSearchValue(e.target.value)}
                 />
+                
               </div>
               <button className="btn btn-primary ms-2" onClick={() => setSearchValue('')}>
                 Clear
