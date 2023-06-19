@@ -112,7 +112,12 @@ const Customers = () => {
   ])
   useEffect(() => {
     fetchData()
+<<<<<<< HEAD
   }, [searchValue,dummyData])
+=======
+    // eslint-disable-next-line
+  }, [searchValue])
+>>>>>>> 72c7872e10b594d17429ed6e2c52913dfcc70dae
   const fetchData = async () => {
     try {
       //   const response = await axios.get(`https://dummyjson.com/products`)
@@ -371,7 +376,7 @@ const Customers = () => {
                 </button>
               </li>
 
-              {pageNumbers.map((pageNumber,index) => {
+              {pageNumbers.map((pageNumber, index) => {
                 return (
                   <li
                     className={currentPage === pageNumber ? 'active page-item' : 'page-item'}
