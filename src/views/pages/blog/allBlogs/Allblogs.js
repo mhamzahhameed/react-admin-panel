@@ -225,7 +225,7 @@ const AllBlogs = () => {
     const currentPageData = getCurrentPageData()
 
     return currentPageData.map((item, index) => (
-      <tr key={ index }>
+      <tr key={index}>
         <th scope="row">{item.id}</th>
         <td>{item.name}</td>
         <td>{item.gender}</td>
