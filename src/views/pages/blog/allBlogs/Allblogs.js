@@ -10,7 +10,7 @@ const AllBlogs = () => {
   const [perPage, setPerPage] = useState(10)
   const [searchValue, setSearchValue] = useState('')
   const [editModalVisible, setEditModalVisible] = useState(false)
-  const [editFormData, setEditFormData] = useState({});
+  const [editFormData, setEditFormData] = useState({})
   const [dummyData,setDummyData] = useState([
     {
       id: 1,
