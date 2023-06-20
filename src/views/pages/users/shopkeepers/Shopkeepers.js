@@ -264,6 +264,7 @@ const Shopkeepers = () => {
     return currentPageData.map((item, index) => (
       <tr key={index}>
         <th scope="row">{item.id}</th>
+        {/* eslint-disable-next-line */}
         <td><img src={item.avatar ? item.avatar : PlaceholderImage} style={{ height:'50px',width: '50px',objectFit:'cover' }} className='border border-primary rounded-circle' onError={()=> document.getElementById(item.id).src = PlaceholderImage} id={item.id} alt='avatar image'/></td>
         <td>{item.firstName}</td>
         <td>{item.lastName}</td>
