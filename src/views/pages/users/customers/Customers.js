@@ -3,6 +3,7 @@ import CIcon from '@coreui/icons-react'
 import { CButton, CForm, CFormCheck, CFormInput, CFormSelect, CFormSwitch, CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle } from '@coreui/react'
 import React, { useEffect, useState } from 'react'
 import Swal from 'sweetalert2'
+import AxiosInstance from 'src/utils/axiosInstance'
 const Customers = () => {
   const [title, setTitle] = useState([])
   const [data, setData] = useState([])
@@ -11,13 +12,14 @@ const Customers = () => {
   const [searchValue, setSearchValue] = useState('')
   const [editModalVisible, setEditModalVisible] = useState(false)
   const [editFormData, setEditFormData] = useState({});
+  const [roles,setRoles] = useState([]);
   const [dummyData,setDummyData] = useState([
     {
       id: 1,
       name: 'Shahab Imtiaz',
       gender: 'male',
       created_at: '25 Jan 2023',
-      role: 'admin',
+      role: 'user',
       mobile: '03009876543',
       cnic: '303109870122',
       province: 'punjab',
@@ -31,7 +33,7 @@ const Customers = () => {
       name: 'Shahab Imtiaz',
       gender: 'male',
       created_at: '25 Jan 2023',
-      role: 'admin',
+      role: 'shopKeeper',
       mobile: '03009876543',
       cnic: '303109870122',
       province: 'punjab',
@@ -113,6 +115,11 @@ const Customers = () => {
   ])
   useEffect(() => {
     fetchData()
+    AxiosInstance.get('/api/user/roles').then((result)=>{
+      setRoles(result.data)
+    }).catch((error)=>{
+      console.log(error.message)
+    })
     // eslint-disable-next-line
     }, [ searchValue, dummyData ])
   const fetchData = async () => {
@@ -252,12 +259,14 @@ const Customers = () => {
           </div>
         </td>
         <td>
+          <div className='d-flex justify-content-between flex-wrap' style={{ width:"100px" }}>
           <button className="btn btn-success text-light" onClick={()=>EditModal(index)}>
             <CIcon icon={cilPenAlt} size="sm" />
           </button>
           <button className="btn btn-danger ms-2 text-light" onClick={()=> handleDelete(index)}>
             <CIcon icon={cilTrash} size="sm" />
           </button>
+          </div>
         </td>
       </tr>
     ))
@@ -286,21 +295,26 @@ const Customers = () => {
   />
   <div className='my-3'>
     <p>Gender</p>
-  <CFormCheck type="radio" name="flexRadioDefault" id="mele" label="Male" value="male" checked={editFormData.gender === 'male'}
+  <CFormCheck type="radio" name="gender" id="male" label="Male" value="male" checked={editFormData.gender === 'male'}
   onChange={(e) =>
     setEditFormData({ ...editFormData, gender: e.target.value })
-  }/>
-<CFormCheck type="radio" name="flexRadioDefault" id="female" label="Female" value="female" checked={editFormData.gender === 'female'}
+  }
+  onClick={(e)=> e.stopPropagation()}
+  />
+<CFormCheck type="radio" name="gender" id="female" label="Female" value="female" checked={editFormData.gender === 'female'}
   onChange={(e) =>
     setEditFormData({ ...editFormData, gender: e.target.value })
-  }/>
+  }
+  onClick={(e)=> e.stopPropagation()}
+  />
   </div>
   <CFormSelect aria-label="role" value={editFormData.role || ''}
   onChange={(e) =>
     setEditFormData({ ...editFormData, role: e.target.value })
   } >
-  <option id='role' value="admin">Admin</option>
-  <option id='role' value="customer">Customer</option>
+    {roles.map((item)=>{
+      return <option id='role' value={item.role} key={item.id} selected={item.role===editFormData.role}>{item.role}</option>
+    })}
 </CFormSelect>
   <CFormInput
     type="tel"

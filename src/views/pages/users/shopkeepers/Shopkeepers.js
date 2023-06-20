@@ -1,7 +1,9 @@
 import { cilPenAlt, cilTrash } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
 import { CButton, CForm, CFormCheck, CFormInput, CFormSelect, CFormSwitch, CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle } from '@coreui/react'
+import PlaceholderImage from '../../../../assets/images/placeholder.png';
 import React, { useEffect, useState } from 'react'
+import AxiosInstance from 'src/utils/axiosInstance'
 import Swal from 'sweetalert2'
 const Shopkeepers = () => {
   const [title, setTitle] = useState([])
@@ -117,11 +119,44 @@ const Shopkeepers = () => {
     }, [ searchValue, dummyData ])
   const fetchData = async () => {
     try {
-      //   const response = await axios.get(`https://dummyjson.com/products`)
+        let response = await AxiosInstance.get('/api/user')
+        response = response.data.users;
+        const shopKeeper =  response.filter(item => {
+          return item.roles.some(role => role.role === 'shopKeeper');
+        });
+        
       //   response.data.products[0] = { ...response.data.products[0], Action: '' }
-      dummyData[0] = { ...dummyData[0], action: '' }
-      setTitle(Object.keys(dummyData[0]))
-      const fetchedData = dummyData
+      setTitle([
+        "id",
+        "avatar",
+        "firstName",
+        "lastName",
+        "username",
+        "mobile",
+        "gender",
+        "dob",
+        "roles",
+        "active",
+        "verified At",
+        "phoneVerified At",
+        "cnic",
+        "education",
+        "address",
+        "tehsil",
+        "district",
+        "division",
+        "province", 
+        "city",
+        "country",
+        "created At",
+        "updated At",
+        "last Reward Paid At",
+        "action"
+    ])
+      // dummyData[0] = { ...dummyData[0], action: '' }
+      // setTitle(Object.keys(dummyData[0]))
+      console.log(shopKeeper);
+      const fetchedData = shopKeeper
       const filteredData = searchValue
         ? fetchedData.filter((item) => {
           
@@ -229,28 +264,47 @@ const Shopkeepers = () => {
     return currentPageData.map((item, index) => (
       <tr key={index}>
         <th scope="row">{item.id}</th>
-        <td>{item.name}</td>
-        <td>{item.gender}</td>
-        <td>{item.created_at}</td>
+        <td><img src={item.avatar ? item.avatar : PlaceholderImage} style={{ height:'50px',width: '50px',objectFit:'cover' }} className='border border-primary rounded-circle' onError={()=> document.getElementById(item.id).src = PlaceholderImage} id={item.id} alt='avatar image'/></td>
+        <td>{item.firstName}</td>
+        <td>{item.lastName}</td>
+        <td>{item.username}</td>
         <td>
-          <span className="badge bg-success">{item.role}</span>
+          {
+            item.roles.map((roleItem)=>{
+              return <span className="badge bg-success" key={roleItem.id}>{roleItem.role}</span>
+            })
+          }
+          
         </td>
         <td>{item.mobile}</td>
-        <td>{item.cnic}</td>
-        <td>{item.province}</td>
-        <td>{item.division}</td>
-        <td>{item.district}</td>
-        <td>{item.tehsil}</td>
+        <td>{item.gender ?? 'not defined'}</td>
+        <td>{item.dob}</td>
         <td>
           <div className="form-check form-switch">
             <input
               className="form-check-input"
               type="checkbox"
               id="flexSwitchCheckDefault"
-              defaultChecked={item.active === true}
+              defaultChecked={item.isActive === true}
             />
           </div>
         </td>
+        <td>{item.verifiedAt}</td>
+        <td>{item.phoneVerifiedAt}</td>
+        <td>{item.cnic}</td>
+        <td>{item.education}</td>
+        <td>{item.address}</td>
+        <td>{item.tehsil}</td>
+        <td>{item.district}</td>
+        <td>{item.division}</td>
+        <td>{item.province}</td>
+        <td>{item.city}</td>
+        <td>{item.country}</td>
+        <td>{item.createdAt}</td>
+        <td>{item.updatedAt}</td>
+        <td>{item.lastRewardPaidAt}</td>
+        
+      
         <td>
           <button className="btn btn-success text-light" onClick={()=>EditModal(index)}>
             <CIcon icon={cilPenAlt} size="sm" />
