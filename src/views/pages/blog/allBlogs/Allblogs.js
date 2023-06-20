@@ -117,8 +117,6 @@ const AllBlogs = () => {
     }, [ searchValue, dummyData ])
   const fetchData = async () => {
     try {
-      // const response = await axios.get(`https://dummyjson.com/products`)
-      // response.data.products[0] = { ...response.data.products[0], Action: '' }
       dummyData[0] = { ...dummyData[0], action: '' }
       setTitle(Object.keys(dummyData[0]))
       const fetchedData = dummyData
