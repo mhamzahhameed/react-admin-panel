@@ -121,7 +121,7 @@ const Shopkeepers = () => {
     try {
         let response = await AxiosInstance.get('/api/user')
         response = response.data.users;
-        const shopKeeper =  response.filter(item => {
+        let shopKeeper =  response.filter(item => {
           return item.roles.some(role => role.role === 'shopKeeper');
         });
         
@@ -138,7 +138,7 @@ const Shopkeepers = () => {
         "dob",
         "active",
         "verified At",
-        "phoneVerified At",
+        "phone Verified At",
         "cnic",
         "education",
         "address",
@@ -155,7 +155,13 @@ const Shopkeepers = () => {
     ])
       // dummyData[0] = { ...dummyData[0], action: '' }
       // setTitle(Object.keys(dummyData[0]))
-      console.log(shopKeeper);
+      shopKeeper = shopKeeper.map(obj => {
+        const updatedObj = {};
+        for (const [key, value] of Object.entries(obj)) {
+          updatedObj[key] = value ? value : 'not defined';
+        }
+        return updatedObj;
+      });
       const fetchedData = shopKeeper
       const filteredData = searchValue
         ? fetchedData.filter((item) => {
@@ -163,14 +169,14 @@ const Shopkeepers = () => {
          return item.username.toLowerCase().includes(searchValue) ||
           item.mobile.toLowerCase().includes(searchValue) ||
           item.cnic.toLowerCase().includes(searchValue) ||
-          item.tehsil.toLowerCase().includes(searchValue) ||
-          item.district.toLowerCase().includes(searchValue) ||
-          item.division.toLowerCase().includes(searchValue) ||
-          item.province.toLowerCase().includes(searchValue) ||
           item.firstName.toLowerCase().includes(searchValue) ||
           item.lastName.toLowerCase().includes(searchValue) ||
-          item.city.toLowerCase().includes(searchValue) || 
-          item.country.toLowerCase().includes(searchValue) 
+          item.tehsil.toLowerCase().includes(searchValue) ||
+          item.district.toLowerCase().includes(searchValue) ||
+          item.city.toLowerCase().includes(searchValue) ||
+          item.education.toLowerCase().includes(searchValue) ||
+          item.country.toLowerCase().includes(searchValue) ||
+          item.address.toLowerCase().includes(searchValue) 
         })
         : fetchedData
 
@@ -279,7 +285,7 @@ const Shopkeepers = () => {
           
         </td>
         <td>{item.mobile}</td>
-        <td>{item.gender ?? 'not defined'}</td>
+        <td>{item.gender}</td>
         <td>{item.dob}</td>
         <td>
           <div className="form-check form-switch">
@@ -308,12 +314,14 @@ const Shopkeepers = () => {
         
       
         <td>
+          <div className='d-flex justify-content-between flex-wrap' style={{ width:"100px" }}>
           <button className="btn btn-success text-light" onClick={()=>EditModal(index)}>
             <CIcon icon={cilPenAlt} size="sm" />
           </button>
           <button className="btn btn-danger ms-2 text-light" onClick={()=> handleDelete(index)}>
             <CIcon icon={cilTrash} size="sm" />
           </button>
+          </div>
         </td>
       </tr>
     ))
