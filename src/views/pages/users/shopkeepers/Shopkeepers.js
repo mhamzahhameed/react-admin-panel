@@ -132,10 +132,10 @@ const Shopkeepers = () => {
         "firstName",
         "lastName",
         "username",
+        "roles",
         "mobile",
         "gender",
         "dob",
-        "roles",
         "active",
         "verified At",
         "phoneVerified At",
@@ -160,16 +160,17 @@ const Shopkeepers = () => {
       const filteredData = searchValue
         ? fetchedData.filter((item) => {
           
-         return item.name.toLowerCase().includes(searchValue) ||
+         return item.username.toLowerCase().includes(searchValue) ||
           item.mobile.toLowerCase().includes(searchValue) ||
           item.cnic.toLowerCase().includes(searchValue) ||
-          item.created_at.toLowerCase().includes(searchValue) ||
           item.tehsil.toLowerCase().includes(searchValue) ||
           item.district.toLowerCase().includes(searchValue) ||
           item.division.toLowerCase().includes(searchValue) ||
           item.province.toLowerCase().includes(searchValue) ||
-          item.role.toLowerCase().includes(searchValue) ||
-          item.gender.toLowerCase().includes(searchValue)
+          item.firstName.toLowerCase().includes(searchValue) ||
+          item.lastName.toLowerCase().includes(searchValue) ||
+          item.city.toLowerCase().includes(searchValue) || 
+          item.country.toLowerCase().includes(searchValue) 
         })
         : fetchedData
 
