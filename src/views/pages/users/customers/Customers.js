@@ -1,7 +1,6 @@
-import { cilPenAlt, cilTrash } from '@coreui/icons'
+import { cilCog, cilPenAlt } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
 import { CButton, CForm, CFormCheck, CFormInput, CFormSelect, CFormSwitch, CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle } from '@coreui/react'
-import PlaceholderImage from '../../../../assets/images/placeholder.png';
 import React, { useEffect, useState } from 'react'
 import AxiosInstance from 'src/utils/axiosInstance'
 import Swal from 'sweetalert2'
@@ -14,104 +13,6 @@ const Shopkeepers = () => {
   const [editModalVisible, setEditModalVisible] = useState(false)
   const [editFormData, setEditFormData] = useState({});
   const [dummyData,setDummyData] = useState([
-    {
-      id: 1,
-      name: 'Shahab Imtiaz',
-      gender: 'male',
-      created_at: '25 Jan 2023',
-      role: 'admin',
-      mobile: '03009876543',
-      cnic: '303109870122',
-      province: 'punjab',
-      division: 'lahore',
-      district: '',
-      tehsil: 'abcdef',
-      active: true,
-    },
-    {
-      id: 2,
-      name: 'Shahab Imtiaz',
-      gender: 'male',
-      created_at: '25 Jan 2023',
-      role: 'admin',
-      mobile: '03009876543',
-      cnic: '303109870122',
-      province: 'punjab',
-      division: 'lahore',
-      district: 'ghjkl',
-      tehsil: 'abcdef',
-      active: false,
-    },
-    {
-      id: 3,
-      name: 'Shahab Imtiaz',
-      gender: 'male',
-      created_at: '25 Jan 2023',
-      role: 'admin',
-      mobile: '03009876543',
-      cnic: '303109870122',
-      province: 'punjab',
-      division: 'lahore',
-      district: '',
-      tehsil: 'abcdef',
-      active: true,
-    },
-    {
-      id: 4,
-      name: 'Adnan Abid',
-      gender: 'male',
-      created_at: '25 Jan 2023',
-      role: 'customer',
-      mobile: '03009876543',
-      cnic: '303109870122',
-      province: 'punjab',
-      division: 'karachi',
-      district: 'lllll',
-      tehsil: 'bbcc',
-      active: true,
-    },
-    {
-      id: 5,
-      name: 'Adnan Abid',
-      gender: 'male',
-      created_at: '25 Jan 2023',
-      role: 'admin',
-      mobile: '03009876543',
-      cnic: '303109870122',
-      province: 'punjab',
-      division: 'lahore',
-      district: '',
-      tehsil: 'abcdef',
-      active: true,
-    },
-    {
-      id: 6,
-      name: 'Adnan Abid',
-      gender: 'male',
-      created_at: '25 Jan 2023',
-      role: 'admin',
-      mobile: '03009876543',
-      cnic: '303109870122',
-      province: 'punjab',
-      division: 'lahore',
-      district: '',
-      tehsil: 'abcdef',
-      active: true,
-    },
-    {
-      id: 7,
-      name: 'Adnan Abid',
-      gender: 'male',
-      created_at: '25 Jan 2023',
-      role: 'admin',
-      mobile: '032209876543',
-      cnic: '3130310987012',
-      province: 'punjab',
-      division: 'lahore',
-      district: '',
-      tehsil: 'abcdef',
-      active: true,
-    },
   ])
   useEffect(() => {
     fetchData()
@@ -119,13 +20,16 @@ const Shopkeepers = () => {
     }, [ searchValue, dummyData ])
   const fetchData = async () => {
     try {
-        let response = await AxiosInstance.get('/api/user')
+      let count = await AxiosInstance.get('/api/user')
+        count = count.data.total;
+        let response = await AxiosInstance.get(`/api/user?limit=${count}`)
         response = response.data.users;
         let customer =   response.filter(obj => {
           const userRole = obj.roles.find(roleObj => roleObj.role === 'user');
           return userRole && obj.roles.length === 1;
         });
       setTitle([
+        "#",
         "name",
         "mobile number",
         "sehr package",
@@ -199,20 +103,17 @@ const Shopkeepers = () => {
   }
   const handleDelete = (id)=>{
     Swal.fire({
-      title: 'Are you sure?',
+      title: 'Are you sure you want to limit this user?',
       text: 'You won\'t be able to revert this!',
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonText: 'Yes, delete it!',
+      confirmButtonText: 'Confirm',
       cancelButtonText: 'Cancel',
       reverseButtons: true,
     }).then((result) => {
       if (result.isConfirmed) {
         // Perform the delete operation
         console.log(id)
-        const newData = [...dummyData];
-        newData.splice(id, 1);
-        setDummyData(newData)
       }
     });
   }
@@ -249,6 +150,7 @@ const Shopkeepers = () => {
 
     return currentPageData.map((item, index) => (
       <tr key={index}>
+        <td>{index+1}</td>
         <td>{item.firstName+" "+item.lastName}</td>
         <td>{item.mobile}</td>
         <td>{item.lastRewardPaidAt}</td>
@@ -258,12 +160,12 @@ const Shopkeepers = () => {
         <td>{item.division}</td>
         <td>{item.province}</td>
         <td>
-          <div className='d-flex justify-content-between flex-wrap' style={{ width:"100px" }}>
+          <div className='d-flex justify-content-between flex-wrap' style={{ width:"210px" }}>
           <button className="btn btn-success text-light" onClick={()=>EditModal(index)}>
-            <CIcon icon={cilPenAlt} size="sm" />
+            <CIcon icon={cilPenAlt} size="sm" /> Edit
           </button>
-          <button className="btn btn-danger ms-2 text-light" onClick={()=> handleDelete(index)}>
-            <CIcon icon={cilTrash} size="sm" />
+          <button className="btn btn-warning ms-2 text-light" onClick={()=> handleDelete(index)}>
+            <CIcon icon={cilCog} size="sm"/> Limit Access
           </button>
           </div>
         </td>
