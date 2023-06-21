@@ -30,19 +30,36 @@ const Shopkeepers = () => {
         let shopKeepers =  response.filter(item => {
           return item.roles.some(role => role.role === 'shopKeeper');
         });
-      let shopKeeper = business.filter(obj2 =>
-        shopKeepers.some(obj1 => obj1.id === obj2.userId)
-      );
-      shopKeeper = shopKeeper.filter(obj => obj.sehrCode == 'string' || obj.sehrCode == null);
+      let shopKeeper = shopKeepers;
+      for (let i = 0; i < shopKeeper.length; i++) {
+        const obj1 = shopKeeper[i];
+
+        const obj2 = business.find((item) => item.userId === obj1.id);
+        if (obj2) {
+          obj1.category = obj2.district;
+          obj1.businessName = obj2.businessName;
+          obj1.ownerName = obj2.ownerName;
+          obj1.sehrCode = obj2.sehrCode;
+        }
+      }
+      shopKeeper = shopKeeper.filter(obj => obj.sehrCode === 'string' || obj.sehrCode === null);
+      shopKeeper = shopKeeper.map(obj => {
+        const updatedObj = {};
+        for (const [key, value] of Object.entries(obj)) {
+          updatedObj[key] = value ? value : 'not defined';
+        }
+        return updatedObj;
+      });
       setTitle([
         "#",
         "owner name",
         "shop name",
         "mobile number",
-        "tehsil",
-        "district",
-        "division",
+        "category",
         "province", 
+        "division",
+        "district",
+        "tehsil", 
         "action"
     ])
       const fetchedData = shopKeeper
@@ -55,7 +72,8 @@ const Shopkeepers = () => {
           item.division.toLowerCase().includes(searchValue) ||
           item.province.toLowerCase().includes(searchValue) ||
           item.tehsil.toLowerCase().includes(searchValue) ||
-          item.district.toLowerCase().includes(searchValue) 
+          item.district.toLowerCase().includes(searchValue) ||
+          item.category.toLowerCase().includes(searchValue) 
         
         })
         : fetchedData
@@ -154,10 +172,11 @@ const Shopkeepers = () => {
         <td>{item.ownerName}</td>
         <td>{item.businessName}</td>
         <td>{item.mobile}</td>
-        <td>{item.tehsil}</td>
-        <td>{item.district}</td>
-        <td>{item.division}</td>
+        <td>{item.category}</td>
         <td>{item.province}</td>
+        <td>{item.division}</td>
+        <td>{item.district}</td>
+        <td>{item.tehsil}</td>
    
         
       

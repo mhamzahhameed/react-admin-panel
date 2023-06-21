@@ -34,14 +34,12 @@ const Shopkeepers = () => {
         "mobile number",
         "sehr package",
         "cnic",
-        "tehsil",
-        "district",
-        "division",
         "province", 
+        "division",
+        "district",
+        "tehsil",
         "action"
     ])
-      // dummyData[0] = { ...dummyData[0], action: '' }
-      // setTitle(Object.keys(dummyData[0]))
       customer = customer.map(obj => {
         const updatedObj = {};
         for (const [key, value] of Object.entries(obj)) {
@@ -155,10 +153,10 @@ const Shopkeepers = () => {
         <td>{item.mobile}</td>
         <td>{item.lastRewardPaidAt}</td>
         <td>{item.cnic}</td>
-        <td>{item.tehsil}</td>
-        <td>{item.district}</td>
-        <td>{item.division}</td>
         <td>{item.province}</td>
+        <td>{item.division}</td>
+        <td>{item.district}</td>
+        <td>{item.tehsil}</td>
         <td>
           <div className='d-flex justify-content-between flex-wrap' style={{ width:"210px" }}>
           <button className="btn btn-success text-light" onClick={()=>EditModal(index)}>

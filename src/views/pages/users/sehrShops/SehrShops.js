@@ -30,20 +30,37 @@ const Shopkeepers = () => {
         let shopKeepers =  response.filter(item => {
           return item.roles.some(role => role.role === 'shopKeeper');
         });
-      let shopKeeper = business.filter(obj2 =>
-        shopKeepers.some(obj1 => obj1.id === obj2.userId)
-      );
-      let sehrShops = shopKeeper.filter(obj => obj.sehrCode != 'string' && obj.sehrCode != null);
+      let sehrShops = shopKeepers;
+      for (let i = 0; i < sehrShops.length; i++) {
+        const obj1 = sehrShops[i];
+
+        const obj2 = business.find((item) => item.userId === obj1.id);
+        if (obj2) {
+          obj1.category = obj2.district;
+          obj1.businessName = obj2.businessName;
+          obj1.ownerName = obj2.ownerName;
+          obj1.sehrCode = obj2.sehrCode;
+        }
+      }
+      sehrShops = sehrShops.filter(obj => obj.sehrCode !== 'string' && obj.sehrCode !== null);
+      sehrShops = sehrShops.map(obj => {
+        const updatedObj = {};
+        for (const [key, value] of Object.entries(obj)) {
+          updatedObj[key] = value ? value : 'not defined';
+        }
+        return updatedObj;
+      });
       setTitle([
         "#",
         "owner name",
         "shop name",
         "sehr code",
         "mobile number",
-        "tehsil",
-        "district",
-        "division",
+        "category",
         "province", 
+        "division",
+        "district",
+        "tehsil",
         "action"
     ])
       const fetchedData = sehrShops
@@ -57,7 +74,8 @@ const Shopkeepers = () => {
           item.division.toLowerCase().includes(searchValue) ||
           item.province.toLowerCase().includes(searchValue) ||
           item.tehsil.toLowerCase().includes(searchValue) ||
-          item.district.toLowerCase().includes(searchValue) 
+          item.district.toLowerCase().includes(searchValue) ||
+          item.category.toLowerCase().includes(searchValue)
         
         })
         : fetchedData
@@ -157,13 +175,11 @@ const Shopkeepers = () => {
         <td>{item.businessName}</td>
         <td>{item.sehrCode}</td>
         <td>{item.mobile}</td>
-        <td>{item.tehsil}</td>
-        <td>{item.district}</td>
-        <td>{item.division}</td>
+        <td>{item.category}</td>
         <td>{item.province}</td>
-   
-        
-      
+        <td>{item.division}</td>
+        <td>{item.district}</td>
+        <td>{item.tehsil}</td>
         <td>
           <div className='d-flex justify-content-between flex-wrap' style={{ width:"210px" }}>
           <button className="btn btn-success text-light" onClick={()=>EditModal(index)}>
