@@ -1,7 +1,6 @@
 import { cilPenAlt, cilTrash } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
-import { CButton, CForm, CFormCheck, CFormInput, CFormSelect, CFormSwitch, CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle } from '@coreui/react'
-import PlaceholderImage from '../../../../assets/images/placeholder.png';
+import { CButton, CForm, CFormCheck, CFormInput, CFormSelect, CFormSwitch, CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle } from '@coreui/react';
 import React, { useEffect, useState } from 'react'
 import AxiosInstance from 'src/utils/axiosInstance'
 import Swal from 'sweetalert2'
@@ -13,170 +12,51 @@ const Shopkeepers = () => {
   const [searchValue, setSearchValue] = useState('')
   const [editModalVisible, setEditModalVisible] = useState(false)
   const [editFormData, setEditFormData] = useState({});
-  const [dummyData,setDummyData] = useState([
-    {
-      id: 1,
-      name: 'Shahab Imtiaz',
-      gender: 'male',
-      created_at: '25 Jan 2023',
-      role: 'admin',
-      mobile: '03009876543',
-      cnic: '303109870122',
-      province: 'punjab',
-      division: 'lahore',
-      district: '',
-      tehsil: 'abcdef',
-      active: true,
-    },
-    {
-      id: 2,
-      name: 'Shahab Imtiaz',
-      gender: 'male',
-      created_at: '25 Jan 2023',
-      role: 'admin',
-      mobile: '03009876543',
-      cnic: '303109870122',
-      province: 'punjab',
-      division: 'lahore',
-      district: 'ghjkl',
-      tehsil: 'abcdef',
-      active: false,
-    },
-    {
-      id: 3,
-      name: 'Shahab Imtiaz',
-      gender: 'male',
-      created_at: '25 Jan 2023',
-      role: 'admin',
-      mobile: '03009876543',
-      cnic: '303109870122',
-      province: 'punjab',
-      division: 'lahore',
-      district: '',
-      tehsil: 'abcdef',
-      active: true,
-    },
-    {
-      id: 4,
-      name: 'Adnan Abid',
-      gender: 'male',
-      created_at: '25 Jan 2023',
-      role: 'customer',
-      mobile: '03009876543',
-      cnic: '303109870122',
-      province: 'punjab',
-      division: 'karachi',
-      district: 'lllll',
-      tehsil: 'bbcc',
-      active: true,
-    },
-    {
-      id: 5,
-      name: 'Adnan Abid',
-      gender: 'male',
-      created_at: '25 Jan 2023',
-      role: 'admin',
-      mobile: '03009876543',
-      cnic: '303109870122',
-      province: 'punjab',
-      division: 'lahore',
-      district: '',
-      tehsil: 'abcdef',
-      active: true,
-    },
-    {
-      id: 6,
-      name: 'Adnan Abid',
-      gender: 'male',
-      created_at: '25 Jan 2023',
-      role: 'admin',
-      mobile: '03009876543',
-      cnic: '303109870122',
-      province: 'punjab',
-      division: 'lahore',
-      district: '',
-      tehsil: 'abcdef',
-      active: true,
-    },
-    {
-      id: 7,
-      name: 'Adnan Abid',
-      gender: 'male',
-      created_at: '25 Jan 2023',
-      role: 'admin',
-      mobile: '032209876543',
-      cnic: '3130310987012',
-      province: 'punjab',
-      division: 'lahore',
-      district: '',
-      tehsil: 'abcdef',
-      active: true,
-    },
-  ])
+  const [dummyData,setDummyData] = useState([])
   useEffect(() => {
     fetchData()
     // eslint-disable-next-line
     }, [ searchValue, dummyData ])
   const fetchData = async () => {
     try {
-        let response = await AxiosInstance.get('/api/user')
+      let count = await AxiosInstance.get('/api/user')
+        count = count.data.total;
+        let businessCount = await AxiosInstance.get('/api/business/all')
+        businessCount = businessCount.data.total;
+        let response = await AxiosInstance.get(`/api/user?limit=${count}`)
         response = response.data.users;
-        let shopKeeper =  response.filter(item => {
+        let business = await AxiosInstance.get(`/api/business/all?limit=${businessCount}`)
+        business = business.data.businesses;
+        let shopKeepers =  response.filter(item => {
           return item.roles.some(role => role.role === 'shopKeeper');
         });
-        
-      //   response.data.products[0] = { ...response.data.products[0], Action: '' }
+      let shopKeeper = business.filter(obj2 =>
+        shopKeepers.some(obj1 => obj1.id === obj2.userId)
+      );
+      shopKeeper = shopKeeper.filter(obj => obj.sehrCode == 'string' || obj.sehrCode == null);
       setTitle([
-        "id",
-        "avatar",
-        "firstName",
-        "lastName",
-        "username",
-        "roles",
-        "mobile",
-        "gender",
-        "dob",
-        "active",
-        "verified At",
-        "phone Verified At",
-        "cnic",
-        "education",
-        "address",
+        "#",
+        "owner name",
+        "shop name",
+        "mobile number",
         "tehsil",
         "district",
         "division",
         "province", 
-        "city",
-        "country",
-        "created At",
-        "updated At",
-        "last Reward Paid At",
         "action"
     ])
-      // dummyData[0] = { ...dummyData[0], action: '' }
-      // setTitle(Object.keys(dummyData[0]))
-      shopKeeper = shopKeeper.map(obj => {
-        const updatedObj = {};
-        for (const [key, value] of Object.entries(obj)) {
-          updatedObj[key] = value ? value : 'not defined';
-        }
-        return updatedObj;
-      });
       const fetchedData = shopKeeper
       const filteredData = searchValue
         ? fetchedData.filter((item) => {
           
-         return item.username.toLowerCase().includes(searchValue) ||
+         return item.ownerName.toLowerCase().includes(searchValue) ||
           item.mobile.toLowerCase().includes(searchValue) ||
-          item.cnic.toLowerCase().includes(searchValue) ||
-          item.firstName.toLowerCase().includes(searchValue) ||
-          item.lastName.toLowerCase().includes(searchValue) ||
+          item.businessName.toLowerCase().includes(searchValue) ||
+          item.division.toLowerCase().includes(searchValue) ||
+          item.province.toLowerCase().includes(searchValue) ||
           item.tehsil.toLowerCase().includes(searchValue) ||
-          item.district.toLowerCase().includes(searchValue) ||
-          item.city.toLowerCase().includes(searchValue) ||
-          item.education.toLowerCase().includes(searchValue) ||
-          item.country.toLowerCase().includes(searchValue) ||
-          item.address.toLowerCase().includes(searchValue) 
+          item.district.toLowerCase().includes(searchValue) 
+        
         })
         : fetchedData
 
@@ -270,56 +150,24 @@ const Shopkeepers = () => {
 
     return currentPageData.map((item, index) => (
       <tr key={index}>
-        <th scope="row">{item.id}</th>
-        {/* eslint-disable-next-line */}
-        <td><img src={item.avatar ? item.avatar : PlaceholderImage} style={{ height:'50px',width: '50px',objectFit:'cover' }} className='border border-primary rounded-circle' onError={()=> document.getElementById(item.id).src = PlaceholderImage} id={item.id} alt='avatar image'/></td>
-        <td>{item.firstName}</td>
-        <td>{item.lastName}</td>
-        <td>{item.username}</td>
-        <td>
-          {
-            item.roles.map((roleItem)=>{
-              return <span className="badge bg-success" key={roleItem.id}>{roleItem.role}</span>
-            })
-          }
-          
-        </td>
+        <td>{index+1}</td>
+        <td>{item.ownerName}</td>
+        <td>{item.businessName}</td>
         <td>{item.mobile}</td>
-        <td>{item.gender}</td>
-        <td>{item.dob}</td>
-        <td>
-          <div className="form-check form-switch">
-            <input
-              className="form-check-input"
-              type="checkbox"
-              id="flexSwitchCheckDefault"
-              defaultChecked={item.isActive === true}
-            />
-          </div>
-        </td>
-        <td>{item.verifiedAt}</td>
-        <td>{item.phoneVerifiedAt}</td>
-        <td>{item.cnic}</td>
-        <td>{item.education}</td>
-        <td>{item.address}</td>
         <td>{item.tehsil}</td>
         <td>{item.district}</td>
         <td>{item.division}</td>
         <td>{item.province}</td>
-        <td>{item.city}</td>
-        <td>{item.country}</td>
-        <td>{item.createdAt}</td>
-        <td>{item.updatedAt}</td>
-        <td>{item.lastRewardPaidAt}</td>
+   
         
       
         <td>
-          <div className='d-flex justify-content-between flex-wrap' style={{ width:"100px" }}>
+          <div className='d-flex justify-content-between flex-wrap' style={{ width:"170px" }}>
           <button className="btn btn-success text-light" onClick={()=>EditModal(index)}>
-            <CIcon icon={cilPenAlt} size="sm" />
+            <CIcon icon={cilPenAlt} size="sm" /> Edit
           </button>
           <button className="btn btn-danger ms-2 text-light" onClick={()=> handleDelete(index)}>
-            <CIcon icon={cilTrash} size="sm" />
+            <CIcon icon={cilTrash} size="sm" /> Delete
           </button>
           </div>
         </td>
