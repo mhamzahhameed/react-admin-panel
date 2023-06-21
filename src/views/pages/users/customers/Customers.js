@@ -1,10 +1,11 @@
 import { cilPenAlt, cilTrash } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
 import { CButton, CForm, CFormCheck, CFormInput, CFormSelect, CFormSwitch, CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle } from '@coreui/react'
+import PlaceholderImage from '../../../../assets/images/placeholder.png';
 import React, { useEffect, useState } from 'react'
-import Swal from 'sweetalert2'
 import AxiosInstance from 'src/utils/axiosInstance'
-const Customers = () => {
+import Swal from 'sweetalert2'
+const Shopkeepers = () => {
   const [title, setTitle] = useState([])
   const [data, setData] = useState([])
   const [currentPage, setCurrentPage] = useState(1)
@@ -12,14 +13,13 @@ const Customers = () => {
   const [searchValue, setSearchValue] = useState('')
   const [editModalVisible, setEditModalVisible] = useState(false)
   const [editFormData, setEditFormData] = useState({});
-  const [roles,setRoles] = useState([]);
   const [dummyData,setDummyData] = useState([
     {
       id: 1,
       name: 'Shahab Imtiaz',
       gender: 'male',
       created_at: '25 Jan 2023',
-      role: 'user',
+      role: 'admin',
       mobile: '03009876543',
       cnic: '303109870122',
       province: 'punjab',
@@ -33,7 +33,7 @@ const Customers = () => {
       name: 'Shahab Imtiaz',
       gender: 'male',
       created_at: '25 Jan 2023',
-      role: 'shopKeeper',
+      role: 'admin',
       mobile: '03009876543',
       cnic: '303109870122',
       province: 'punjab',
@@ -115,33 +115,47 @@ const Customers = () => {
   ])
   useEffect(() => {
     fetchData()
-    AxiosInstance.get('/api/user/roles').then((result)=>{
-      setRoles(result.data)
-    }).catch((error)=>{
-      console.log(error.message)
-    })
     // eslint-disable-next-line
     }, [ searchValue, dummyData ])
   const fetchData = async () => {
     try {
-      //   const response = await axios.get(`https://dummyjson.com/products`)
-      //   response.data.products[0] = { ...response.data.products[0], Action: '' }
-      dummyData[0] = { ...dummyData[0], action: '' }
-      setTitle(Object.keys(dummyData[0]))
-      const fetchedData = dummyData
+        let response = await AxiosInstance.get('/api/user')
+        response = response.data.users;
+        let customer =   response.filter(obj => {
+          const userRole = obj.roles.find(roleObj => roleObj.role === 'user');
+          return userRole && obj.roles.length === 1;
+        });
+      setTitle([
+        "name",
+        "mobile number",
+        "sehr package",
+        "cnic",
+        "tehsil",
+        "district",
+        "division",
+        "province", 
+        "action"
+    ])
+      // dummyData[0] = { ...dummyData[0], action: '' }
+      // setTitle(Object.keys(dummyData[0]))
+      customer = customer.map(obj => {
+        const updatedObj = {};
+        for (const [key, value] of Object.entries(obj)) {
+          updatedObj[key] = value ? value : 'not defined';
+        }
+        return updatedObj;
+      });
+      const fetchedData = customer
       const filteredData = searchValue
         ? fetchedData.filter((item) => {
-          
-         return item.name.toLowerCase().includes(searchValue) ||
+          const name = item.firstName+" "+item.lastName;
+         return name.toLowerCase().includes(searchValue) ||
           item.mobile.toLowerCase().includes(searchValue) ||
           item.cnic.toLowerCase().includes(searchValue) ||
-          item.created_at.toLowerCase().includes(searchValue) ||
           item.tehsil.toLowerCase().includes(searchValue) ||
           item.district.toLowerCase().includes(searchValue) ||
-          item.division.toLowerCase().includes(searchValue) ||
-          item.province.toLowerCase().includes(searchValue) ||
-          item.role.toLowerCase().includes(searchValue) ||
-          item.gender.toLowerCase().includes(searchValue)
+          item.lastRewardPaidAt.toLowerCase().includes(searchValue) ||
+          item.division.toLowerCase().includes(searchValue)
         })
         : fetchedData
 
@@ -235,29 +249,14 @@ const Customers = () => {
 
     return currentPageData.map((item, index) => (
       <tr key={index}>
-        <th scope="row">{item.id}</th>
-        <td>{item.name}</td>
-        <td>{item.gender}</td>
-        <td>{item.created_at}</td>
-        <td>
-          <span className="badge bg-success">{item.role}</span>
-        </td>
+        <td>{item.firstName+" "+item.lastName}</td>
         <td>{item.mobile}</td>
+        <td>{item.lastRewardPaidAt}</td>
         <td>{item.cnic}</td>
-        <td>{item.province}</td>
-        <td>{item.division}</td>
-        <td>{item.district}</td>
         <td>{item.tehsil}</td>
-        <td>
-          <div className="form-check form-switch">
-            <input
-              className="form-check-input"
-              type="checkbox"
-              id="flexSwitchCheckDefault"
-              defaultChecked={item.active === true}
-            />
-          </div>
-        </td>
+        <td>{item.district}</td>
+        <td>{item.division}</td>
+        <td>{item.province}</td>
         <td>
           <div className='d-flex justify-content-between flex-wrap' style={{ width:"100px" }}>
           <button className="btn btn-success text-light" onClick={()=>EditModal(index)}>
@@ -295,26 +294,21 @@ const Customers = () => {
   />
   <div className='my-3'>
     <p>Gender</p>
-  <CFormCheck type="radio" name="gender" id="male" label="Male" value="male" checked={editFormData.gender === 'male'}
+  <CFormCheck type="radio" name="flexRadioDefault" id="mele" label="Male" value="male" checked={editFormData.gender === 'male'}
   onChange={(e) =>
     setEditFormData({ ...editFormData, gender: e.target.value })
-  }
-  onClick={(e)=> e.stopPropagation()}
-  />
-<CFormCheck type="radio" name="gender" id="female" label="Female" value="female" checked={editFormData.gender === 'female'}
+  }/>
+<CFormCheck type="radio" name="flexRadioDefault" id="female" label="Female" value="female" checked={editFormData.gender === 'female'}
   onChange={(e) =>
     setEditFormData({ ...editFormData, gender: e.target.value })
-  }
-  onClick={(e)=> e.stopPropagation()}
-  />
+  }/>
   </div>
   <CFormSelect aria-label="role" value={editFormData.role || ''}
   onChange={(e) =>
     setEditFormData({ ...editFormData, role: e.target.value })
   } >
-    {roles.map((item)=>{
-      return <option id='role' value={item.role} key={item.id} selected={item.role===editFormData.role}>{item.role}</option>
-    })}
+  <option id='role' value="admin">Admin</option>
+  <option id='role' value="customer">Customer</option>
 </CFormSelect>
   <CFormInput
     type="tel"
@@ -469,4 +463,4 @@ const Customers = () => {
     </div>
   )
 }
-export default Customers
+export default Shopkeepers
