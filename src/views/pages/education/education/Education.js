@@ -1,144 +1,153 @@
-import { cilPenAlt, cilTrash } from '@coreui/icons'
+import { cilPenAlt, cilPlus, cilTrash } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
-import { CButton, CForm, CFormCheck, CFormInput, CFormSelect, CFormSwitch, CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle } from '@coreui/react'
+import { CButton, CForm, CFormInput, CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle } from '@coreui/react'
 import React, { useEffect, useState } from 'react'
+import AxiosInstance from 'src/utils/axiosInstance'
 import Swal from 'sweetalert2'
 const Education = () => {
   const [title, setTitle] = useState([])
   const [data, setData] = useState([])
   const [currentPage, setCurrentPage] = useState(1)
-  const [perPage, setPerPage] = useState(10)
+  const [perPage, setPerPage] = useState(5)
   const [searchValue, setSearchValue] = useState('')
   const [editModalVisible, setEditModalVisible] = useState(false)
+  const [editEducationModal, setEditEducationModal] = useState(false)
+
   const [editFormData, setEditFormData] = useState({});
-  const [dummyData,setDummyData] = useState([
-    {
-      id: 1,
-      name: 'Shahab Imtiaz',
-      gender: 'male',
-      created_at: '25 Jan 2023',
-      role: 'admin',
-      mobile: '03009876543',
-      cnic: '303109870122',
-      province: 'punjab',
-      division: 'lahore',
-      district: '',
-      tehsil: 'abcdef',
-      active: true,
-    },
-    {
-      id: 2,
-      name: 'Shahab Imtiaz',
-      gender: 'male',
-      created_at: '25 Jan 2023',
-      role: 'admin',
-      mobile: '03009876543',
-      cnic: '303109870122',
-      province: 'punjab',
-      division: 'lahore',
-      district: 'ghjkl',
-      tehsil: 'abcdef',
-      active: false,
-    },
-    {
-      id: 3,
-      name: 'Shahab Imtiaz',
-      gender: 'male',
-      created_at: '25 Jan 2023',
-      role: 'admin',
-      mobile: '03009876543',
-      cnic: '303109870122',
-      province: 'punjab',
-      division: 'lahore',
-      district: '',
-      tehsil: 'abcdef',
-      active: true,
-    },
-    {
-      id: 4,
-      name: 'Adnan Abid',
-      gender: 'male',
-      created_at: '25 Jan 2023',
-      role: 'customer',
-      mobile: '03009876543',
-      cnic: '303109870122',
-      province: 'punjab',
-      division: 'karachi',
-      district: 'lllll',
-      tehsil: 'bbcc',
-      active: true,
-    },
-    {
-      id: 5,
-      name: 'Adnan Abid',
-      gender: 'male',
-      created_at: '25 Jan 2023',
-      role: 'admin',
-      mobile: '03009876543',
-      cnic: '303109870122',
-      province: 'punjab',
-      division: 'lahore',
-      district: '',
-      tehsil: 'abcdef',
-      active: true,
-    },
-    {
-      id: 6,
-      name: 'Adnan Abid',
-      gender: 'male',
-      created_at: '25 Jan 2023',
-      role: 'admin',
-      mobile: '03009876543',
-      cnic: '303109870122',
-      province: 'punjab',
-      division: 'lahore',
-      district: '',
-      tehsil: 'abcdef',
-      active: true,
-    },
-    {
-      id: 7,
-      name: 'Adnan Abid',
-      gender: 'male',
-      created_at: '25 Jan 2023',
-      role: 'admin',
-      mobile: '032209876543',
-      cnic: '3130310987012',
-      province: 'punjab',
-      division: 'lahore',
-      district: '',
-      tehsil: 'abcdef',
-      active: true,
-    },
-  ])
+  // const [dummyData, setDummyData] = useState([
+  //   {
+  //     id: 1,
+  //     name: 'Shahab Imtiaz',
+  //     gender: 'male',
+  //     created_at: '25 Jan 2023',
+  //     role: 'admin',
+  //     mobile: '03009876543',
+  //     cnic: '303109870122',
+  //     province: 'punjab',
+  //     division: 'lahore',
+  //     district: '',
+  //     tehsil: 'abcdef',
+  //     active: true,
+  //   },
+  //   {
+  //     id: 2,
+  //     name: 'Shahab Imtiaz',
+  //     gender: 'male',
+  //     created_at: '25 Jan 2023',
+  //     role: 'admin',
+  //     mobile: '03009876543',
+  //     cnic: '303109870122',
+  //     province: 'punjab',
+  //     division: 'lahore',
+  //     district: 'ghjkl',
+  //     tehsil: 'abcdef',
+  //     active: false,
+  //   },
+  //   {
+  //     id: 3,
+  //     name: 'Shahab Imtiaz',
+  //     gender: 'male',
+  //     created_at: '25 Jan 2023',
+  //     role: 'admin',
+  //     mobile: '03009876543',
+  //     cnic: '303109870122',
+  //     province: 'punjab',
+  //     division: 'lahore',
+  //     district: '',
+  //     tehsil: 'abcdef',
+  //     active: true,
+  //   },
+  //   {
+  //     id: 4,
+  //     name: 'Adnan Abid',
+  //     gender: 'male',
+  //     created_at: '25 Jan 2023',
+  //     role: 'customer',
+  //     mobile: '03009876543',
+  //     cnic: '303109870122',
+  //     province: 'punjab',
+  //     division: 'karachi',
+  //     district: 'lllll',
+  //     tehsil: 'bbcc',
+  //     active: true,
+  //   },
+  //   {
+  //     id: 5,
+  //     name: 'Adnan Abid',
+  //     gender: 'male',
+  //     created_at: '25 Jan 2023',
+  //     role: 'admin',
+  //     mobile: '03009876543',
+  //     cnic: '303109870122',
+  //     province: 'punjab',
+  //     division: 'lahore',
+  //     district: '',
+  //     tehsil: 'abcdef',
+  //     active: true,
+  //   },
+  //   {
+  //     id: 6,
+  //     name: 'Adnan Abid',
+  //     gender: 'male',
+  //     created_at: '25 Jan 2023',
+  //     role: 'admin',
+  //     mobile: '03009876543',
+  //     cnic: '303109870122',
+  //     province: 'punjab',
+  //     division: 'lahore',
+  //     district: '',
+  //     tehsil: 'abcdef',
+  //     active: true,
+  //   },
+  //   {
+  //     id: 7,
+  //     name: 'Adnan Abid',
+  //     gender: 'male',
+  //     created_at: '25 Jan 2023',
+  //     role: 'admin',
+  //     mobile: '032209876543',
+  //     cnic: '3130310987012',
+  //     province: 'punjab',
+  //     division: 'lahore',
+  //     district: '',
+  //     tehsil: 'abcdef',
+  //     active: true,
+  //   },
+  // ])
   useEffect(() => {
     fetchData()
     // eslint-disable-next-line
-    }, [ searchValue, dummyData ])
+  }, [searchValue])
   const fetchData = async () => {
     try {
-      //   const response = await axios.get(`https://dummyjson.com/products`)
-      //   response.data.products[0] = { ...response.data.products[0], Action: '' }
-      dummyData[0] = { ...dummyData[0], action: '' }
-      setTitle(Object.keys(dummyData[0]))
-      const fetchedData = dummyData
+      let response = await AxiosInstance.get('/api/education')
+      response = response.data.education;
+      console.log("education data :", response)
+      // let education =   response.filter(obj => {
+      //   const userRole = obj.roles.find(roleObj => roleObj.role === 'user');
+      //   return userRole && obj.roles.length === 1;
+      // });
+      setTitle([
+        "#",
+        "education"
+      ])
+      // let education = response.map(obj => {
+      //   const updatedObj = {};
+      //   for (const [key, value] of Object.entries(obj)) {
+      //     updatedObj[key] = value ? value : 'not defined';
+      //   }
+      //   return updatedObj;
+      // });
+      const fetchedData = response
       const filteredData = searchValue
         ? fetchedData.filter((item) => {
-          
-         return item.name.toLowerCase().includes(searchValue) ||
-          item.mobile.toLowerCase().includes(searchValue) ||
-          item.cnic.toLowerCase().includes(searchValue) ||
-          item.created_at.toLowerCase().includes(searchValue) ||
-          item.tehsil.toLowerCase().includes(searchValue) ||
-          item.district.toLowerCase().includes(searchValue) ||
-          item.division.toLowerCase().includes(searchValue) ||
-          item.province.toLowerCase().includes(searchValue) ||
-          item.role.toLowerCase().includes(searchValue) ||
-          item.gender.toLowerCase().includes(searchValue)
+          return item.id.toString().includes(searchValue) ||
+            item.title.toLowerCase().includes(searchValue)
         })
         : fetchedData
-
+      console.log("filtererData : ", filteredData);
       setData(filteredData)
+      console.log(data);
     } catch (error) {
       console.error(error)
     }
@@ -169,14 +178,9 @@ const Education = () => {
       setCurrentPage(currentPage + 1)
     }
   }
-  const EditModal = (index)=>{
-    setEditFormData({
-      ...dummyData[index],
-      index,
-    });
-    setEditModalVisible(true);
-  }
-  const handleDelete = (id)=>{
+
+  const handleDelete = (id) => {
+    console.log('id', id);
     Swal.fire({
       title: 'Are you sure?',
       text: 'You won\'t be able to revert this!',
@@ -188,40 +192,46 @@ const Education = () => {
     }).then((result) => {
       if (result.isConfirmed) {
         // Perform the delete operation
-        console.log(id)
-        const newData = [...dummyData];
-        newData.splice(id, 1);
-        setDummyData(newData)
+        AxiosInstance.delete(`/api/education/${id}`)
+        fetchData()
+
       }
+
+
     });
   }
+
+  // Handle Save Changes button onclicking
+  const handleSaveEducation = () => {
+    const education = { "title": editFormData.title }
+    AxiosInstance.post('/api/education', education)
+
+    fetchData()
+    setEditEducationModal(false);
+    setEditFormData({});
+  };
+
+  const editModal = (id) => {
+
+    setEditFormData({});
+    if (id) {
+      const editData = data.find(item => item.id === id);
+      setEditFormData(editData);
+    }
+    setEditModalVisible(true);
+  };
+
   // Handle Save Changes button onclicking
   const handleSaveChanges = () => {
-    const updatedData = dummyData.map((item, index) => {
-      if (index === editFormData.index) {
-        // Update the specific row with the new form values
-        return {
-          ...item,
-          name: editFormData.name || item.name,
-          gender: editFormData.gender || item.gender,
-          role: editFormData.role || item.role,
-          mobile: editFormData.mobile || item.mobile,
-          cnic: editFormData.cnic || item.cnic,
-          province: editFormData.province || item.province,
-          division: editFormData.division || item.division,
-          district: editFormData.district || item.district,
-          tehsil: editFormData.tehsil || item.tehsil,
-          active: editFormData.active || item.active,
-        };
-      }
-      return item;
-    });
-  
-    setDummyData(updatedData);
+    console.log("id", editFormData.id);
+    const education = { "title": editFormData.title }
+    AxiosInstance.patch(`/api/education/${editFormData.id}`, education)
+
+    fetchData()
     setEditModalVisible(false);
     setEditFormData({});
   };
-  
+
   // Render the current page's records
   const renderData = () => {
     const currentPageData = getCurrentPageData()
@@ -229,33 +239,12 @@ const Education = () => {
     return currentPageData.map((item, index) => (
       <tr key={index}>
         <th scope="row">{item.id}</th>
-        <td>{item.name}</td>
-        <td>{item.gender}</td>
-        <td>{item.created_at}</td>
+        <td>{item.title}</td>
         <td>
-          <span className="badge bg-success">{item.role}</span>
-        </td>
-        <td>{item.mobile}</td>
-        <td>{item.cnic}</td>
-        <td>{item.province}</td>
-        <td>{item.division}</td>
-        <td>{item.district}</td>
-        <td>{item.tehsil}</td>
-        <td>
-          <div className="form-check form-switch">
-            <input
-              className="form-check-input"
-              type="checkbox"
-              id="flexSwitchCheckDefault"
-              defaultChecked={item.active === true}
-            />
-          </div>
-        </td>
-        <td>
-          <button className="btn btn-success text-light" onClick={()=>EditModal(index)}>
+          <button className="btn btn-success text-light" onClick={() => editModal(item.id)}>
             <CIcon icon={cilPenAlt} size="sm" />
           </button>
-          <button className="btn btn-danger ms-2 text-light" onClick={()=> handleDelete(index)}>
+          <button className="btn btn-danger ms-2 text-light" onClick={() => handleDelete(index)}>
             <CIcon icon={cilTrash} size="sm" />
           </button>
         </td>
@@ -267,105 +256,66 @@ const Education = () => {
   const totalPages = Math.ceil(data.length / perPage)
   // Generate an array of page numbers
   const pageNumbers = Array.from({ length: totalPages }, (_, index) => index + 1)
-  
+
   return (
     <div className="container">
-    <CModal alignment="center" visible={editModalVisible} onClose={() => setEditModalVisible(false)}>
-      <CModalHeader>
-        <CModalTitle>Edit Customer Details</CModalTitle>
-      </CModalHeader>
-      <CModalBody>
-      <CForm>
-  <CFormInput
-    type="text"
-    id="name"
-    label="Name"
-    aria-describedby="name"
-    value={editFormData.name || ''}
-  onChange={(e) => setEditFormData({ ...editFormData, name: e.target.value })}
-  />
-  <div className='my-3'>
-    <p>Gender</p>
-  <CFormCheck type="radio" name="flexRadioDefault" id="mele" label="Male" value="male" checked={editFormData.gender === 'male'}
-  onChange={(e) =>
-    setEditFormData({ ...editFormData, gender: e.target.value })
-  }/>
-<CFormCheck type="radio" name="flexRadioDefault" id="female" label="Female" value="female" checked={editFormData.gender === 'female'}
-  onChange={(e) =>
-    setEditFormData({ ...editFormData, gender: e.target.value })
-  }/>
-  </div>
-  <CFormSelect aria-label="role" value={editFormData.role || ''}
-  onChange={(e) =>
-    setEditFormData({ ...editFormData, role: e.target.value })
-  } >
-  <option id='role' value="admin">Admin</option>
-  <option id='role' value="customer">Customer</option>
-</CFormSelect>
-  <CFormInput
-    type="tel"
-    id="mobile"
-    label="Mobile Number"
-    aria-describedby="name"
-    value={editFormData.mobile || ''}
-  onChange={(e) => setEditFormData({ ...editFormData, mobile: e.target.value })}
-  />
-  <CFormInput
-    type="text"
-    id="cnic"
-    label="CNIC"
-    aria-describedby="name"
-    value={editFormData.cnic || ''}
-  onChange={(e) => setEditFormData({ ...editFormData, cnic: e.target.value })}
-  />
-  <CFormInput
-    type="text"
-    id="province"
-    label="Province"
-    aria-describedby="name"
-    value={editFormData.province || ''}
-  onChange={(e) => setEditFormData({ ...editFormData, province: e.target.value })}
-  />
-  <CFormInput
-    type="text"
-    id="division"
-    label="Division"
-    aria-describedby="name"
-    value={editFormData.division || ''}
-  onChange={(e) => setEditFormData({ ...editFormData, division: e.target.value })}
-  />
-  <CFormInput
-    type="text"
-    id="district"
-    label="District"
-    aria-describedby="name"
-    value={editFormData.district || ''}
-  onChange={(e) => setEditFormData({ ...editFormData, district: e.target.value })}
-  />
-  <CFormInput
-    type="text"
-    id="tehsil"
-    label="Tehsil"
-    aria-describedby="name"
-    value={editFormData.tehsil || ''}
-  onChange={(e) => setEditFormData({ ...editFormData, tehsil: e.target.value })}
-  />
-  <div className='my-2'>
-    <p className='mb-2'>Active</p>
-  <CFormSwitch id="formSwitchCheckChecked" defaultChecked={editFormData.active}
-    onChange={(e) =>
-      setEditFormData({ ...editFormData, active: e.target.checked })
-    }/>
-  </div>
-</CForm>
-      </CModalBody>
-      <CModalFooter>
-        <CButton color="secondary" onClick={() => setEditModalVisible(false)}>
-          Close
-        </CButton>
-        <CButton color="primary" onClick={handleSaveChanges}>Save changes</CButton>
-      </CModalFooter>
-    </CModal>
+      <button className="btn btn-primary ms-2 mb-2 " onClick={() => setEditEducationModal(true)}>
+        <CIcon icon={cilPlus} size="lg" className='mt-1' /> <p className=' my-1 d-inline-block'>Education</p>
+      </button>
+      <CModal alignment="center" visible={editEducationModal} onClose={() => setEditEducationModal(false)}>
+        <CModalHeader>
+          <CModalTitle>Add New Education</CModalTitle>
+        </CModalHeader>
+        <CModalBody>
+          <CForm>
+            <CFormInput
+              type="text"
+              id="title"
+              label="Name"
+              aria-describedby="name"
+              value={editFormData.title || ''}
+              onChange={(e) => setEditFormData({ ...editFormData, title: e.target.value })}
+            />
+          </CForm>
+        </CModalBody>
+        <CModalFooter>
+          <CButton color="secondary" onClick={() => setEditEducationModal(false)}>
+            Close
+          </CButton>
+          <CButton color="primary" onClick={handleSaveEducation}>Save Education</CButton>
+        </CModalFooter>
+      </CModal>
+      <CModal alignment="center" visible={editModalVisible} onClose={() => setEditModalVisible(false)}>
+        <CModalHeader>
+          <CModalTitle>Edit Education Details</CModalTitle>
+        </CModalHeader>
+        <CModalBody>
+          <CForm>
+            {/* <CFormInput
+    type="hidden"
+    id="id"
+    label=""
+    aria-describedby="id"
+    value={editFormData.id || ''}
+  onChange={(e) => setEditFormData({ ...editFormData, id: e.target.value })}
+  /> */}
+            <CFormInput
+              type="text"
+              id="title"
+              label="Title"
+              aria-describedby="title"
+              value={editFormData.title || ''}
+              onChange={(e) => setEditFormData({ ...editFormData, title: e.target.value })}
+            />
+          </CForm>
+        </CModalBody>
+        <CModalFooter>
+          <CButton color="secondary" onClick={() => setEditModalVisible(false)}>
+            Close
+          </CButton>
+          <CButton color="primary" onClick={() => handleSaveChanges(editFormData.id)}>Save changes</CButton>
+        </CModalFooter>
+      </CModal>
       <div className="card">
         <div className="card-header">Education</div>
         <div className="card-body">
@@ -379,7 +329,7 @@ const Education = () => {
                   value={searchValue}
                   onChange={(e) => setSearchValue(e.target.value)}
                 />
-                
+
               </div>
               <button className="btn btn-primary ms-2" onClick={() => setSearchValue('')}>
                 Clear
@@ -410,12 +360,12 @@ const Education = () => {
               className="form-select form-select"
               onChange={(e) => setPerPage(e.target.value)}
             >
-              <option value="10" defaultValue>
-                10
+              <option value="5" defaultValue>
+                5
               </option>
-              <option value="25">25</option>
-              <option value="30">30</option>
-              <option value="50">50</option>
+              <option value="10">10</option>
+              <option value="15">15</option>
+              <option value="20">20</option>
             </select>
           </div>
           <nav aria-label="...">
