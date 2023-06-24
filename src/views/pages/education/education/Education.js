@@ -14,106 +14,7 @@ const Education = () => {
   const [editEducationModal, setEditEducationModal] = useState(false)
 
   const [editFormData, setEditFormData] = useState({});
-  // const [dummyData, setDummyData] = useState([
-  //   {
-  //     id: 1,
-  //     name: 'Shahab Imtiaz',
-  //     gender: 'male',
-  //     created_at: '25 Jan 2023',
-  //     role: 'admin',
-  //     mobile: '03009876543',
-  //     cnic: '303109870122',
-  //     province: 'punjab',
-  //     division: 'lahore',
-  //     district: '',
-  //     tehsil: 'abcdef',
-  //     active: true,
-  //   },
-  //   {
-  //     id: 2,
-  //     name: 'Shahab Imtiaz',
-  //     gender: 'male',
-  //     created_at: '25 Jan 2023',
-  //     role: 'admin',
-  //     mobile: '03009876543',
-  //     cnic: '303109870122',
-  //     province: 'punjab',
-  //     division: 'lahore',
-  //     district: 'ghjkl',
-  //     tehsil: 'abcdef',
-  //     active: false,
-  //   },
-  //   {
-  //     id: 3,
-  //     name: 'Shahab Imtiaz',
-  //     gender: 'male',
-  //     created_at: '25 Jan 2023',
-  //     role: 'admin',
-  //     mobile: '03009876543',
-  //     cnic: '303109870122',
-  //     province: 'punjab',
-  //     division: 'lahore',
-  //     district: '',
-  //     tehsil: 'abcdef',
-  //     active: true,
-  //   },
-  //   {
-  //     id: 4,
-  //     name: 'Adnan Abid',
-  //     gender: 'male',
-  //     created_at: '25 Jan 2023',
-  //     role: 'customer',
-  //     mobile: '03009876543',
-  //     cnic: '303109870122',
-  //     province: 'punjab',
-  //     division: 'karachi',
-  //     district: 'lllll',
-  //     tehsil: 'bbcc',
-  //     active: true,
-  //   },
-  //   {
-  //     id: 5,
-  //     name: 'Adnan Abid',
-  //     gender: 'male',
-  //     created_at: '25 Jan 2023',
-  //     role: 'admin',
-  //     mobile: '03009876543',
-  //     cnic: '303109870122',
-  //     province: 'punjab',
-  //     division: 'lahore',
-  //     district: '',
-  //     tehsil: 'abcdef',
-  //     active: true,
-  //   },
-  //   {
-  //     id: 6,
-  //     name: 'Adnan Abid',
-  //     gender: 'male',
-  //     created_at: '25 Jan 2023',
-  //     role: 'admin',
-  //     mobile: '03009876543',
-  //     cnic: '303109870122',
-  //     province: 'punjab',
-  //     division: 'lahore',
-  //     district: '',
-  //     tehsil: 'abcdef',
-  //     active: true,
-  //   },
-  //   {
-  //     id: 7,
-  //     name: 'Adnan Abid',
-  //     gender: 'male',
-  //     created_at: '25 Jan 2023',
-  //     role: 'admin',
-  //     mobile: '032209876543',
-  //     cnic: '3130310987012',
-  //     province: 'punjab',
-  //     division: 'lahore',
-  //     district: '',
-  //     tehsil: 'abcdef',
-  //     active: true,
-  //   },
-  // ])
+
   useEffect(() => {
     fetchData()
     // eslint-disable-next-line
@@ -121,7 +22,7 @@ const Education = () => {
   const fetchData = async () => {
     try {
       let response = await AxiosInstance.get('/api/education')
-      response = response.data.education;
+      response = await response.data.education;
       console.log("education data :", response)
       // let education =   response.filter(obj => {
       //   const userRole = obj.roles.find(roleObj => roleObj.role === 'user');
@@ -259,9 +160,6 @@ const Education = () => {
 
   return (
     <div className="container">
-      <button className="btn btn-primary ms-2 mb-2 " onClick={() => setEditEducationModal(true)}>
-        <CIcon icon={cilPlus} size="lg" className='mt-1' /> <p className=' my-1 d-inline-block'>Education</p>
-      </button>
       <CModal alignment="center" visible={editEducationModal} onClose={() => setEditEducationModal(false)}>
         <CModalHeader>
           <CModalTitle>Add New Education</CModalTitle>
@@ -317,8 +215,13 @@ const Education = () => {
         </CModalFooter>
       </CModal>
       <div className="card">
-        <div className="card-header">Education</div>
+        <div className="card-header"> Education</div>
         <div className="card-body">
+        <div className='container'>
+        <CButton className="ms-2 mb-2" onClick={() => setEditEducationModal(true)}>
+        <CIcon icon={cilPlus} size="lg" className='mt-1' /> <p className=' my-1 d-inline-block'> Add Education</p>
+        </CButton>
+        </div>
           <div>
             <div className="d-flex my-2 justify-content-end">
               <div className="col-lg-4 col-md-6 col-sm-6">

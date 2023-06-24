@@ -1,10 +1,9 @@
-import { cilCog, cilPenAlt, cilReload } from '@coreui/icons'
+import { cilReload } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
-import { CButton, CForm, CFormCheck, CFormInput, CFormSelect, CFormSwitch, CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle } from '@coreui/react'
+import { CDropdown, CDropdownItem, CDropdownMenu, CDropdownToggle } from '@coreui/react'
 import React, { useEffect, useState } from 'react'
 import AxiosInstance from 'src/utils/axiosInstance'
-import Swal from 'sweetalert2'
-import { CDropdown, CDropdownItem, CDropdownMenu, CDropdownToggle } from '@coreui/react';
+
 const UserByEducation = () => {
   const [title, setTitle] = useState([])
   const [data, setData] = useState([])
@@ -14,10 +13,7 @@ const UserByEducation = () => {
   const [currentPage, setCurrentPage] = useState(1)
   const [perPage, setPerPage] = useState(10)
   const [searchValue, setSearchValue] = useState('')
-  const [editModalVisible, setEditModalVisible] = useState(false)
-  const [editFormData, setEditFormData] = useState({});
-  const [dummyData,setDummyData] = useState([
-  ])
+  
   useEffect(() => {
     if(data.length < 1)
     {
@@ -38,9 +34,7 @@ const UserByEducation = () => {
   }
   const fetchData = async () => {
     try {
-      let count = await AxiosInstance.get('/api/user')
-        count = count.data.total;
-        let response = await AxiosInstance.get(`/api/user?limit=${count}`)
+        let response = await AxiosInstance.get("/api/user?limit=0")
         response = response.data.users;
         let customer =   response.filter(obj => {
           const userRole = obj.roles.find(roleObj => roleObj.role === 'user');
@@ -56,7 +50,6 @@ const UserByEducation = () => {
         "division",
         "district",
         "tehsil",
-        "action"
     ])
       customer = customer.map(obj => {
         const updatedObj = {};
@@ -111,55 +104,6 @@ const UserByEducation = () => {
       setCurrentPage(currentPage + 1)
     }
   }
-  const EditModal = (index)=>{
-    setEditFormData({
-      ...dummyData[index],
-      index,
-    });
-    setEditModalVisible(true);
-  }
-  const handleDelete = (id)=>{
-    Swal.fire({
-      title: 'Are you sure you want to limit this user?',
-      text: 'You won\'t be able to revert this!',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Confirm',
-      cancelButtonText: 'Cancel',
-      reverseButtons: true,
-    }).then((result) => {
-      if (result.isConfirmed) {
-        // Perform the delete operation
-        console.log(id)
-      }
-    });
-  }
-  // Handle Save Changes button onclicking
-  const handleSaveChanges = () => {
-    const updatedData = dummyData.map((item, index) => {
-      if (index === editFormData.index) {
-        // Update the specific row with the new form values
-        return {
-          ...item,
-          name: editFormData.name || item.name,
-          gender: editFormData.gender || item.gender,
-          role: editFormData.role || item.role,
-          mobile: editFormData.mobile || item.mobile,
-          cnic: editFormData.cnic || item.cnic,
-          province: editFormData.province || item.province,
-          division: editFormData.division || item.division,
-          district: editFormData.district || item.district,
-          tehsil: editFormData.tehsil || item.tehsil,
-          active: editFormData.active || item.active,
-        };
-      }
-      return item;
-    });
-  
-    setDummyData(updatedData);
-    setEditModalVisible(false);
-    setEditFormData({});
-  };
 
   const handleDropdownItemClick = (item) => {
     // Handle the click event for each dropdown item
@@ -173,7 +117,7 @@ const UserByEducation = () => {
     const currentPageData = getCurrentPageData()
 
     return currentPageData.map((item, index) => (
-      <tr key={index}>
+      <tr key={item.id}>
         <td>{index+1}</td>
         <td>{item.firstName+" "+item.lastName}</td>
         <td>{item.mobile}</td>
@@ -184,14 +128,6 @@ const UserByEducation = () => {
         <td>{item.district}</td>
         <td>{item.tehsil}</td>
         <td>
-          <div className='d-flex justify-content-between flex-wrap' style={{ width:"210px" }}>
-          <button className="btn btn-success text-light" onClick={()=>EditModal(index)}>
-            <CIcon icon={cilPenAlt} size="sm" /> Edit
-          </button>
-          <button className="btn btn-warning ms-2 text-light" onClick={()=> handleDelete(index)}>
-            <CIcon icon={cilCog} size="sm"/> Limit Access
-          </button>
-          </div>
         </td>
       </tr>
     ))
@@ -204,107 +140,12 @@ const UserByEducation = () => {
   
   return (
     <div className="container">
-    <CModal alignment="center" visible={editModalVisible} onClose={() => setEditModalVisible(false)}>
-      <CModalHeader>
-        <CModalTitle>Edit Customer Details</CModalTitle>
-      </CModalHeader>
-      <CModalBody>
-      <CForm>
-  <CFormInput
-    type="text"
-    id="name"
-    label="Name"
-    aria-describedby="name"
-    value={editFormData.name || ''}
-  onChange={(e) => setEditFormData({ ...editFormData, name: e.target.value })}
-  />
-  <div className='my-3'>
-    <p>Gender</p>
-  <CFormCheck type="radio" name="flexRadioDefault" id="mele" label="Male" value="male" checked={editFormData.gender === 'male'}
-  onChange={(e) =>
-    setEditFormData({ ...editFormData, gender: e.target.value })
-  }/>
-<CFormCheck type="radio" name="flexRadioDefault" id="female" label="Female" value="female" checked={editFormData.gender === 'female'}
-  onChange={(e) =>
-    setEditFormData({ ...editFormData, gender: e.target.value })
-  }/>
-  </div>
-  <CFormSelect aria-label="role" value={editFormData.role || ''}
-  onChange={(e) =>
-    setEditFormData({ ...editFormData, role: e.target.value })
-  } >
-  <option id='role' value="admin">Admin</option>
-  <option id='role' value="customer">Customer</option>
-</CFormSelect>
-  <CFormInput
-    type="tel"
-    id="mobile"
-    label="Mobile Number"
-    aria-describedby="name"
-    value={editFormData.mobile || ''}
-  onChange={(e) => setEditFormData({ ...editFormData, mobile: e.target.value })}
-  />
-  <CFormInput
-    type="text"
-    id="cnic"
-    label="CNIC"
-    aria-describedby="name"
-    value={editFormData.cnic || ''}
-  onChange={(e) => setEditFormData({ ...editFormData, cnic: e.target.value })}
-  />
-  <CFormInput
-    type="text"
-    id="province"
-    label="Province"
-    aria-describedby="name"
-    value={editFormData.province || ''}
-  onChange={(e) => setEditFormData({ ...editFormData, province: e.target.value })}
-  />
-  <CFormInput
-    type="text"
-    id="division"
-    label="Division"
-    aria-describedby="name"
-    value={editFormData.division || ''}
-  onChange={(e) => setEditFormData({ ...editFormData, division: e.target.value })}
-  />
-  <CFormInput
-    type="text"
-    id="district"
-    label="District"
-    aria-describedby="name"
-    value={editFormData.district || ''}
-  onChange={(e) => setEditFormData({ ...editFormData, district: e.target.value })}
-  />
-  <CFormInput
-    type="text"
-    id="tehsil"
-    label="Tehsil"
-    aria-describedby="name"
-    value={editFormData.tehsil || ''}
-  onChange={(e) => setEditFormData({ ...editFormData, tehsil: e.target.value })}
-  />
-  <div className='my-2'>
-    <p className='mb-2'>Active</p>
-  <CFormSwitch id="formSwitchCheckChecked" defaultChecked={editFormData.active}
-    onChange={(e) =>
-      setEditFormData({ ...editFormData, active: e.target.checked })
-    }/>
-  </div>
-</CForm>
-      </CModalBody>
-      <CModalFooter>
-        <CButton color="secondary" onClick={() => setEditModalVisible(false)}>
-          Close
-        </CButton>
-        <CButton color="primary" onClick={handleSaveChanges}>Save changes</CButton>
-      </CModalFooter>
-    </CModal>
+  
     <CDropdown className="custom-dropdown mb-3" size="lg">
       <CDropdownToggle caret>Dropdown</CDropdownToggle>
       <CDropdownMenu className="custom-dropdown-menu" style={{ zIndex: '100' }}>
         {educationList.map((item, index) => (
-          <CDropdownItem key={index} onClick={() => handleDropdownItemClick(item)}>
+          <CDropdownItem key={item.id} onClick={() => handleDropdownItemClick(item)}>
             {item.title}
           </CDropdownItem>
         ))}
@@ -315,7 +156,7 @@ const UserByEducation = () => {
     </CDropdown>
     <h4 className='d-inline-block m-5 align-end' ><strong> Total Users : {data.length} </strong></h4>
       <div className="card">
-        <div className="card-header">Customers</div>
+        <div className="card-header">Users</div>
         <div className="card-body">
           <div>
             <div className="d-flex my-2 justify-content-end">

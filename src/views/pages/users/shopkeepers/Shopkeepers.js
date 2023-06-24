@@ -31,8 +31,8 @@ const Shopkeepers = () => {
           return item.roles.some(role => role.role === 'shopKeeper');
         });
       let shopKeeper = shopKeepers;
-      for (let i = 0; i < shopKeeper.length; i++) {
-        const obj1 = shopKeeper[i];
+      for (const element of shopKeeper) {
+        const obj1 = element;
 
         const obj2 = business.find((item) => item.userId === obj1.id);
         if (obj2) {
@@ -167,7 +167,7 @@ const Shopkeepers = () => {
     const currentPageData = getCurrentPageData()
 
     return currentPageData.map((item, index) => (
-      <tr key={index}>
+      <tr key={item.id}>
         <td>{index+1}</td>
         <td>{item.ownerName}</td>
         <td>{item.businessName}</td>

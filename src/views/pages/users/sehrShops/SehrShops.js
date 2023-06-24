@@ -4,7 +4,7 @@ import { CButton, CForm, CFormCheck, CFormInput, CFormSelect, CFormSwitch, CModa
 import React, { useEffect, useState } from 'react'
 import AxiosInstance from 'src/utils/axiosInstance'
 import Swal from 'sweetalert2'
-const Shopkeepers = () => {
+const SehrShops = () => {
   const [title, setTitle] = useState([])
   const [data, setData] = useState([])
   const [currentPage, setCurrentPage] = useState(1)
@@ -19,11 +19,9 @@ const Shopkeepers = () => {
     }, [ searchValue, dummyData ])
   const fetchData = async () => {
     try {
-      let count = await AxiosInstance.get('/api/user')
-        count = count.data.total;
         let businessCount = await AxiosInstance.get('/api/business/all')
         businessCount = businessCount.data.total;
-        let response = await AxiosInstance.get(`/api/user?limit=${count}`)
+        let response = await AxiosInstance.get("/api/user?limit=0")
         response = response.data.users;
         let business = await AxiosInstance.get(`/api/business/all?limit=${businessCount}`)
         business = business.data.businesses;
@@ -31,8 +29,8 @@ const Shopkeepers = () => {
           return item.roles.some(role => role.role === 'shopKeeper');
         });
       let sehrShops = shopKeepers;
-      for (let i = 0; i < sehrShops.length; i++) {
-        const obj1 = sehrShops[i];
+      for (const element of sehrShops) {
+        const obj1 = element;
 
         const obj2 = business.find((item) => item.userId === obj1.id);
         if (obj2) {
@@ -169,7 +167,7 @@ const Shopkeepers = () => {
     const currentPageData = getCurrentPageData()
 
     return currentPageData.map((item, index) => (
-      <tr key={index}>
+      <tr key={item.id}>
         <td>{index+1}</td>
         <td>{item.ownerName}</td>
         <td>{item.businessName}</td>
@@ -386,4 +384,4 @@ const Shopkeepers = () => {
     </div>
   )
 }
-export default Shopkeepers
+export default SehrShops
