@@ -35,6 +35,7 @@ const CategoryCommission = () => {
       ])
 
       response.map((category)=>{
+        // eslint-disable-next-line
         commission.map((comission)=>{
           if (comission.categoryId === category.id)
           return category["commission"] = comission.commission
