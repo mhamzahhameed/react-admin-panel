@@ -158,8 +158,10 @@ const Province = () => {
   Swal.fire({
     title: message,
   })
+  fetchData()
       }
     });
+    
     
   }
   // Handle Save Changes button onclicking
@@ -201,7 +203,7 @@ const Province = () => {
       title: message,
     })
     setVisible(false);
-    // setData([]);
+    fetchData();
   };
   const openAddData = (name,secondId,thirdId)=>{
    setmodalTitle(['add',name]);
@@ -247,6 +249,7 @@ const Province = () => {
   // setData([]);
   setVisible(false);
   // setData([]);
+  fetchData();
   }
   const openCollapse = (id)=>{
     let check = id.split('-')[0];
