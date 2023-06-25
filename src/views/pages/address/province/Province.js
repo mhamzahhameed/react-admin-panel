@@ -1,148 +1,68 @@
-import { cilPenAlt, cilTrash } from '@coreui/icons'
+import { cilChevronBottom, cilChevronTop, cilLibraryAdd, cilPenAlt, cilTrash } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
-import { CButton, CForm, CFormCheck, CFormInput, CFormSelect, CFormSwitch, CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle } from '@coreui/react'
+import { CButton, CCard, CCardBody, CCardHeader, CCollapse, CForm, CFormInput, CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle } from '@coreui/react'
 import React, { useEffect, useState } from 'react'
+import AxiosInstance from 'src/utils/axiosInstance'
 import Swal from 'sweetalert2'
 const Province = () => {
   const [title, setTitle] = useState([])
   const [data, setData] = useState([])
   const [currentPage, setCurrentPage] = useState(1)
   const [perPage, setPerPage] = useState(10)
-  const [searchValue, setSearchValue] = useState('')
-  const [editModalVisible, setEditModalVisible] = useState(false)
-  const [editFormData, setEditFormData] = useState({});
-  const [dummyData,setDummyData] = useState([
-    {
-      id: 1,
-      name: 'Shahab Imtiaz',
-      gender: 'male',
-      created_at: '25 Jan 2023',
-      role: 'admin',
-      mobile: '03009876543',
-      cnic: '303109870122',
-      province: 'punjab',
-      division: 'lahore',
-      district: '',
-      tehsil: 'abcdef',
-      active: true,
-    },
-    {
-      id: 2,
-      name: 'Shahab Imtiaz',
-      gender: 'male',
-      created_at: '25 Jan 2023',
-      role: 'admin',
-      mobile: '03009876543',
-      cnic: '303109870122',
-      province: 'punjab',
-      division: 'lahore',
-      district: 'ghjkl',
-      tehsil: 'abcdef',
-      active: false,
-    },
-    {
-      id: 3,
-      name: 'Shahab Imtiaz',
-      gender: 'male',
-      created_at: '25 Jan 2023',
-      role: 'admin',
-      mobile: '03009876543',
-      cnic: '303109870122',
-      province: 'punjab',
-      division: 'lahore',
-      district: '',
-      tehsil: 'abcdef',
-      active: true,
-    },
-    {
-      id: 4,
-      name: 'Adnan Abid',
-      gender: 'male',
-      created_at: '25 Jan 2023',
-      role: 'customer',
-      mobile: '03009876543',
-      cnic: '303109870122',
-      province: 'punjab',
-      division: 'karachi',
-      district: 'lllll',
-      tehsil: 'bbcc',
-      active: true,
-    },
-    {
-      id: 5,
-      name: 'Adnan Abid',
-      gender: 'male',
-      created_at: '25 Jan 2023',
-      role: 'admin',
-      mobile: '03009876543',
-      cnic: '303109870122',
-      province: 'punjab',
-      division: 'lahore',
-      district: '',
-      tehsil: 'abcdef',
-      active: true,
-    },
-    {
-      id: 6,
-      name: 'Adnan Abid',
-      gender: 'male',
-      created_at: '25 Jan 2023',
-      role: 'admin',
-      mobile: '03009876543',
-      cnic: '303109870122',
-      province: 'punjab',
-      division: 'lahore',
-      district: '',
-      tehsil: 'abcdef',
-      active: true,
-    },
-    {
-      id: 7,
-      name: 'Adnan Abid',
-      gender: 'male',
-      created_at: '25 Jan 2023',
-      role: 'admin',
-      mobile: '032209876543',
-      cnic: '3130310987012',
-      province: 'punjab',
-      division: 'lahore',
-      district: '',
-      tehsil: 'abcdef',
-      active: true,
-    },
-  ])
+  const [provinceCollapse,setProvinceCollapse] = useState({});
+  const [modalTitle,setmodalTitle] = useState([])
+  
+  const [visible, setVisible] = useState(false)
+  const [editData,setEditData] = useState({});
   useEffect(() => {
-    fetchData()
+    
+      fetchData()
     // eslint-disable-next-line
-    }, [ searchValue, dummyData ])
+    }, [ ])
   const fetchData = async () => {
     try {
-      //   const response = await axios.get(`https://dummyjson.com/products`)
-      //   response.data.products[0] = { ...response.data.products[0], Action: '' }
-      dummyData[0] = { ...dummyData[0], action: '' }
-      setTitle(Object.keys(dummyData[0]))
-      const fetchedData = dummyData
-      const filteredData = searchValue
-        ? fetchedData.filter((item) => {
-          
-         return item.name.toLowerCase().includes(searchValue) ||
-          item.mobile.toLowerCase().includes(searchValue) ||
-          item.cnic.toLowerCase().includes(searchValue) ||
-          item.created_at.toLowerCase().includes(searchValue) ||
-          item.tehsil.toLowerCase().includes(searchValue) ||
-          item.district.toLowerCase().includes(searchValue) ||
-          item.division.toLowerCase().includes(searchValue) ||
-          item.province.toLowerCase().includes(searchValue) ||
-          item.role.toLowerCase().includes(searchValue) ||
-          item.gender.toLowerCase().includes(searchValue)
-        })
-        : fetchedData
-
-      setData(filteredData)
+     
+        let response = await AxiosInstance.get(`/api/proviences?limit=0`)
+        response = response.data.province; 
+      setTitle([
+        "+",
+        "#",
+        "province",
+        "action"
+    ])
+      let provinces = response;
+      for(let i = 0; i<provinces.length;i++)
+      {
+        
+       let divisions = await AxiosInstance.get(`http://3.133.0.29/api/divisions?provinceId=${provinces[i].id}&limit=0`);
+       divisions = divisions.data.divisions;
+    for(let j = 0; j<divisions.length;j++)
+    {
+      
+      let district = await AxiosInstance.get(`http://3.133.0.29/api/divisions/${divisions[j].id}/district?limit=0`);
+      district = district.data.districts
+      divisions[j].districts = district; 
+      
+      for(let k = 0; k< district.length;k++)
+    {
+      
+      // console.log(tehsilCount);
+      let tehsil = await AxiosInstance.get(`http://3.133.0.29/api/divisions/${divisions[j].id}/district/${district[k].id}/tehsils?limit=0`);
+      district[k].tehsils = tehsil.data.tehsils; 
+    }
+    }
+    // console.log(provinces);
+       provinces[i].divisions = divisions;
+    
+      }
+      // console.log(provinces);
+      setData(provinces)
+      setmodalTitle(['initial','initial']);
     } catch (error) {
       console.error(error)
     }
   }
+
   // Function to calculate the current page's records
   const getCurrentPageData = () => {
     const startIndex = (currentPage - 1) * perPage
@@ -169,97 +89,382 @@ const Province = () => {
       setCurrentPage(currentPage + 1)
     }
   }
-  const EditModal = (index)=>{
-    setEditFormData({
-      ...dummyData[index],
-      index,
-    });
-    setEditModalVisible(true);
+  const EditModal = (id,title,name,secondId,thirdId)=>{
+
+  setmodalTitle([ name.split('-')[1], name.split('-')[0]]);
+  if(!secondId && !thirdId)
+  {
+    setEditData({id,title,name,action:name})
+  }else if(secondId && !thirdId)
+  {
+    setEditData({id,secondId,title,name,action:name})
   }
-  const handleDelete = (id)=>{
+  else if(secondId && thirdId)
+  {
+    setEditData({id,secondId,thirdId,title,name,action:name})
+  }
+  setVisible(true);
+  }
+  const handleDelete = (id,name,secondId,thirdId)=>{
+    console.log(id,name,secondId,thirdId)
     Swal.fire({
-      title: 'Are you sure?',
+      title: `Are you sure you want to delete this ${name.split('-')[0]}`,
       text: 'You won\'t be able to revert this!',
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonText: 'Yes, delete it!',
+      confirmButtonText: 'Confirm',
       cancelButtonText: 'Cancel',
       reverseButtons: true,
-    }).then((result) => {
+    }).then(async(result) => {
       if (result.isConfirmed) {
+        let url = "";
         // Perform the delete operation
-        console.log(id)
-        const newData = [...dummyData];
-        newData.splice(id, 1);
-        setDummyData(newData)
+  switch(name)
+  {
+    case 'province-delete':
+      url = `/api/proviences/${id}/`
+      break;
+      case 'division-delete':
+      url = `/api/divisions/${id}`
+      break;
+      case 'district-delete':
+      url = `/api/divisions/${secondId}/district/${id}`
+      break;
+      case 'tehsil-delete':
+      url = `/api/divisions/${secondId}/district/${thirdId}/tehsils/${id}`
+      break;
+      default:
+        url = '/'
+        break;
+  }
+  let response = "";
+  if(name.split('-')[0] !== 'tehsil')
+  {
+
+      response = await AxiosInstance.delete(url);
+  }
+  else
+  {
+    response = {status: 200};
+  }
+  let message = ""
+  if(response.status === 200 || response.status === 204)
+  {
+    message = `${name.split('-')[0]} is deleted successfully`;
+  }else
+  {
+    message = `${name.split('-')[0]} is not deleted due to some error`
+  }
+  Swal.fire({
+    title: message,
+  })
       }
     });
+    
   }
   // Handle Save Changes button onclicking
-  const handleSaveChanges = () => {
-    const updatedData = dummyData.map((item, index) => {
-      if (index === editFormData.index) {
-        // Update the specific row with the new form values
-        return {
-          ...item,
-          name: editFormData.name || item.name,
-          gender: editFormData.gender || item.gender,
-          role: editFormData.role || item.role,
-          mobile: editFormData.mobile || item.mobile,
-          cnic: editFormData.cnic || item.cnic,
-          province: editFormData.province || item.province,
-          division: editFormData.division || item.division,
-          district: editFormData.district || item.district,
-          tehsil: editFormData.tehsil || item.tehsil,
-          active: editFormData.active || item.active,
-        };
+  const handleSaveChanges = async() => {
+    console.log(editData);
+    let url = ""
+    switch(editData.action){
+      case 'province-edit':
+        url = `/api/proviences/${editData.id}`;
+        break;
+      case 'district-edit':
+        url = `/api/divisions/${editData.secondId}/district/${editData.id}`
+        break;
+      case 'division-edit':
+        url = `/api/divisions/${editData.id}`
+        break;
+        case 'tehsil-edit':
+        url = `/api/divisions/${editData.secondId}/district/${editData.thirdId}/tehsils/${editData.id}`
+        break;
+       default: 
+       url= '/'
+       break;
+      
+    }
+    let message = "";
+      let response = "";
+         response = await AxiosInstance.patch(url,JSON.stringify({title:editData.title}));
+
+      console.log(response);
+      if(response.status === 200 || response.status === 201 || response.status === 204)
+      {
+        message = `${modalTitle[1]} is updated succesfully`;
+      }else{
+        message = `${modalTitle[1]} is not updated due to some error!`;
       }
-      return item;
-    });
-  
-    setDummyData(updatedData);
-    setEditModalVisible(false);
-    setEditFormData({});
+      
+      setEditData({});
+    Swal.fire({
+      title: message,
+    })
+    setVisible(false);
+    // setData([]);
   };
+  const openAddData = (name,secondId,thirdId)=>{
+   setmodalTitle(['add',name]);
+   secondId = secondId ? secondId : ""
+   thirdId = thirdId ? thirdId : ""
+   setEditData({name: name,secondId,thirdId})
+   setVisible(true);
+  }
+  const addData = async()=>{
+    let url = "";
+    switch(editData.name){
+      case 'province':
+        url = `/api/proviences/`
+        break;
+        case 'division':
+        url = `/api/divisions/`
+        break;
+        case 'district':
+        url = `/api/divisions/${editData.secondId}/district/`
+        break;
+        case 'tehsil':
+        url = `/api/divisions/${editData.secondId}/district/${editData.thirdId}/tehsils/`
+        break;
+        default:
+          url ='/';
+          break;
+    }
+    
+   
+    let response = await AxiosInstance.post(url,JSON.stringify({title:editData.title}));
+    let message = "";
+    if(response.status === 200 || response.status === 201 || response.status === 204)
+    {
+      message = `${editData.name} is added succesfully`;
+    }else{
+      message = `${editData.name} is not added!`;
+    }
+    console.log(response);
+  setEditData({});
+  Swal.fire({
+    title: message,
+  })
+  // setData([]);
+  setVisible(false);
+  // setData([]);
+  }
+  const openCollapse = (id)=>{
+    let check = id.split('-')[0];
+  if(check==='province')
+  {
+    title[0] = '-';
+    
+  }else if(check==='division')
+  {
+    document.getElementById('division_title').innerText = '-'
+  }
+  else if(check==='district')
+  {
+    document.getElementById('district_title').innerText = '-'
+  }
+    setProvinceCollapse({...provinceCollapse,[id]:true})
+  }
+const closeCollapse = (id)=>{
+  let check = id.split('-')[0];
+  if(check==='province')
+  {
+    title[0] = '+';
+  }else if(check==='division')
+  {
+    document.getElementById('division_title').innerText = '+'
+  }else if(check==='district')
+  {
+    document.getElementById('district_title').innerText = '+'
+  }
   
+  
+  setProvinceCollapse({...provinceCollapse,[id]:false})
+}
+
   // Render the current page's records
   const renderData = () => {
     const currentPageData = getCurrentPageData()
 
     return currentPageData.map((item, index) => (
-      <tr key={index}>
-        <th scope="row">{item.id}</th>
-        <td>{item.name}</td>
-        <td>{item.gender}</td>
-        <td>{item.created_at}</td>
+      <>
+      <tr >
         <td>
-          <span className="badge bg-success">{item.role}</span>
+          
+          {provinceCollapse[`province-${item.id}`] ? <button className="btn btn-dark" onClick={()=>closeCollapse(`province-${item.id}`)}><CIcon icon={cilChevronTop}/></button> : <button className="btn btn-dark" onClick={()=>openCollapse(`province-${item.id}`)}><CIcon icon={cilChevronBottom}/></button>}
         </td>
-        <td>{item.mobile}</td>
-        <td>{item.cnic}</td>
-        <td>{item.province}</td>
-        <td>{item.division}</td>
-        <td>{item.district}</td>
-        <td>{item.tehsil}</td>
-        <td>
-          <div className="form-check form-switch">
-            <input
-              className="form-check-input"
-              type="checkbox"
-              id="flexSwitchCheckDefault"
-              defaultChecked={item.active === true}
-            />
-          </div>
-        </td>
-        <td>
-          <button className="btn btn-success text-light" onClick={()=>EditModal(index)}>
-            <CIcon icon={cilPenAlt} size="sm" />
+        <td>{index+1}</td>
+       <td>{item.title}</td>
+        <td className='d-flex justify-content-center align-items-center flex-wrap'>
+          
+          <button className="btn btn-success text-light" onClick={()=>EditModal(item.id,item.title,'province-edit')}>
+            <CIcon icon={cilPenAlt} size="sm" /> Edit
           </button>
-          <button className="btn btn-danger ms-2 text-light" onClick={()=> handleDelete(index)}>
-            <CIcon icon={cilTrash} size="sm" />
+          <button className="btn btn-danger ms-2 text-light" onClick={()=> handleDelete(item.id,'province-delete')}>
+            <CIcon icon={cilTrash} size="sm"/> Delete
           </button>
+          
         </td>
       </tr>
+      <tr>
+        <td colSpan={4}>
+          <CCollapse visible={provinceCollapse[`province-${item.id}`]} >
+      <CCard>
+      <CCardHeader className='text-uppercase h4 fw-bold bg-success text-light d-flex justify-content-between'><p className='text-uppercase'>Divisions</p><button className='btn btn-info text-light' onClick={() => openAddData('division')}><CIcon icon={cilLibraryAdd} size="sm"  /> Add</button></CCardHeader>
+        <CCardBody>
+        <div className="table-responsive">
+            <table className="table table-striped table-bordered">
+              <thead>
+                <tr>
+                <th scope="col" className="text-uppercase text-center" id="division_title">
+                        +
+                      </th>
+                      <th scope="col" className="text-uppercase text-center">
+                        #
+                      </th>
+                      <th scope="col" className="text-uppercase text-center">
+                        title
+                      </th>
+                      <th scope="col" className="text-uppercase text-center">
+                        action
+                      </th>
+                </tr>
+              </thead>
+              <tbody className="text-center">
+                {item.divisions.map((division,divIndex)=>{
+                  return <><tr key={divIndex}> 
+                     <td>
+          
+          {provinceCollapse[`division-${division.id}`] ? <button className="btn btn-dark" onClick={()=>closeCollapse(`division-${division.id}`)}><CIcon icon={cilChevronTop}/></button> : <button className="btn btn-dark" onClick={()=>openCollapse(`division-${division.id}`)}><CIcon icon={cilChevronBottom}/></button>}
+        </td>
+                    <td>{divIndex + 1}</td>
+                    <td>{division.title}</td>
+                    <td className='d-flex justify-content-center align-items-center flex-wrap'>
+          
+          <button className="btn btn-success text-light" onClick={()=>EditModal(division.id,division.title,'division-edit')}>
+            <CIcon icon={cilPenAlt} size="sm" /> Edit
+          </button>
+          <button className="btn btn-danger ms-2 text-light" onClick={()=> handleDelete(division.id,'division-delete')}>
+            <CIcon icon={cilTrash} size="sm"/> Delete
+          </button>
+          
+        </td>
+                  </tr>
+                  <tr>
+                    <td colSpan={4}>
+                  <CCollapse visible={provinceCollapse[`division-${division.id}`]} >
+      <CCard>
+      <CCardHeader className='text-uppercase h4 fw-bold bg-primary text-light d-flex justify-content-between'><p className='text-uppercase'>Districts</p><button className='btn btn-info text-light' onClick={() => openAddData('district',division.id)}><CIcon icon={cilLibraryAdd} size="sm"  /> Add</button></CCardHeader>
+        <CCardBody>
+        <div className="table-responsive">
+            <table className="table table-striped table-bordered">
+              <thead>
+                <tr>
+                <th scope="col" className="text-uppercase text-center" id="district_title">
+                        +
+                      </th>
+                      <th scope="col" className="text-uppercase text-center">
+                        #
+                      </th>
+                      <th scope="col" className="text-uppercase text-center">
+                        title
+                      </th>
+                      <th scope="col" className="text-uppercase text-center">
+                        action
+                      </th>
+                </tr>
+              </thead>
+              <tbody className="text-center">
+        {division.districts.map((district,disIndex)=>{
+                  return <><tr key={disIndex}> 
+                     <td>
+          
+          {provinceCollapse[`district-${district.id}`] ? <button className="btn btn-dark" onClick={()=>closeCollapse(`district-${district.id}`)}><CIcon icon={cilChevronTop}/></button> : <button className="btn btn-dark" onClick={()=>openCollapse(`district-${district.id}`)}><CIcon icon={cilChevronBottom}/></button>}
+        </td>
+                    <td>{disIndex + 1}</td>
+                    <td>{district.title}</td>
+                    <td className='d-flex justify-content-center align-items-center flex-wrap'>
+          
+          <button className="btn btn-success text-light" onClick={()=>EditModal(district.id,district.title,'district-edit',division.id)}>
+            <CIcon icon={cilPenAlt} size="sm" /> Edit
+          </button>
+          <button className="btn btn-danger ms-2 text-light" onClick={()=> handleDelete(district.id,'district-delete',division.id)}>
+            <CIcon icon={cilTrash} size="sm"/> Delete
+          </button>
+          
+        </td>
+                  </tr>
+                  <tr>
+                    <td colSpan={4}>
+                  <CCollapse visible={provinceCollapse[`district-${district.id}`]} >
+      <CCard>
+        <CCardHeader className='text-uppercase h4 fw-bold bg-dark text-light d-flex justify-content-between'><p className='text-uppercase'>Tehsils</p><button className='btn btn-info text-light' onClick={() => openAddData('tehsil',division.id,district.id)}><CIcon icon={cilLibraryAdd} size="sm"  /> Add</button></CCardHeader>
+        <CCardBody>
+        <div className="table-responsive">
+            <table className="table table-striped table-bordered">
+              <thead>
+                <tr>
+              
+                      <th scope="col" className="text-uppercase text-center">
+                        #
+                      </th>
+                      <th scope="col" className="text-uppercase text-center">
+                        title
+                      </th>
+                      <th scope="col" className="text-uppercase text-center">
+                        action
+                      </th>
+                </tr>
+              </thead>
+              <tbody className="text-center">
+              {district.tehsils.map((tehsil,tehIndex)=>{
+                  return <><tr key={tehIndex}> 
+               
+                    <td>{tehIndex + 1}</td>
+                    <td>{tehsil.title}</td>
+                    <td className='d-flex justify-content-center align-items-center flex-wrap'>
+          
+          <button className="btn btn-success text-light" onClick={()=>EditModal(tehsil.id,tehsil.title,'tehsil-edit',division.id,district.id)}>
+            <CIcon icon={cilPenAlt} size="sm" /> Edit
+          </button>
+          <button className="btn btn-danger ms-2 text-light" onClick={()=> handleDelete(tehsil.id,'tehsil-delete',division.id,district.id)}>
+            <CIcon icon={cilTrash} size="sm"/> Delete
+          </button>
+          
+        </td>
+                  </tr>
+                 
+                  </>
+                })}
+                 </tbody>
+            </table>
+          </div>
+                  </CCardBody>
+                  
+      </CCard>
+    </CCollapse>
+    </td>
+                  </tr>
+                  </>
+                })}
+                 </tbody>
+            </table>
+          </div>
+                  </CCardBody>
+      </CCard>
+    </CCollapse>
+    </td>
+                  </tr>
+                  </>
+                })}
+              </tbody>
+            </table>
+          </div>
+        </CCardBody>
+      </CCard>
+    </CCollapse>
+    </td>
+      </tr>
+      </>
     ))
   }
 
@@ -270,121 +475,38 @@ const Province = () => {
   
   return (
     <div className="container">
-    <CModal alignment="center" visible={editModalVisible} onClose={() => setEditModalVisible(false)}>
-      <CModalHeader>
-        <CModalTitle>Edit Customer Details</CModalTitle>
+      <div className="card">
+      <div className="card-header d-flex justify-content-between text-uppercase h4 fw-bold bg-warning text-light"><p className='text-uppercase'>Provinces</p>{modalTitle.length > 0 ? <button className='btn btn-info text-light' onClick={() => openAddData('province')}><CIcon icon={cilLibraryAdd} size="sm"  /> Add</button> : ""}</div>
+      <CModal visible={visible} onClose={() => setVisible(false)}>
+      <CModalHeader onClose={() => setVisible(false)}>
+        <CModalTitle className='text-uppercase'>{modalTitle[0] ? modalTitle[0]:""} {modalTitle[1] ? modalTitle[1]:""}</CModalTitle>
       </CModalHeader>
       <CModalBody>
+
       <CForm>
   <CFormInput
     type="text"
-    id="name"
-    label="Name"
-    aria-describedby="name"
-    value={editFormData.name || ''}
-  onChange={(e) => setEditFormData({ ...editFormData, name: e.target.value })}
+    label="Title"
+    id='title'
+   
+    name='title'
+    required
+    value={editData.title}
+    onChange={(e)=> setEditData({...editData,'title':e.target.value})}
+    autoFocus
   />
-  <div className='my-3'>
-    <p>Gender</p>
-  <CFormCheck type="radio" name="flexRadioDefault" id="mele" label="Male" value="male" checked={editFormData.gender === 'male'}
-  onChange={(e) =>
-    setEditFormData({ ...editFormData, gender: e.target.value })
-  }/>
-<CFormCheck type="radio" name="flexRadioDefault" id="female" label="Female" value="female" checked={editFormData.gender === 'female'}
-  onChange={(e) =>
-    setEditFormData({ ...editFormData, gender: e.target.value })
-  }/>
-  </div>
-  <CFormSelect aria-label="role" value={editFormData.role || ''}
-  onChange={(e) =>
-    setEditFormData({ ...editFormData, role: e.target.value })
-  } >
-  <option id='role' value="admin">Admin</option>
-  <option id='role' value="customer">Customer</option>
-</CFormSelect>
-  <CFormInput
-    type="tel"
-    id="mobile"
-    label="Mobile Number"
-    aria-describedby="name"
-    value={editFormData.mobile || ''}
-  onChange={(e) => setEditFormData({ ...editFormData, mobile: e.target.value })}
-  />
-  <CFormInput
-    type="text"
-    id="cnic"
-    label="CNIC"
-    aria-describedby="name"
-    value={editFormData.cnic || ''}
-  onChange={(e) => setEditFormData({ ...editFormData, cnic: e.target.value })}
-  />
-  <CFormInput
-    type="text"
-    id="province"
-    label="Province"
-    aria-describedby="name"
-    value={editFormData.province || ''}
-  onChange={(e) => setEditFormData({ ...editFormData, province: e.target.value })}
-  />
-  <CFormInput
-    type="text"
-    id="division"
-    label="Division"
-    aria-describedby="name"
-    value={editFormData.division || ''}
-  onChange={(e) => setEditFormData({ ...editFormData, division: e.target.value })}
-  />
-  <CFormInput
-    type="text"
-    id="district"
-    label="District"
-    aria-describedby="name"
-    value={editFormData.district || ''}
-  onChange={(e) => setEditFormData({ ...editFormData, district: e.target.value })}
-  />
-  <CFormInput
-    type="text"
-    id="tehsil"
-    label="Tehsil"
-    aria-describedby="name"
-    value={editFormData.tehsil || ''}
-  onChange={(e) => setEditFormData({ ...editFormData, tehsil: e.target.value })}
-  />
-  <div className='my-2'>
-    <p className='mb-2'>Active</p>
-  <CFormSwitch id="formSwitchCheckChecked" defaultChecked={editFormData.active}
-    onChange={(e) =>
-      setEditFormData({ ...editFormData, active: e.target.checked })
-    }/>
-  </div>
+ 
 </CForm>
       </CModalBody>
       <CModalFooter>
-        <CButton color="secondary" onClick={() => setEditModalVisible(false)}>
+        <CButton color="secondary" onClick={() => setVisible(false)}>
           Close
         </CButton>
-        <CButton color="primary" onClick={handleSaveChanges}>Save changes</CButton>
+        <CButton color="primary" className="text-uppercase" onClick={()=> modalTitle[0] ==='add' ? addData(): handleSaveChanges()}>{modalTitle[0]}</CButton>
       </CModalFooter>
     </CModal>
-      <div className="card">
-        <div className="card-header">Province</div>
         <div className="card-body">
           <div>
-            <div className="d-flex my-2 justify-content-end">
-              <div className="col-lg-4 col-md-6 col-sm-6">
-                <input
-                  type="text"
-                  className="form-control"
-                  placeholder="Search"
-                  value={searchValue}
-                  onChange={(e) => setSearchValue(e.target.value)}
-                />
-                
-              </div>
-              <button className="btn btn-primary ms-2" onClick={() => setSearchValue('')}>
-                Clear
-              </button>
-            </div>
           </div>
           <div className="table-responsive">
             <table className="table table-striped table-bordered">
@@ -392,14 +514,14 @@ const Province = () => {
                 <tr>
                   {title.map((item, index) => {
                     return (
-                      <th scope="col" className="text-uppercase" key={index}>
+                      <th scope="col" className="text-uppercase text-center" key={index}>
                         {item}
                       </th>
                     )
                   })}
                 </tr>
               </thead>
-              <tbody>{renderData()}</tbody>
+              <tbody className="text-center">{renderData()}</tbody>
             </table>
           </div>
         </div>

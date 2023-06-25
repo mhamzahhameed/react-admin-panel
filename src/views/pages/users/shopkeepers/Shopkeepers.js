@@ -1,4 +1,4 @@
-import { cilPenAlt, cilTrash } from '@coreui/icons'
+import { cilPenAlt, cilShortText, cilTrash } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
 import { CButton, CForm, CFormCheck, CFormInput, CFormSelect, CFormSwitch, CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle } from '@coreui/react';
 import React, { useEffect, useState } from 'react'
@@ -19,13 +19,9 @@ const Shopkeepers = () => {
     }, [ searchValue, dummyData ])
   const fetchData = async () => {
     try {
-      let count = await AxiosInstance.get('/api/user')
-        count = count.data.total;
-        let businessCount = await AxiosInstance.get('/api/business/all')
-        businessCount = businessCount.data.total;
-        let response = await AxiosInstance.get(`/api/user?limit=${count}`)
+        let response = await AxiosInstance.get(`/api/user?limit=0`)
         response = response.data.users;
-        let business = await AxiosInstance.get(`/api/business/all?limit=${businessCount}`)
+        let business = await AxiosInstance.get(`/api/business/all?limit=0`)
         business = business.data.businesses;
         let shopKeepers =  response.filter(item => {
           return item.roles.some(role => role.role === 'shopKeeper');
@@ -181,12 +177,15 @@ const Shopkeepers = () => {
         
       
         <td>
-          <div className='d-flex justify-content-between flex-wrap' style={{ width:"170px" }}>
+          <div className='d-flex justify-content-between flex-wrap' style={{ width:"380px" }}>
           <button className="btn btn-success text-light" onClick={()=>EditModal(index)}>
             <CIcon icon={cilPenAlt} size="sm" /> Edit
           </button>
           <button className="btn btn-danger ms-2 text-light" onClick={()=> handleDelete(index)}>
             <CIcon icon={cilTrash} size="sm" /> Delete
+          </button>
+          <button className="btn btn-info ms-2 text-light" onClick={()=> handleDelete(index)}>
+            <CIcon icon={cilShortText} size="sm" /> Generate sehr code
           </button>
           </div>
         </td>

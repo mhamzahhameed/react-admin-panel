@@ -20,9 +20,9 @@ const Customers = () => {
     }, [ searchValue, dummyData ])
   const fetchData = async () => {
     try {
-      let count = await AxiosInstance.get('/api/user')
-        count = count.data.total;
-        let response = await AxiosInstance.get(`/api/user?limit=${count}`)
+      // let count = await AxiosInstance.get('/api/user')
+      //   count = count.data.total;
+        let response = await AxiosInstance.get(`/api/user?limit=0`)
         response = response.data.users;
         let customer =   response.filter(obj => {
           const userRole = obj.roles.find(roleObj => roleObj.role === 'user');
