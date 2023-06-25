@@ -55,15 +55,16 @@ const ShopListByPackage = () => {
       }
     }
     sehrShops = sehrShops.filter(obj => obj.sehrCode !== 'string' && obj.sehrCode !== null);
-    sehrShops.map((sehrShop)=>{
-      // eslint-disable-next-line
-      packageList.map((Package)=>{
-        if (Package.id === sehrShop.id)
-        return setShopListByPackage(...shopListByPackage, )
-    })
-      return shopListByPackage
-    })
-    sehrShops = shopListByPackage.map(obj => {
+    // sehrShops.map((sehrShop)=>{
+    //   // eslint-disable-next-line
+    //   packageList.map((Package)=>{
+    //     if (Package.id === sehrShop.id)
+    //     return setShopListByPackage(...shopListByPackage, )
+    // })
+    //   return shopListByPackage
+    // })
+    console.log('serh shops :', sehrShops);
+    sehrShops = sehrShops.map(obj => {
       const updatedObj = {};
       for (const [key, value] of Object.entries(obj)) {
         updatedObj[key] = value ? value : 'not defined';
