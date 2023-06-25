@@ -15,7 +15,6 @@ import ShopListByCategory from './views/pages/category/shopListByCategory/ShopLi
 import PackagesDetail from './views/pages/sehrPackages/packagesDetail/PackagesDetail'
 import UserListByPackage from './views/pages/sehrPackages/userListbyPackage/UserListByPackage'
 import ShopListByPackage from './views/pages/sehrPackages/shopListByPackage/ShopListByPackage'
-import Division from './views/pages/address/division/Division'
 import Province from './views/pages/address/province/Province'
 import PostBlog from './views/pages/blog/postBlog/PostBlog'
 // import AllBlogs from './views/pages/blog/allBlogs/AllBlogs'
@@ -91,7 +90,6 @@ const routes = [
   { path: '/packages/packages-detail', name: 'Packages Detail', element: PackagesDetail, exact: true },
   { path: '/packages/user-list', name: 'User List by Packeges', element: UserListByPackage, exact: true },
   { path: '/packages/shop-list', name: 'Shop List by Packeges', element: ShopListByPackage, exact: true },
-  { path: '/address/division', name: 'Division', element: Division, exact: true },
   { path: '/address/province', name: 'Province', element: Province, exact: true },
   // { path: '/blog/all-blogs', name: 'All Blogs', element: AllBlogs, exact: true },
   { path: '/blog/post-blog', name: 'Post Blog', element: PostBlog, exact: true },

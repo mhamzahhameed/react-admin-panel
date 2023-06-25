@@ -167,14 +167,8 @@ const _nav = [
   },
   {
     component: CNavItem,
-    name: 'Province',
+    name: 'Province, Division, District and Tehsil',
     to: '/address/province',
-    icon: <CIcon icon={cilAddressBook} customClassName="nav-icon" />,
-  },
-  {
-    component: CNavItem,
-    name: 'Division',
-    to: '/address/division',
     icon: <CIcon icon={cilAddressBook} customClassName="nav-icon" />,
   },
   {
