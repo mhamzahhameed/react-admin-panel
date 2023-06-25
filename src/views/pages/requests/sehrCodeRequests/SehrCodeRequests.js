@@ -126,6 +126,7 @@ const SehrCodeRequests = () => {
       setCurrentPage(currentPage + 1)
     }
   }
+  // eslint-disable-next-line
   const EditModal = (index)=>{
     setEditFormData({
       ...dummyData[index],
