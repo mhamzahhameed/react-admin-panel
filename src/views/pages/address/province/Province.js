@@ -31,30 +31,30 @@ const Province = () => {
         "action"
     ])
       let provinces = response;
-      for(let i = 0; i<provinces.length;i++)
-      {
+    //   for(let i = 0; i<provinces.length;i++)
+    //   {
         
-       let divisions = await AxiosInstance.get(`http://3.133.0.29/api/divisions?provinceId=${provinces[i].id}&limit=0`);
-       divisions = divisions.data.divisions;
-    for(let j = 0; j<divisions.length;j++)
-    {
+    //    let divisions = await AxiosInstance.get(`http://3.133.0.29/api/divisions?provinceId=${provinces[i].id}&limit=0`);
+    //    divisions = divisions.data.divisions;
+    // for(let j = 0; j<divisions.length;j++)
+    // {
       
-      let district = await AxiosInstance.get(`http://3.133.0.29/api/divisions/${divisions[j].id}/district?limit=0`);
-      district = district.data.districts
-      divisions[j].districts = district; 
+    //   let district = await AxiosInstance.get(`http://3.133.0.29/api/divisions/${divisions[j].id}/district?limit=0`);
+    //   district = district.data.districts
+    //   divisions[j].districts = district; 
       
-      for(let k = 0; k< district.length;k++)
-    {
+    //   for(let k = 0; k< district.length;k++)
+    // {
       
-      // console.log(tehsilCount);
-      let tehsil = await AxiosInstance.get(`http://3.133.0.29/api/divisions/${divisions[j].id}/district/${district[k].id}/tehsils?limit=0`);
-      district[k].tehsils = tehsil.data.tehsils; 
-    }
-    }
-    // console.log(provinces);
-       provinces[i].divisions = divisions;
+    //   // console.log(tehsilCount);
+    //   let tehsil = await AxiosInstance.get(`http://3.133.0.29/api/divisions/${divisions[j].id}/district/${district[k].id}/tehsils?limit=0`);
+    //   district[k].tehsils = tehsil.data.tehsils; 
+    // }
+    // }
+    // // console.log(provinces);
+    //    provinces[i].divisions = divisions;
     
-      }
+    //   }
       // console.log(provinces);
       setData(provinces)
       setmodalTitle(['initial','initial']);
@@ -62,12 +62,60 @@ const Province = () => {
       console.error(error)
     }
   }
+  const openCollapse = async(id,provinceIndex,divisionIndex,districtIndex,divisionId,districtId)=>{
+    let check = id.split('-')[0];
+    let Id = id.split('-')[1];
+  if(check==='province')
+  {
+        let divisions = await AxiosInstance.get(`http://3.133.0.29/api/divisions?provinceId=${Id}&limit=0`);
+       divisions = divisions.data.divisions;
+       data[provinceIndex].divisions = divisions;
 
+       
+    title[0] = '-';
+    
+  }else if(check==='division')
+  {
+       let district = await AxiosInstance.get(`http://3.133.0.29/api/divisions/${Id}/district?limit=0`);
+      district = district.data.districts
+      data[provinceIndex].divisions[divisionIndex].districts = district;
+    document.getElementById('division_title').innerText = '-'
+  }
+  else if(check==='district')
+  {
+       let tehsil = await AxiosInstance.get(`http://3.133.0.29/api/divisions/${divisionId}/district/${districtId}/tehsils?limit=0`);
+       tehsil = tehsil.data.tehsils; 
+      data[provinceIndex].divisions[divisionIndex].districts[districtIndex].tehsils = tehsil;
+    document.getElementById('district_title').innerText = '-'
+  }
+    setProvinceCollapse({...provinceCollapse,[id]:true})
+  }
+const closeCollapse = (id)=>{
+  let check = id.split('-')[0];
+  if(check==='province')
+  {
+    title[0] = '+';
+  }else if(check==='division')
+  {
+    document.getElementById('division_title').innerText = '+'
+  }else if(check==='district')
+  {
+    document.getElementById('district_title').innerText = '+'
+  }
+  
+  
+  setProvinceCollapse({...provinceCollapse,[id]:false})
+}
+const resetData = ()=>{
+  title[0] = '+';
+  setProvinceCollapse({});
+}
   // Function to calculate the current page's records
   const getCurrentPageData = () => {
     const startIndex = (currentPage - 1) * perPage
     const endIndex = startIndex + perPage
     return data.slice(startIndex, endIndex)
+   
   }
 
   // Function to handle page changes
@@ -158,7 +206,8 @@ const Province = () => {
   Swal.fire({
     title: message,
   })
-  fetchData()
+  fetchData();
+  resetData();
       }
     });
     
@@ -166,7 +215,6 @@ const Province = () => {
   }
   // Handle Save Changes button onclicking
   const handleSaveChanges = async() => {
-    console.log(editData);
     let url = ""
     switch(editData.action){
       case 'province-edit':
@@ -204,6 +252,7 @@ const Province = () => {
     })
     setVisible(false);
     fetchData();
+    resetData();
   };
   const openAddData = (name,secondId,thirdId)=>{
    setmodalTitle(['add',name]);
@@ -250,39 +299,9 @@ const Province = () => {
   setVisible(false);
   // setData([]);
   fetchData();
-  }
-  const openCollapse = (id)=>{
-    let check = id.split('-')[0];
-  if(check==='province')
-  {
-    title[0] = '-';
-    
-  }else if(check==='division')
-  {
-    document.getElementById('division_title').innerText = '-'
-  }
-  else if(check==='district')
-  {
-    document.getElementById('district_title').innerText = '-'
-  }
-    setProvinceCollapse({...provinceCollapse,[id]:true})
-  }
-const closeCollapse = (id)=>{
-  let check = id.split('-')[0];
-  if(check==='province')
-  {
-    title[0] = '+';
-  }else if(check==='division')
-  {
-    document.getElementById('division_title').innerText = '+'
-  }else if(check==='district')
-  {
-    document.getElementById('district_title').innerText = '+'
+  resetData();
   }
   
-  
-  setProvinceCollapse({...provinceCollapse,[id]:false})
-}
 
   // Render the current page's records
   const renderData = () => {
@@ -293,7 +312,7 @@ const closeCollapse = (id)=>{
       <tr >
         <td>
           
-          {provinceCollapse[`province-${item.id}`] ? <button className="btn btn-dark" onClick={()=>closeCollapse(`province-${item.id}`)}><CIcon icon={cilChevronTop}/></button> : <button className="btn btn-dark" onClick={()=>openCollapse(`province-${item.id}`)}><CIcon icon={cilChevronBottom}/></button>}
+          {provinceCollapse[`province-${item.id}`] ? <button className="btn btn-dark" onClick={()=>closeCollapse(`province-${item.id}`)}><CIcon icon={cilChevronTop}/></button> : <button className="btn btn-dark" onClick={()=>openCollapse(`province-${item.id}`,index)}><CIcon icon={cilChevronBottom}/></button>}
         </td>
         <td>{index+1}</td>
        <td>{item.title}</td>
@@ -309,7 +328,9 @@ const closeCollapse = (id)=>{
         </td>
       </tr>
       <tr>
+        { item?.divisions ? 
         <td colSpan={4}>
+          
           <CCollapse visible={provinceCollapse[`province-${item.id}`]} >
       <CCard>
       <CCardHeader className='text-uppercase h4 fw-bold bg-success text-light d-flex justify-content-between'><p className='text-uppercase'>Divisions</p><button className='btn btn-info text-light' onClick={() => openAddData('division')}><CIcon icon={cilLibraryAdd} size="sm"  /> Add</button></CCardHeader>
@@ -337,7 +358,7 @@ const closeCollapse = (id)=>{
                   return <><tr key={divIndex}> 
                      <td>
           
-          {provinceCollapse[`division-${division.id}`] ? <button className="btn btn-dark" onClick={()=>closeCollapse(`division-${division.id}`)}><CIcon icon={cilChevronTop}/></button> : <button className="btn btn-dark" onClick={()=>openCollapse(`division-${division.id}`)}><CIcon icon={cilChevronBottom}/></button>}
+          {provinceCollapse[`division-${division.id}`] ? <button className="btn btn-dark" onClick={()=>closeCollapse(`division-${division.id}`)}><CIcon icon={cilChevronTop}/></button> : <button className="btn btn-dark" onClick={()=>openCollapse(`division-${division.id}`,index,divIndex)}><CIcon icon={cilChevronBottom}/></button>}
         </td>
                     <td>{divIndex + 1}</td>
                     <td>{division.title}</td>
@@ -353,6 +374,7 @@ const closeCollapse = (id)=>{
         </td>
                   </tr>
                   <tr>
+                    {division?.districts ?
                     <td colSpan={4}>
                   <CCollapse visible={provinceCollapse[`division-${division.id}`]} >
       <CCard>
@@ -381,7 +403,7 @@ const closeCollapse = (id)=>{
                   return <><tr key={disIndex}> 
                      <td>
           
-          {provinceCollapse[`district-${district.id}`] ? <button className="btn btn-dark" onClick={()=>closeCollapse(`district-${district.id}`)}><CIcon icon={cilChevronTop}/></button> : <button className="btn btn-dark" onClick={()=>openCollapse(`district-${district.id}`)}><CIcon icon={cilChevronBottom}/></button>}
+          {provinceCollapse[`district-${district.id}`] ? <button className="btn btn-dark" onClick={()=>closeCollapse(`district-${district.id}`)}><CIcon icon={cilChevronTop}/></button> : <button className="btn btn-dark" onClick={()=>openCollapse(`district-${district.id}`,index,divIndex,disIndex,division.id,district.id)}><CIcon icon={cilChevronBottom}/></button>}
         </td>
                     <td>{disIndex + 1}</td>
                     <td>{district.title}</td>
@@ -397,6 +419,7 @@ const closeCollapse = (id)=>{
         </td>
                   </tr>
                   <tr>
+                    {district?.tehsils ?
                     <td colSpan={4}>
                   <CCollapse visible={provinceCollapse[`district-${district.id}`]} >
       <CCard>
@@ -445,7 +468,7 @@ const closeCollapse = (id)=>{
                   
       </CCard>
     </CCollapse>
-    </td>
+    </td> : ""}
                   </tr>
                   </>
                 })}
@@ -455,7 +478,7 @@ const closeCollapse = (id)=>{
                   </CCardBody>
       </CCard>
     </CCollapse>
-    </td>
+    </td> : ""}
                   </tr>
                   </>
                 })}
@@ -466,6 +489,7 @@ const closeCollapse = (id)=>{
       </CCard>
     </CCollapse>
     </td>
+    : ""}
       </tr>
       </>
     ))
