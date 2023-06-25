@@ -18,10 +18,31 @@ const Shopkeepers = () => {
     // eslint-disable-next-line
     }, [ searchValue, dummyData ])
   const fetchData = async () => {
+    let token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Iis5MjMwNzg0ODg5MDMiLCJzdWIiOjEsImlhdCI6MTY4NzY5MTM1OSwiZXhwIjoxNjg3Nzc3NzU5fQ.PdJULKkhSwRBOmZtAIRso55XkXplL5nL_-zLxs1Ba9I';
     try {
-        let response = await AxiosInstance.get(`/api/user?limit=0`)
+      let count = await AxiosInstance.get(`/api/user`,{
+        headers:{
+          "Authorization": `Bearer ${token}`
+        }
+      })
+      let businessCount = await AxiosInstance.get(`/api/business/all`,{
+        headers:{
+          "Authorization": `Bearer ${token}`
+        }
+      })
+      count = count.data.total;
+      businessCount = businessCount.data.total;
+        let response = await AxiosInstance.get(`/api/user?limit=${count}`,{
+          headers:{
+            "Authorization": `Bearer ${token}`
+          }
+        })
         response = response.data.users;
-        let business = await AxiosInstance.get(`/api/business/all?limit=0`)
+        let business = await AxiosInstance.get(`/api/business/all?limit=${businessCount}`,{
+          headers:{
+            "Authorization": `Bearer ${token}`
+          }
+        })
         business = business.data.businesses;
         let shopKeepers =  response.filter(item => {
           return item.roles.some(role => role.role === 'shopKeeper');

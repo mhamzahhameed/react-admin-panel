@@ -1,7 +1,8 @@
-import { cilPenAlt, cilTrash } from '@coreui/icons'
+import {  cilShortText } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
-import { CButton, CForm, CFormCheck, CFormInput, CFormSelect, CFormSwitch, CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle } from '@coreui/react'
+import { CButton, CForm, CFormCheck, CFormInput, CFormSelect, CFormSwitch, CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle } from '@coreui/react';
 import React, { useEffect, useState } from 'react'
+import AxiosInstance from 'src/utils/axiosInstance'
 import Swal from 'sweetalert2'
 const SehrCodeRequests = () => {
   const [title, setTitle] = useState([])
@@ -11,130 +12,86 @@ const SehrCodeRequests = () => {
   const [searchValue, setSearchValue] = useState('')
   const [editModalVisible, setEditModalVisible] = useState(false)
   const [editFormData, setEditFormData] = useState({});
-  const [dummyData,setDummyData] = useState([
-    {
-      id: 1,
-      name: 'Shahab Imtiaz',
-      gender: 'male',
-      created_at: '25 Jan 2023',
-      role: 'admin',
-      mobile: '03009876543',
-      cnic: '303109870122',
-      province: 'punjab',
-      division: 'lahore',
-      district: '',
-      tehsil: 'abcdef',
-      active: true,
-    },
-    {
-      id: 2,
-      name: 'Shahab Imtiaz',
-      gender: 'male',
-      created_at: '25 Jan 2023',
-      role: 'admin',
-      mobile: '03009876543',
-      cnic: '303109870122',
-      province: 'punjab',
-      division: 'lahore',
-      district: 'ghjkl',
-      tehsil: 'abcdef',
-      active: false,
-    },
-    {
-      id: 3,
-      name: 'Shahab Imtiaz',
-      gender: 'male',
-      created_at: '25 Jan 2023',
-      role: 'admin',
-      mobile: '03009876543',
-      cnic: '303109870122',
-      province: 'punjab',
-      division: 'lahore',
-      district: '',
-      tehsil: 'abcdef',
-      active: true,
-    },
-    {
-      id: 4,
-      name: 'Adnan Abid',
-      gender: 'male',
-      created_at: '25 Jan 2023',
-      role: 'customer',
-      mobile: '03009876543',
-      cnic: '303109870122',
-      province: 'punjab',
-      division: 'karachi',
-      district: 'lllll',
-      tehsil: 'bbcc',
-      active: true,
-    },
-    {
-      id: 5,
-      name: 'Adnan Abid',
-      gender: 'male',
-      created_at: '25 Jan 2023',
-      role: 'admin',
-      mobile: '03009876543',
-      cnic: '303109870122',
-      province: 'punjab',
-      division: 'lahore',
-      district: '',
-      tehsil: 'abcdef',
-      active: true,
-    },
-    {
-      id: 6,
-      name: 'Adnan Abid',
-      gender: 'male',
-      created_at: '25 Jan 2023',
-      role: 'admin',
-      mobile: '03009876543',
-      cnic: '303109870122',
-      province: 'punjab',
-      division: 'lahore',
-      district: '',
-      tehsil: 'abcdef',
-      active: true,
-    },
-    {
-      id: 7,
-      name: 'Adnan Abid',
-      gender: 'male',
-      created_at: '25 Jan 2023',
-      role: 'admin',
-      mobile: '032209876543',
-      cnic: '3130310987012',
-      province: 'punjab',
-      division: 'lahore',
-      district: '',
-      tehsil: 'abcdef',
-      active: true,
-    },
-  ])
+  const [dummyData,setDummyData] = useState([])
   useEffect(() => {
     fetchData()
     // eslint-disable-next-line
     }, [ searchValue, dummyData ])
   const fetchData = async () => {
+    let token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Iis5MjMwNzg0ODg5MDMiLCJzdWIiOjEsImlhdCI6MTY4NzY5MTM1OSwiZXhwIjoxNjg3Nzc3NzU5fQ.PdJULKkhSwRBOmZtAIRso55XkXplL5nL_-zLxs1Ba9I';
     try {
-      //   const response = await axios.get(`https://dummyjson.com/products`)
-      //   response.data.products[0] = { ...response.data.products[0], Action: '' }
-      dummyData[0] = { ...dummyData[0], action: '' }
-      setTitle(Object.keys(dummyData[0]))
-      const fetchedData = dummyData
+      let count = await AxiosInstance.get(`/api/user`,{
+        headers:{
+          "Authorization": `Bearer ${token}`
+        }
+      })
+      let businessCount = await AxiosInstance.get(`/api/business/all`,{
+        headers:{
+          "Authorization": `Bearer ${token}`
+        }
+      })
+      count = count.data.total;
+      businessCount = businessCount.data.total;
+        let response = await AxiosInstance.get(`/api/user?limit=${count}`,{
+          headers:{
+            "Authorization": `Bearer ${token}`
+          }
+        })
+        response = response.data.users;
+        let business = await AxiosInstance.get(`/api/business/all?limit=${businessCount}`,{
+          headers:{
+            "Authorization": `Bearer ${token}`
+          }
+        })
+        business = business.data.businesses;
+        let shopKeepers =  response.filter(item => {
+          return item.roles.some(role => role.role === 'shopKeeper');
+        });
+      let shopKeeper = shopKeepers;
+      for (const element of shopKeeper) {
+        const obj1 = element;
+
+        const obj2 = business.find((item) => item.userId === obj1.id);
+        if (obj2) {
+          obj1.category = obj2.district;
+          obj1.businessName = obj2.businessName;
+          obj1.ownerName = obj2.ownerName;
+          obj1.sehrCode = obj2.sehrCode;
+        }
+      }
+      shopKeeper = shopKeeper.filter(obj => obj.sehrCode === 'string' || obj.sehrCode === null);
+      shopKeeper = shopKeeper.map(obj => {
+        const updatedObj = {};
+        for (const [key, value] of Object.entries(obj)) {
+          updatedObj[key] = value ? value : 'not defined';
+        }
+        return updatedObj;
+      });
+      setTitle([
+        "#",
+        "owner name",
+        "shop name",
+        "mobile number",
+        "category",
+        "province", 
+        "division",
+        "district",
+        "tehsil", 
+        "action"
+    ])
+      const fetchedData = shopKeeper
       const filteredData = searchValue
         ? fetchedData.filter((item) => {
           
-         return item.name.toLowerCase().includes(searchValue) ||
+         return item.ownerName.toLowerCase().includes(searchValue) ||
           item.mobile.toLowerCase().includes(searchValue) ||
-          item.cnic.toLowerCase().includes(searchValue) ||
-          item.created_at.toLowerCase().includes(searchValue) ||
-          item.tehsil.toLowerCase().includes(searchValue) ||
-          item.district.toLowerCase().includes(searchValue) ||
+          item.businessName.toLowerCase().includes(searchValue) ||
           item.division.toLowerCase().includes(searchValue) ||
           item.province.toLowerCase().includes(searchValue) ||
-          item.role.toLowerCase().includes(searchValue) ||
-          item.gender.toLowerCase().includes(searchValue)
+          item.tehsil.toLowerCase().includes(searchValue) ||
+          item.district.toLowerCase().includes(searchValue) ||
+          item.category.toLowerCase().includes(searchValue) 
+        
         })
         : fetchedData
 
@@ -227,37 +184,26 @@ const SehrCodeRequests = () => {
     const currentPageData = getCurrentPageData()
 
     return currentPageData.map((item, index) => (
-      <tr key={index}>
-        <th scope="row">{item.id}</th>
-        <td>{item.name}</td>
-        <td>{item.gender}</td>
-        <td>{item.created_at}</td>
-        <td>
-          <span className="badge bg-success">{item.role}</span>
-        </td>
+      <tr key={item.id}>
+        <td>{index+1}</td>
+        <td>{item.ownerName}</td>
+        <td>{item.businessName}</td>
         <td>{item.mobile}</td>
-        <td>{item.cnic}</td>
+        <td>{item.category}</td>
         <td>{item.province}</td>
         <td>{item.division}</td>
         <td>{item.district}</td>
         <td>{item.tehsil}</td>
+   
+        
+      
         <td>
-          <div className="form-check form-switch">
-            <input
-              className="form-check-input"
-              type="checkbox"
-              id="flexSwitchCheckDefault"
-              defaultChecked={item.active === true}
-            />
+          <div className='d-flex justify-content-between flex-wrap' style={{ width:"380px" }}>
+          
+          <button className="btn btn-info ms-2 text-light" onClick={()=> handleDelete(index)}>
+            <CIcon icon={cilShortText} size="sm" /> Accept Request
+         </button>
           </div>
-        </td>
-        <td>
-          <button className="btn btn-success text-light" onClick={()=>EditModal(index)}>
-            <CIcon icon={cilPenAlt} size="sm" />
-          </button>
-          <button className="btn btn-danger ms-2 text-light" onClick={()=> handleDelete(index)}>
-            <CIcon icon={cilTrash} size="sm" />
-          </button>
         </td>
       </tr>
     ))
@@ -367,7 +313,7 @@ const SehrCodeRequests = () => {
       </CModalFooter>
     </CModal>
       <div className="card">
-        <div className="card-header">Sehr Code Requests</div>
+        <div className="card-header">Sehr Code Request</div>
         <div className="card-body">
           <div>
             <div className="d-flex my-2 justify-content-end">
