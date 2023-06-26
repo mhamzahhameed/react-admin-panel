@@ -18,7 +18,7 @@ const SehrCodeRequests = () => {
     // eslint-disable-next-line
     }, [ searchValue, dummyData ])
   const fetchData = async () => {
-    let token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Iis5MjMwNzg0ODg5MDMiLCJzdWIiOjEsImlhdCI6MTY4NzY5MTM1OSwiZXhwIjoxNjg3Nzc3NzU5fQ.PdJULKkhSwRBOmZtAIRso55XkXplL5nL_-zLxs1Ba9I';
+    let token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Iis5MjMwNzg0ODg5MDMiLCJzdWIiOjEsImlhdCI6MTY4Nzc5OTMyMCwiZXhwIjoxNjg3ODg1NzIwfQ.xyM4Ha6iDlnSVqdI5jNQ2YQOJgdW0mgiigTT88HWU4A';
     try {
       let count = await AxiosInstance.get(`/api/user`,{
         headers:{
