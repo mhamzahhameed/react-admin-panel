@@ -67,7 +67,7 @@ const Province = () => {
     let Id = id.split('-')[1];
   if(check==='province')
   {
-        let divisions = await AxiosInstance.get(`http://3.133.0.29/api/divisions?provinceId=${Id}&limit=0`);
+        let divisions = await AxiosInstance.get(`/api/divisions?provinceId=${Id}&limit=0`);
        divisions = divisions.data.divisions;
        data[provinceIndex].divisions = divisions;
 
@@ -76,14 +76,14 @@ const Province = () => {
     
   }else if(check==='division')
   {
-       let district = await AxiosInstance.get(`http://3.133.0.29/api/divisions/${Id}/district?limit=0`);
+       let district = await AxiosInstance.get(`/api/divisions/${Id}/district?limit=0`);
       district = district.data.districts
       data[provinceIndex].divisions[divisionIndex].districts = district;
     document.getElementById('division_title').innerText = '-'
   }
   else if(check==='district')
   {
-       let tehsil = await AxiosInstance.get(`http://3.133.0.29/api/divisions/${divisionId}/district/${districtId}/tehsils?limit=0`);
+       let tehsil = await AxiosInstance.get(`/api/divisions/${divisionId}/district/${districtId}/tehsils?limit=0`);
        tehsil = tehsil.data.tehsils; 
       data[provinceIndex].divisions[divisionIndex].districts[districtIndex].tehsils = tehsil;
     document.getElementById('district_title').innerText = '-'
