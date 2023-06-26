@@ -66,6 +66,22 @@ const Customers = () => {
       console.error(error)
     }
   }
+  const getPageNumbers = (currentPage, totalPages, displayRange = 3) => {
+    let startPage = currentPage - Math.floor(displayRange / 2);
+    let endPage = currentPage + Math.floor(displayRange / 2);
+  
+    if (startPage < 1) {
+      startPage = 1;
+      endPage = Math.min(displayRange, totalPages);
+    }
+  
+    if (endPage > totalPages) {
+      endPage = totalPages;
+      startPage = Math.max(totalPages - displayRange + 1, 1);
+    }
+  
+    return Array.from({ length: endPage - startPage + 1 }, (_, index) => startPage + index);
+  };
   // Function to calculate the current page's records
   const getCurrentPageData = () => {
     const startIndex = (currentPage - 1) * perPage
@@ -174,7 +190,7 @@ const Customers = () => {
   // Calculate total number of pages
   const totalPages = Math.ceil(data.length / perPage)
   // Generate an array of page numbers
-  const pageNumbers = Array.from({ length: totalPages }, (_, index) => index + 1)
+  const pageNumbers = getPageNumbers(currentPage,totalPages);
   
   return (
     <div className="container">

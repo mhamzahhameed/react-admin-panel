@@ -13,10 +13,11 @@ const Shopkeepers = () => {
   const [editModalVisible, setEditModalVisible] = useState(false)
   const [editFormData, setEditFormData] = useState({});
   const [dummyData,setDummyData] = useState([])
+const [code,setCode] = useState("");
   useEffect(() => {
     fetchData()
     // eslint-disable-next-line
-    }, [ searchValue, dummyData ])
+    }, [ ])
   const fetchData = async () => {
     let token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Iis5MjMwNzg0ODg5MDMiLCJzdWIiOjEsImlhdCI6MTY4NzY5MTM1OSwiZXhwIjoxNjg3Nzc3NzU5fQ.PdJULKkhSwRBOmZtAIRso55XkXplL5nL_-zLxs1Ba9I';
     try {
@@ -59,7 +60,28 @@ const Shopkeepers = () => {
           obj1.sehrCode = obj2.sehrCode;
         }
       }
+      let filterSehrCode = shopKeeper.filter(obj => obj.sehrCode !== 'string' && obj.sehrCode !== null);
+      filterSehrCode.sort((a, b) => a.sehrCode.localeCompare(b.sehrCode));
+      let lastSehrCode = filterSehrCode[filterSehrCode.length-1].sehrCode;
+      let newCode
+        let getCodeNumber = 1;
+      if(lastSehrCode)
+      {  
+        if(lastSehrCode.includes('PDDT'))
+        {
+           getCodeNumber =  parseInt(lastSehrCode.split('PDDT')[1]) + 1;
+           newCode = `PDDT${getCodeNumber.toString().padStart(3, '0')}`;
+        }
+        else{
+          newCode = `PDDT${getCodeNumber.toString().padStart(3, '0')}`;
+        }
+      }else
+      {
+        newCode = `PDDT${getCodeNumber.toString().padStart(3, '0')}`;
+      }
+      setCode(newCode);
       shopKeeper = shopKeeper.filter(obj => obj.sehrCode === 'string' || obj.sehrCode === null);
+      
       shopKeeper = shopKeeper.map(obj => {
         const updatedObj = {};
         for (const [key, value] of Object.entries(obj)) {
@@ -100,6 +122,22 @@ const Shopkeepers = () => {
       console.error(error)
     }
   }
+  const getPageNumbers = (currentPage, totalPages, displayRange = 3) => {
+    let startPage = currentPage - Math.floor(displayRange / 2);
+    let endPage = currentPage + Math.floor(displayRange / 2);
+  
+    if (startPage < 1) {
+      startPage = 1;
+      endPage = Math.min(displayRange, totalPages);
+    }
+  
+    if (endPage > totalPages) {
+      endPage = totalPages;
+      startPage = Math.max(totalPages - displayRange + 1, 1);
+    }
+  
+    return Array.from({ length: endPage - startPage + 1 }, (_, index) => startPage + index);
+  };
   // Function to calculate the current page's records
   const getCurrentPageData = () => {
     const startIndex = (currentPage - 1) * perPage
@@ -149,6 +187,23 @@ const Shopkeepers = () => {
         const newData = [...dummyData];
         newData.splice(id, 1);
         setDummyData(newData)
+      }
+    });
+  }
+  const generateCode = (id)=>{
+    Swal.fire({
+      title: `Confirm to assign ${code} to this user!`,
+      text: 'You won\'t be able to revert this!',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Confirm',
+      cancelButtonText: 'Cancel',
+      reverseButtons: true,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Perform the delete operation
+        console.log(id)
+      
       }
     });
   }
@@ -205,7 +260,7 @@ const Shopkeepers = () => {
           <button className="btn btn-danger ms-2 text-light" onClick={()=> handleDelete(index)}>
             <CIcon icon={cilTrash} size="sm" /> Delete
           </button>
-          <button className="btn btn-info ms-2 text-light" onClick={()=> handleDelete(index)}>
+          <button className="btn btn-info ms-2 text-light" onClick={()=> generateCode(index)}>
             <CIcon icon={cilShortText} size="sm" /> Generate sehr code
           </button>
           </div>
@@ -217,7 +272,7 @@ const Shopkeepers = () => {
   // Calculate total number of pages
   const totalPages = Math.ceil(data.length / perPage)
   // Generate an array of page numbers
-  const pageNumbers = Array.from({ length: totalPages }, (_, index) => index + 1)
+  const pageNumbers = getPageNumbers(currentPage,totalPages);
   
   return (
     <div className="container">
