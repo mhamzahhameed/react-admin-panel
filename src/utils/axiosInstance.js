@@ -1,5 +1,5 @@
 import axios from 'axios';
-const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Iis5MjMwNzg0ODg5MDMiLCJzdWIiOjEsImlhdCI6MTY4Nzg2NDAwNSwiZXhwIjoxNjg3OTUwNDA1fQ.sRv7kV9P_9YGuxm_h2ccvk-oFD75ve_0KQf-TFF_YXU';
+const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IjAzMDEzMzMyMjIxIiwic3ViIjoxLCJpYXQiOjE2ODc4ODkyMDMsImV4cCI6MTY4Nzk3NTYwM30.8owYvf3l53twsxdLl7WQrVLUowYhDO-4nVCkYIZJFmo';
 const AxiosInstance = axios.create({
     baseURL: 'https://api.sehrapp.com', 
     headers: {

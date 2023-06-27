@@ -17,9 +17,9 @@ const [code,setCode] = useState("");
   useEffect(() => {
     fetchData()
     // eslint-disable-next-line
-    }, [ ])
+    }, [searchValue])
   const fetchData = async () => {
-    let token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Iis5MjMwNzg0ODg5MDMiLCJzdWIiOjEsImlhdCI6MTY4Nzc5OTMyMCwiZXhwIjoxNjg3ODg1NzIwfQ.xyM4Ha6iDlnSVqdI5jNQ2YQOJgdW0mgiigTT88HWU4A';
+    let token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IjAzMDEzMzMyMjIxIiwic3ViIjoxLCJpYXQiOjE2ODc4ODkyMDMsImV4cCI6MTY4Nzk3NTYwM30.8owYvf3l53twsxdLl7WQrVLUowYhDO-4nVCkYIZJFmo';
     try {
       let count = await AxiosInstance.get(`/api/user`,{
         headers:{
