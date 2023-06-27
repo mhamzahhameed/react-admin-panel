@@ -1,15 +1,16 @@
 import { cilReload } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
-import { CDropdown, CDropdownItem, CDropdownMenu, CDropdownToggle } from '@coreui/react'
+import { CButton, CDropdown, CDropdownItem, CDropdownMenu, CDropdownToggle, CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle } from '@coreui/react'
 import React, { useEffect, useState } from 'react'
 import AxiosInstance from 'src/utils/axiosInstance'
 
 const UserByEducation = () => {
   const [title, setTitle] = useState([])
+  const [userTitle] = useState(['#', 'name', 'education', 'cell', 'cnic'  ])
   const [data, setData] = useState([])
   const [userByEducation, setUserByEducation] = useState([])
   const [educationList, setEducationList] = useState([])
-
+  const [detailModal, setDetailModal] = useState(false)
   const [currentPage, setCurrentPage] = useState(1)
   const [perPage, setPerPage] = useState(10)
   const [searchValue, setSearchValue] = useState('')
@@ -35,22 +36,12 @@ const UserByEducation = () => {
   const fetchData = async () => {
     try {
         let response = await AxiosInstance.get("/api/user?limit=0")
-        response = response.data.users;
-        let customer =   response.filter(obj => {
-          const userRole = obj.roles.find(roleObj => roleObj.role === 'user');
-          return userRole && obj.roles.length === 1;
-        });
+        let customer =    response.data.users;
       setTitle([
         "#",
-        "name",
         "education",
-        "mobile number",
-        "sehr package",
-        "cnic",
-        "province", 
-        "division",
-        "district",
-        "tehsil",
+        "Total Users",
+        "details",
     ])
       customer = customer.map(obj => {
         const updatedObj = {};
@@ -83,7 +74,7 @@ const UserByEducation = () => {
   const getCurrentPageData = () => {
     const startIndex = (currentPage - 1) * perPage
     const endIndex = startIndex + perPage
-    return data.slice(startIndex, endIndex)
+    return educationList.slice(startIndex, endIndex)
   }
 
   // Function to handle page changes
@@ -100,7 +91,7 @@ const UserByEducation = () => {
 
   // Function to handle next page
   const goToNextPage = () => {
-    const totalPages = Math.ceil(data.length / perPage)
+    const totalPages = Math.ceil(educationList.length / perPage)
     if (currentPage < totalPages) {
       setCurrentPage(currentPage + 1)
     }
@@ -112,6 +103,9 @@ const UserByEducation = () => {
       setData(newData);
     
   };
+  const detailModalHandler = (item) => {
+    setDetailModal(true)
+  }
   
   // Render the current page's records
   const renderData = () => {
@@ -120,23 +114,37 @@ const UserByEducation = () => {
     return currentPageData.map((item, index) => (
       <tr key={item.id}>
         <td>{index+1}</td>
-        <td>{item.firstName+" "+item.lastName}</td>
-        <td>{item.education}</td>
-        <td>{item.mobile}</td>
-        <td>{item.lastRewardPaidAt}</td>
-        <td>{item.cnic}</td>
-        <td>{item.province}</td>
-        <td>{item.division}</td>
-        <td>{item.district}</td>
-        <td>{item.tehsil}</td>
+        {/* <td>{item.firstName+" "+item.lastName}</td> */}
+        <td>{item.title}</td>
+        <td>{(data.filter((user) => user.education === item.title).length)}</td>
         <td>
+          <button className="btn btn-primary ms-2" onClick={() => detailModalHandler('')}>
+                View
+              </button>
+        </td>
+      </tr>
+    ))
+  }  
+  const renderUserData = () => {
+    const currentPageData = getCurrentPageData()
+
+    return currentPageData.map((item, index) => (
+      <tr key={item.id}>
+        <td>{index+1}</td>
+        {/* <td>{item.firstName+" "+item.lastName}</td> */}
+        <td>{item.title}</td>
+        <td>{(data.filter((user) => user.education === item.title).length)}</td>
+        <td>
+          <button className="btn btn-primary ms-2" onClick={() => detailModalHandler('')}>
+                View
+              </button>
         </td>
       </tr>
     ))
   }
 
   // Calculate total number of pages
-  const totalPages = Math.ceil(data.length / perPage)
+  const totalPages = Math.ceil(educationList.length / perPage)
   // Generate an array of page numbers
   const pageNumbers = Array.from({ length: totalPages }, (_, index) => index + 1)
   
@@ -156,6 +164,34 @@ const UserByEducation = () => {
             <CIcon icon={cilReload} size="lg" /> Refresh Table Data
           </button>
     </CDropdown>
+    <CModal alignment="center" size='lg' visible={detailModal} onClose={() => setDetailModal(false)}>
+        <CModalHeader>
+          <CModalTitle>User List by </CModalTitle>
+        </CModalHeader>
+        <CModalBody>
+        <div className="table-responsive">
+            <table className="table table-striped table-bordered">
+              <thead>
+                <tr>
+                  {userTitle.map((item, index) => {
+                    return (
+                      <th scope="col" className="text-uppercase" key={index}>
+                        {item}
+                      </th>
+                    )
+                  })}
+                </tr>
+              </thead>
+              <tbody>{renderUserData()}</tbody>
+            </table>
+          </div> 
+        </CModalBody>
+        <CModalFooter>
+          <CButton color="secondary" onClick={() => setDetailModal(false)}>
+            Close
+          </CButton>
+        </CModalFooter>
+      </CModal>
     <h4 className='d-inline-block m-5 align-end' ><strong> Total Users : {data.length} </strong></h4>
       <div className="card">
         <div className="card-header">Users</div>
