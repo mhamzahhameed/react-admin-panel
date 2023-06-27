@@ -5,8 +5,22 @@ import React, { useEffect, useState } from 'react'
 import AxiosInstance from 'src/utils/axiosInstance'
 
 const UserByEducation = () => {
-  const [title, setTitle] = useState([])
-  const [userTitle] = useState(['#', 'name', 'education', 'cell', 'cnic'  ])
+  const [title, setTitle] = useState([
+    "#",
+    "education",
+    "Total Users",
+    "details",
+])
+  const [userTitle] = useState([   "#",
+  "name",
+  "mobile number",
+  "sehr package",
+  "education",
+  "cnic",
+  "province", 
+  "division",
+  "district",
+  "tehsil"])
   const [data, setData] = useState([])
   const [userByEducation, setUserByEducation] = useState([])
   const [educationList, setEducationList] = useState([])
@@ -16,60 +30,34 @@ const UserByEducation = () => {
   const [searchValue, setSearchValue] = useState('')
   
   useEffect(() => {
-    if(data.length < 1)
-    {
-      fetchData()
-    }
+  
     fetchEducationList()
     // eslint-disable-next-line
-    }, [])
+    }, [searchValue])
 
   const fetchEducationList = async() => {
     try{
       let list = await AxiosInstance.get('/api/education')
-        setEducationList(list.data.education)
+        const fetchedData = list.data.education
+        let response = await AxiosInstance.get("/api/user?limit=0")
+      let customer =    response.data.users;
+      fetchedData.map((element)=>{
+        let filterCustomer = customer.filter((j)=> j.education === element.title);
+        element.userCount = filterCustomer.length;
+      })
+        const filteredData = searchValue
+          ? fetchedData.filter((item) => {
+            
+           return item.title.toLowerCase().includes(searchValue) 
+          })
+          : fetchedData
+          setEducationList(filteredData)
     }
     catch (error) {
       console.error(error)
     }
   }
-  const fetchData = async () => {
-    try {
-        let response = await AxiosInstance.get("/api/user?limit=0")
-        let customer =    response.data.users;
-      setTitle([
-        "#",
-        "education",
-        "Total Users",
-        "details",
-    ])
-      customer = customer.map(obj => {
-        const updatedObj = {};
-        for (const [key, value] of Object.entries(obj)) {
-          updatedObj[key] = value ? value : 'not defined';
-        }
-        return updatedObj;
-      });
-      const fetchedData = customer
-      const filteredData = searchValue
-        ? fetchedData.filter((item) => {
-          const name = item.firstName+" "+item.lastName;
-         return name.toLowerCase().includes(searchValue) ||
-          item.mobile.toLowerCase().includes(searchValue) ||
-          item.cnic.toLowerCase().includes(searchValue) ||
-          item.tehsil.toLowerCase().includes(searchValue) ||
-          item.district.toLowerCase().includes(searchValue) ||
-          item.lastRewardPaidAt.toLowerCase().includes(searchValue) ||
-          item.division.toLowerCase().includes(searchValue)
-        })
-        : fetchedData
-
-      setData(filteredData)
-      setUserByEducation(filteredData)
-    } catch (error) {
-      console.error(error)
-    }
-  }
+  
   // Function to calculate the current page's records
   const getCurrentPageData = () => {
     const startIndex = (currentPage - 1) * perPage
@@ -103,8 +91,38 @@ const UserByEducation = () => {
       setData(newData);
     
   };
-  const detailModalHandler = (item) => {
+  const detailModalHandler = async(item) => {
+    try {
+      let response = await AxiosInstance.get("/api/user?limit=0")
+      let customer =    response.data.users;
+    customer = customer.filter((el,index)=> el.education === item);
+    customer = customer.map(obj => {
+      const updatedObj = {};
+      for (const [key, value] of Object.entries(obj)) {
+        updatedObj[key] = value ? value : 'not defined';
+      }
+      return updatedObj;
+    });
+    const fetchedData = customer
+    const filteredData = searchValue
+      ? fetchedData.filter((item) => {
+        const name = item.firstName+" "+item.lastName;
+       return name.toLowerCase().includes(searchValue) ||
+        item.mobile.toLowerCase().includes(searchValue) ||
+        item.cnic.toLowerCase().includes(searchValue) ||
+        item.tehsil.toLowerCase().includes(searchValue) ||
+        item.district.toLowerCase().includes(searchValue) ||
+        item.lastRewardPaidAt.toLowerCase().includes(searchValue) ||
+        item.division.toLowerCase().includes(searchValue)
+      })
+      : fetchedData
+
+    setData(filteredData)
     setDetailModal(true)
+  } catch (error) {
+    console.error(error)
+  }
+    
   }
   
   // Render the current page's records
@@ -114,34 +132,33 @@ const UserByEducation = () => {
     return currentPageData.map((item, index) => (
       <tr key={item.id}>
         <td>{index+1}</td>
-        {/* <td>{item.firstName+" "+item.lastName}</td> */}
         <td>{item.title}</td>
-        <td>{(data.filter((user) => user.education === item.title).length)}</td>
+        <td>{item.userCount}</td>
         <td>
-          <button className="btn btn-primary ms-2" onClick={() => detailModalHandler('')}>
+          <button className="btn btn-primary ms-2" onClick={() => detailModalHandler(item.title)}>
                 View
               </button>
         </td>
       </tr>
     ))
   }  
-  const renderUserData = () => {
-    const currentPageData = getCurrentPageData()
+  // const renderUserData = () => {
+  //   const currentPageData = getCurrentPageData()
 
-    return currentPageData.map((item, index) => (
-      <tr key={item.id}>
-        <td>{index+1}</td>
-        {/* <td>{item.firstName+" "+item.lastName}</td> */}
-        <td>{item.title}</td>
-        <td>{(data.filter((user) => user.education === item.title).length)}</td>
-        <td>
-          <button className="btn btn-primary ms-2" onClick={() => detailModalHandler('')}>
-                View
-              </button>
-        </td>
-      </tr>
-    ))
-  }
+  //   return currentPageData.map((item, index) => (
+  //     <tr key={item.id}>
+  //       <td>{index+1}</td>
+  //       {/* <td>{item.firstName+" "+item.lastName}</td> */}
+  //       <td>{item.title}</td>
+  //       <td>{(data.filter((user) => user.education === item.title).length)}</td>
+  //       <td>
+  //         <button className="btn btn-primary ms-2" onClick={() => detailModalHandler('')}>
+  //               View
+  //             </button>
+  //       </td>
+  //     </tr>
+  //   ))
+  // }
 
   // Calculate total number of pages
   const totalPages = Math.ceil(educationList.length / perPage)
@@ -182,7 +199,7 @@ const UserByEducation = () => {
                   })}
                 </tr>
               </thead>
-              <tbody>{renderUserData()}</tbody>
+              <tbody></tbody>
             </table>
           </div> 
         </CModalBody>

@@ -140,17 +140,16 @@ const resetData = ()=>{
   const EditModal = (id,title,name,secondId,thirdId)=>{
 
   setmodalTitle([ name.split('-')[1], name.split('-')[0]]);
-  if(!secondId && !thirdId)
-  {
-    setEditData({id,title,name,action:name})
-  }else if(secondId && !thirdId)
-  {
-    setEditData({id,secondId,title,name,action:name})
-  }
-  else if(secondId && thirdId)
-  {
-    setEditData({id,secondId,thirdId,title,name,action:name})
-  }
+  
+    if(name.split('-')[0] === 'division')
+    {
+      setEditData({id,provinceId:secondId.toString(),title,name,action:name})
+    }
+    else
+    {
+      setEditData({id,secondId,thirdId,title,name,action:name})
+    }
+  
   setVisible(true);
   }
   const handleDelete = (id,name,secondId,thirdId)=>{
@@ -185,24 +184,20 @@ const resetData = ()=>{
         url = '/'
         break;
   }
-  let response = "";
-  if(name.split('-')[0] !== 'tehsil')
-  {
-
-      response = await AxiosInstance.delete(url);
-  }
-  else
-  {
-    response = {status: 200};
-  }
   let message = ""
-  if(response.status === 200 || response.status === 204)
-  {
-    message = `${name.split('-')[0]} is deleted successfully`;
-  }else
-  {
-    message = `${name.split('-')[0]} is not deleted due to some error`
-  }
+ try {
+  let response = "";
+  response = await AxiosInstance.delete(url);
+if(response.status === 200 || response.status === 204)
+{
+message = `${name.split('-')[0]} is deleted successfully`;
+}else
+{
+message = `${name.split('-')[0]} is not deleted due to some error`
+}
+ } catch (error) {
+  message = error.message;
+ }
   Swal.fire({
     title: message,
   })
@@ -216,34 +211,42 @@ const resetData = ()=>{
   // Handle Save Changes button onclicking
   const handleSaveChanges = async() => {
     let url = ""
+    let config = "";
     switch(editData.action){
       case 'province-edit':
         url = `/api/proviences/${editData.id}`;
+        config = {title: editData.title};
         break;
       case 'district-edit':
         url = `/api/divisions/${editData.secondId}/district/${editData.id}`
+        config = {title: editData.title,provinceId: editData.provinceId};
         break;
       case 'division-edit':
         url = `/api/divisions/${editData.id}`
+        config = {divisionId: editData.secondId, title: editData.title}
         break;
         case 'tehsil-edit':
         url = `/api/divisions/${editData.secondId}/district/${editData.thirdId}/tehsils/${editData.id}`
+        config = { title: editData.title,districtId: editData.thirdId}
         break;
        default: 
        url= '/'
        break;
       
     }
+    config = JSON.stringify(config);
     let message = "";
-      let response = "";
-         response = await AxiosInstance.patch(url,JSON.stringify({title:editData.title}));
-
-      console.log(response);
+      try {
+        let response = "";
+         response = await AxiosInstance.patch(url,config);
       if(response.status === 200 || response.status === 201 || response.status === 204)
       {
         message = `${modalTitle[1]} is updated succesfully`;
       }else{
         message = `${modalTitle[1]} is not updated due to some error!`;
+      }
+      } catch (error) {
+        message = error.response.data.message;
       }
       
       setEditData({});
@@ -258,39 +261,56 @@ const resetData = ()=>{
    setmodalTitle(['add',name]);
    secondId = secondId ? secondId : ""
    thirdId = thirdId ? thirdId : ""
-   setEditData({name: name,secondId,thirdId})
+   if(name === 'division')
+   {
+    
+    setEditData({name: name,provinceId:secondId})
+   }else
+   {
+    setEditData({name: name,secondId,thirdId})
+   }
    setVisible(true);
   }
   const addData = async()=>{
     let url = "";
+    let config = "";
     switch(editData.name){
       case 'province':
         url = `/api/proviences/`
+        config = {title: editData.title};
         break;
         case 'division':
         url = `/api/divisions/`
+        config = {title: editData.title,provinceId: editData.provinceId};
         break;
         case 'district':
         url = `/api/divisions/${editData.secondId}/district/`
+        config = {divisionId: editData.secondId, title: editData.title}
         break;
         case 'tehsil':
         url = `/api/divisions/${editData.secondId}/district/${editData.thirdId}/tehsils/`
+        config = { title: editData.title,districtId: editData.thirdId}
         break;
         default:
           url ='/';
           break;
     }
-    
-   
-    let response = await AxiosInstance.post(url,JSON.stringify({title:editData.title}));
+    config = JSON.stringify(config)
     let message = "";
+   try {
+    
+    let response = await AxiosInstance.post(url,config);
+    
     if(response.status === 200 || response.status === 201 || response.status === 204)
     {
       message = `${editData.name} is added succesfully`;
     }else{
       message = `${editData.name} is not added!`;
     }
-    console.log(response);
+   } catch (error) {
+    message = `${editData.name} is not added!`;
+   }
+   
   setEditData({});
   Swal.fire({
     title: message,
@@ -319,7 +339,7 @@ const resetData = ()=>{
         <td className='d-flex justify-content-center align-items-center flex-wrap'>
           
           <button className="btn btn-success text-light" onClick={()=>EditModal(item.id,item.title,'province-edit')}>
-            <CIcon icon={cilPenAlt} size="sm" /> Edit
+            <CIcon icon={cilPenAlt} size="sm" /> Update
           </button>
           <button className="btn btn-danger ms-2 text-light" onClick={()=> handleDelete(item.id,'province-delete')}>
             <CIcon icon={cilTrash} size="sm"/> Delete
@@ -333,7 +353,7 @@ const resetData = ()=>{
           
           <CCollapse visible={provinceCollapse[`province-${item.id}`]} >
       <CCard>
-      <CCardHeader className='text-uppercase h4 fw-bold bg-success text-light d-flex justify-content-between'><p className='text-uppercase'>Divisions</p><button className='btn btn-info text-light' onClick={() => openAddData('division')}><CIcon icon={cilLibraryAdd} size="sm"  /> Add</button></CCardHeader>
+      <CCardHeader className='text-uppercase h4 fw-bold bg-success text-light d-flex justify-content-between'><p className='text-uppercase'>Divisions</p><button className='btn btn-info text-light' onClick={() => openAddData('division',item.id)}><CIcon icon={cilLibraryAdd} size="sm"  /> Add</button></CCardHeader>
         <CCardBody>
         <div className="table-responsive">
             <table className="table table-striped table-bordered">
@@ -364,8 +384,8 @@ const resetData = ()=>{
                     <td>{division.title}</td>
                     <td className='d-flex justify-content-center align-items-center flex-wrap'>
           
-          <button className="btn btn-success text-light" onClick={()=>EditModal(division.id,division.title,'division-edit')}>
-            <CIcon icon={cilPenAlt} size="sm" /> Edit
+          <button className="btn btn-success text-light" onClick={()=>EditModal(division.id,division.title,'division-edit',item.id)}>
+            <CIcon icon={cilPenAlt} size="sm" /> Update
           </button>
           <button className="btn btn-danger ms-2 text-light" onClick={()=> handleDelete(division.id,'division-delete')}>
             <CIcon icon={cilTrash} size="sm"/> Delete
@@ -410,7 +430,7 @@ const resetData = ()=>{
                     <td className='d-flex justify-content-center align-items-center flex-wrap'>
           
           <button className="btn btn-success text-light" onClick={()=>EditModal(district.id,district.title,'district-edit',division.id)}>
-            <CIcon icon={cilPenAlt} size="sm" /> Edit
+            <CIcon icon={cilPenAlt} size="sm" /> Update
           </button>
           <button className="btn btn-danger ms-2 text-light" onClick={()=> handleDelete(district.id,'district-delete',division.id)}>
             <CIcon icon={cilTrash} size="sm"/> Delete
@@ -450,11 +470,9 @@ const resetData = ()=>{
                     <td className='d-flex justify-content-center align-items-center flex-wrap'>
           
           <button className="btn btn-success text-light" onClick={()=>EditModal(tehsil.id,tehsil.title,'tehsil-edit',division.id,district.id)}>
-            <CIcon icon={cilPenAlt} size="sm" /> Edit
+            <CIcon icon={cilPenAlt} size="sm" /> Update
           </button>
-          <button className="btn btn-danger ms-2 text-light" onClick={()=> handleDelete(tehsil.id,'tehsil-delete',division.id,district.id)}>
-            <CIcon icon={cilTrash} size="sm"/> Delete
-          </button>
+          
           
         </td>
                   </tr>

@@ -17,33 +17,16 @@ const [code,setCode] = useState("");
   useEffect(() => {
     fetchData()
     // eslint-disable-next-line
-    }, [ ])
+    }, [searchValue])
   const fetchData = async () => {
-    let token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Iis5MjMwNzg0ODg5MDMiLCJzdWIiOjEsImlhdCI6MTY4Nzc5OTMyMCwiZXhwIjoxNjg3ODg1NzIwfQ.xyM4Ha6iDlnSVqdI5jNQ2YQOJgdW0mgiigTT88HWU4A';
     try {
-      let count = await AxiosInstance.get(`/api/user`,{
-        headers:{
-          "Authorization": `Bearer ${token}`
-        }
-      })
-      let businessCount = await AxiosInstance.get(`/api/business/all`,{
-        headers:{
-          "Authorization": `Bearer ${token}`
-        }
-      })
+      let count = await AxiosInstance.get(`/api/user`)
+      let businessCount = await AxiosInstance.get(`/api/business/all`)
       count = count.data.total;
       businessCount = businessCount.data.total;
-        let response = await AxiosInstance.get(`/api/user?limit=${count}`,{
-          headers:{
-            "Authorization": `Bearer ${token}`
-          }
-        })
+        let response = await AxiosInstance.get(`/api/user?limit=${count}`)
         response = response.data.users;
-        let business = await AxiosInstance.get(`/api/business/all?limit=${businessCount}`,{
-          headers:{
-            "Authorization": `Bearer ${token}`
-          }
-        })
+        let business = await AxiosInstance.get(`/api/business/all?limit=${businessCount}`)
         business = business.data.businesses;
         let shopKeepers =  response.filter(item => {
           return item.roles.some(role => role.role === 'shopKeeper');
