@@ -43,6 +43,7 @@ const UserByEducation = () => {
       setTitle([
         "#",
         "name",
+        "education",
         "mobile number",
         "sehr package",
         "cnic",
@@ -120,6 +121,7 @@ const UserByEducation = () => {
       <tr key={item.id}>
         <td>{index+1}</td>
         <td>{item.firstName+" "+item.lastName}</td>
+        <td>{item.education}</td>
         <td>{item.mobile}</td>
         <td>{item.lastRewardPaidAt}</td>
         <td>{item.cnic}</td>
