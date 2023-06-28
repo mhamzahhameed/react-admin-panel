@@ -1,4 +1,4 @@
-import { cilPenAlt, cilShortText, cilTrash } from '@coreui/icons'
+import { cilPenAlt, cilShortText, cilViewColumn } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
 import { CButton, CForm, CFormCheck, CFormInput, CFormSelect, CFormSwitch, CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle } from '@coreui/react';
 import React, { useEffect, useState } from 'react'
@@ -155,25 +155,25 @@ const [code,setCode] = useState("");
     });
     setEditModalVisible(true);
   }
-  const handleDelete = (id)=>{
-    Swal.fire({
-      title: 'Are you sure?',
-      text: 'You won\'t be able to revert this!',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Yes, delete it!',
-      cancelButtonText: 'Cancel',
-      reverseButtons: true,
-    }).then((result) => {
-      if (result.isConfirmed) {
-        // Perform the delete operation
-        console.log(id)
-        const newData = [...dummyData];
-        newData.splice(id, 1);
-        setDummyData(newData)
-      }
-    });
-  }
+  // const handleDelete = (id)=>{
+  //   Swal.fire({
+  //     title: 'Are you sure?',
+  //     text: 'You won\'t be able to revert this!',
+  //     icon: 'warning',
+  //     showCancelButton: true,
+  //     confirmButtonText: 'Yes, delete it!',
+  //     cancelButtonText: 'Cancel',
+  //     reverseButtons: true,
+  //   }).then((result) => {
+  //     if (result.isConfirmed) {
+  //       // Perform the delete operation
+  //       console.log(id)
+  //       const newData = [...dummyData];
+  //       newData.splice(id, 1);
+  //       setDummyData(newData)
+  //     }
+  //   });
+  // }
   const generateCode = (id)=>{
     Swal.fire({
       title: `Confirm to assign ${code} to this user!`,
@@ -239,10 +239,10 @@ const [code,setCode] = useState("");
         <td>
           <div className='d-flex justify-content-between flex-wrap' style={{ width:"380px" }}>
           <button className="btn btn-success text-light" onClick={()=>EditModal(index)}>
-            <CIcon icon={cilPenAlt} size="sm" /> Edit
+            <CIcon icon={cilPenAlt} size="sm" /> Update
           </button>
-          <button className="btn btn-danger ms-2 text-light" onClick={()=> handleDelete(index)}>
-            <CIcon icon={cilTrash} size="sm" /> Delete
+          <button className="btn btn-info text-light" onClick={()=>EditModal({...item,action: 'view'})}>
+            <CIcon icon={cilViewColumn} size="sm" /> View
           </button>
           <button className="btn btn-info ms-2 text-light" onClick={()=> generateCode(index)}>
             <CIcon icon={cilShortText} size="sm" /> Generate sehr code

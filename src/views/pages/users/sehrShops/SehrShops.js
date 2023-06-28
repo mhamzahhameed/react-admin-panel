@@ -1,4 +1,4 @@
-import { cilCog, cilPenAlt } from '@coreui/icons'
+import { cilLockLocked, cilPenAlt, cilViewColumn } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
 import { CButton, CForm, CFormCheck, CFormInput, CFormSelect, CFormSwitch, CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle } from '@coreui/react'
 import React, { useEffect, useState } from 'react'
@@ -179,12 +179,15 @@ const SehrShops = () => {
         <td>{item.district}</td>
         <td>{item.tehsil}</td>
         <td>
-          <div className='d-flex justify-content-between flex-wrap' style={{ width:"210px" }}>
+          <div className='d-flex justify-content-between flex-wrap' style={{ width:"270px" }}>
           <button className="btn btn-success text-light" onClick={()=>EditModal(index)}>
-            <CIcon icon={cilPenAlt} size="sm" /> Edit
+            <CIcon icon={cilPenAlt} size="sm" /> Update
+          </button>
+          <button className="btn btn-info text-light" onClick={()=>EditModal({...item,action: 'view'})}>
+            <CIcon icon={cilViewColumn} size="sm" /> View
           </button>
           <button className="btn btn-warning ms-2 text-light" onClick={()=> handleDelete(index)}>
-            <CIcon icon={cilCog} size="sm" /> Limit Access
+            <CIcon icon={cilLockLocked} size="sm" /> Limit
           </button>
           </div>
         </td>

@@ -1,4 +1,4 @@
-import { cilCog, cilPenAlt, cilViewColumn } from '@coreui/icons'
+import { cilLockLocked, cilPenAlt, cilViewColumn } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
 import { CButton, CForm,  CFormInput,  CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle } from '@coreui/react'
 import React, { useEffect, useState } from 'react'
@@ -158,7 +158,7 @@ const Customers = () => {
             <CIcon icon={cilPenAlt} size="sm" /> Update
           </button>
           <button className="btn btn-warning ms-2 text-light" onClick={()=> handleDelete(index)}>
-            <CIcon icon={cilCog} size="sm"/> Limit
+            <CIcon icon={cilLockLocked} size="sm"/> Limit
           </button>
           </div>
         </td>

@@ -1,4 +1,4 @@
-import { cilPenAlt, cilTrash } from '@coreui/icons'
+import { cilCheck, cilPen } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
 import { CButton, CForm, CFormCheck, CFormInput, CFormSelect, CFormSwitch, CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle } from '@coreui/react'
 import React, { useEffect, useState } from 'react'
@@ -252,12 +252,14 @@ const LimitedSehrShops = () => {
           </div>
         </td>
         <td>
+        <div className='d-flex justify-content-between flex-wrap' style={{ width:"180px" }}>
           <button className="btn btn-success text-light" onClick={()=>EditModal(index)}>
-            <CIcon icon={cilPenAlt} size="sm" />
+            <CIcon icon={cilPen} size="sm" />Notify
           </button>
           <button className="btn btn-danger ms-2 text-light" onClick={()=> handleDelete(index)}>
-            <CIcon icon={cilTrash} size="sm" />
+            <CIcon icon={cilCheck} size="sm" />Allow
           </button>
+          </div>
         </td>
       </tr>
     ))
