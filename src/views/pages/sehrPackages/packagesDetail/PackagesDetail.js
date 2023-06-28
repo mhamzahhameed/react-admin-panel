@@ -145,12 +145,14 @@ const PackagesDetail = () => {
         <td>{item.salesTarget}</td>
         <td>{item.description}</td>
         <td>
+          <div className='d-flex justify-content-between flex-wrap' style={{ width:"150px" }}>
           <button className="btn btn-success text-light" onClick={() => editModal(item.id)}>
-            <CIcon icon={cilPenAlt} size="sm" /> Edit
+            <CIcon icon={cilPenAlt} size="sm" /> Update
           </button>
           <button className="btn btn-danger ms-2 text-light" onClick={() => handleDelete(item.id)}>
             <CIcon icon={cilTrash} size="sm" />
           </button>
+          </div>
         </td>
       </tr>
     ))

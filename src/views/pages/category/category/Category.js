@@ -141,7 +141,7 @@ const Category = () => {
         <td>{item.title}</td>
         <td>
           <button className="btn btn-success text-light" onClick={() => editModal(item.id)}>
-            <CIcon icon={cilPenAlt} size="sm" /> Edit
+            <CIcon icon={cilPenAlt} size="sm" /> Update
           </button>
           <button className="btn btn-danger ms-2 text-light" onClick={() => handleDelete(item.id)}>
             <CIcon icon={cilTrash} size="sm" />
