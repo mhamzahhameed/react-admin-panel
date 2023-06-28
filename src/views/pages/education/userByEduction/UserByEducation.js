@@ -149,10 +149,10 @@ const UserByEducation = () => {
           </CDropdownItem>
         ))}
       </CDropdownMenu>
+    </CDropdown>
       <button className="btn btn-success text-light ms-5" onClick={()=>setData(userByEducation)}>
             <CIcon icon={cilReload} size="lg" /> Refresh Table Data
           </button>
-    </CDropdown>
     <h4 className='d-inline-block m-5 align-end' ><strong> Total Users : {data.length} </strong></h4>
       <div className="card">
         <div className="card-header">User List by Education</div>

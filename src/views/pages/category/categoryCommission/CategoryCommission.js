@@ -1,6 +1,7 @@
 import { cilPenAlt, cilPlus, cilTrash } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
-import { CButton, CForm, CFormInput, CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle } from '@coreui/react'
+import { CButton, CDropdown, CDropdownItem, CDropdownMenu, CDropdownToggle, CForm, CFormInput, CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle } from '@coreui/react'
+import { number } from 'prop-types'
 import React, { useEffect, useState } from 'react'
 import AxiosInstance from 'src/utils/axiosInstance'
 import Swal from 'sweetalert2'
@@ -11,7 +12,7 @@ const CategoryCommission = () => {
   const [perPage, setPerPage] = useState(5)
   const [searchValue, setSearchValue] = useState('')
   const [editModalVisible, setEditModalVisible] = useState(false)
-  const [editCategoryModal, setEditCategoryModal] = useState(false)
+  const [addCommissionModal, setAddCommissionModal] = useState(false)
 
   const [editFormData, setEditFormData] = useState({});
   
@@ -22,16 +23,17 @@ const CategoryCommission = () => {
   const fetchData = async () => {
     try {
       let response = await AxiosInstance.get('/api/category')
-      response = response.data?.categories;
+      response = await response.data?.categories;
       let commission = await AxiosInstance.get('/api/comission')
-      commission = commission.data.comission
+      commission = await commission.data.comission
       console.log("category data :", response)
       console.log("commission data :", commission);
       
       setTitle([
         "#",
         "category",
-        "commission"
+        "commission",
+        "action"
       ])
 
       response.map((category)=>{
@@ -109,15 +111,17 @@ const CategoryCommission = () => {
   }
 
   // Handle Save Changes button onclicking
-  const handleSaveCategory = async () => {
+  const handleSaveCommission = async () => {
     try {
-    const category = { "title": editFormData.title }
-     await AxiosInstance.post('/api/category', category)
-    //  const commission = { "gradeId":editFormData.gradeId, "categoryId":editFormData.categoryId ,"commission": editFormData.comission , "description" : editFormData.description }
-    //  await AxiosInstance.post('/api/comission', commission)
+    
+     const commission = { "gradeId": 1,
+     "categoryId": editFormData.id,
+     "comission": Number(editFormData.comission),
+     "description": "string" }
+     await AxiosInstance.post('/api/comission', commission)
 
     await fetchData()
-    setEditCategoryModal(false);
+    setAddCommissionModal(false);
     setEditFormData({});
       } catch (error) {
         console.error(error)
@@ -125,13 +129,12 @@ const CategoryCommission = () => {
     } 
     
 
-  const editModal = (id) => {
+  const editModal = (item) => {
 
     setEditFormData({});
-    if (id) {
-      const editData = data?.find(item => item.id === id);
-      setEditFormData(editData);
-    }
+    
+      setEditFormData(item);
+    
     setEditModalVisible(true);
   };
 
@@ -161,7 +164,7 @@ const CategoryCommission = () => {
         <td>{item.title}</td>
         <td>{item.commission}%</td>
         <td>
-          <button className="btn btn-success text-light" onClick={() => editModal(item.id)}>
+          <button className="btn btn-success text-light" onClick={() => editModal(item)}>
             <CIcon icon={cilPenAlt} size="sm" /> Edit
           </button>
           <button className="btn btn-danger ms-2 text-light" onClick={() => handleDelete(item.id)}>
@@ -172,6 +175,11 @@ const CategoryCommission = () => {
     ))
   }
 
+  const handleDropdownItemClick = (item)=> {
+    console.log('item :',item);
+    setEditFormData(item)
+  }
+
   // Calculate total number of pages
   const totalPages = Math.ceil(data?.length / perPage)
   // Generate an array of page numbers
@@ -179,60 +187,50 @@ const CategoryCommission = () => {
 
   return (
     <div className="container">
-      <CModal alignment="center" visible={editCategoryModal} onClose={() => setEditCategoryModal(false)}>
+      <CModal alignment="center" visible={addCommissionModal} onClose={() => setAddCommissionModal(false)}>
         <CModalHeader>
-          <CModalTitle>Add New Category</CModalTitle>
+          <CModalTitle>Add Commission</CModalTitle>
         </CModalHeader>
         <CModalBody>
+        <CDropdown className="custom-dropdown mb-3" size="lg">
+      <CDropdownToggle caret>Dropdown</CDropdownToggle>
+      <CDropdownMenu className="custom-dropdown-menu" style={{ zIndex: '100' }}>
+        {data.filter((item)=> !(item.commission) ).map((item, index) => (
+          <CDropdownItem key={item.id} onClick={() => handleDropdownItemClick(item)}>
+            {item.title}
+          </CDropdownItem>
+        ))}
+      </CDropdownMenu>
+    </CDropdown>
           <CForm>
             <CFormInput
               type="text"
               id="title"
               label="Title"
               aria-describedby="name"
-              onChange={(e) => setEditFormData({ ...editFormData, title: e.target.value })}
-            />
-            <CFormInput
-              type="hidden"
-              id="gradeId"
-              label="Grade ID"
-              aria-describedby="gradeId"
-              onChange={(e) => setEditFormData({ ...editFormData, gradeId: e.target.value })}
-            />
-            <CFormInput
-              type="text"
-              id="categoryId"
-              label="Category ID"
-              aria-describedby="categoryId"              
-              onChange={(e) => setEditFormData({ ...editFormData, categoryId: e.target.value })}
+              value={editFormData.title || ''}
+              disabled
             />
             <CFormInput
               type="text"
               id="comission"
               label="Commission"
               aria-describedby="commission"
-              onChange={(e) => setEditFormData({ ...editFormData, commission: e.target.value })}
-            />
-            <CFormInput
-              type="hidden"
-              id="description"
-              label="Description"
-              aria-describedby="description"
-              
-              onChange={(e) => setEditFormData({ ...editFormData, title: e.target.value })}
+              value={editFormData.comission || number}
+              onChange={(e) => setEditFormData({ ...editFormData, comission: e.target.value })}
             />
           </CForm>
         </CModalBody>
         <CModalFooter>
-          <CButton color="secondary" onClick={() => setEditCategoryModal(false)}>
+          <CButton color="secondary" onClick={() => setAddCommissionModal(false)}>
             Close
           </CButton>
-          <CButton color="primary" onClick={handleSaveCategory}>Save Category</CButton>
+          <CButton color="primary" onClick={() => handleSaveCommission()}>Save Commission</CButton>
         </CModalFooter>
       </CModal>
       <CModal alignment="center" visible={editModalVisible} onClose={() => setEditModalVisible(false)}>
         <CModalHeader>
-          <CModalTitle>Edit Category Details</CModalTitle>
+          <CModalTitle>Edit Commission Details</CModalTitle>
         </CModalHeader>
         <CModalBody>
           <CForm>
@@ -240,18 +238,17 @@ const CategoryCommission = () => {
           <CFormInput
               type="hidden"
               id="id"
-              label="ID"
+              label=""
               aria-describedby="name"
-              value={editFormData.title || ''}
-              onChange={(e) => setEditFormData({ ...editFormData, title: e.target.value })}
+              value={editFormData.title}
             />
             <CFormInput
-              type="text"
+              type="test"
               id="title"
               label="Name"
               aria-describedby="name"
-              value={editFormData.title || ''}
-              onChange={(e) => setEditFormData({ ...editFormData, title: e.target.value })}
+              value={editFormData.title } 
+              disabled
             />
             <CFormInput
               type="text"
@@ -275,8 +272,8 @@ const CategoryCommission = () => {
         <div className="card-header"> Category Commission </div>
         <div className="card-body">
         <div className='container'>
-        <CButton className="ms-2 mb-2" onClick={() => setEditCategoryModal(true)}>
-        <CIcon icon={cilPlus} size="lg" className='mt-1' /> <p className=' my-1 d-inline-block'> Add Category</p>
+        <CButton className="ms-2 mb-2" onClick={() => setAddCommissionModal(true)}>
+        <CIcon icon={cilPlus} size="lg" className='mt-1' /> <p className=' my-1 d-inline-block'> Add Commission</p>
         </CButton>
         </div>
           <div>
