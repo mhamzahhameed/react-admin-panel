@@ -1,4 +1,4 @@
-import { cilCog, cilPenAlt } from '@coreui/icons'
+import { cilCog, cilEyedropper, cilPenAlt, cilViewColumn } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
 import { CButton, CForm, CFormCheck, CFormInput, CFormSelect, CFormSwitch, CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle } from '@coreui/react'
 import React, { useEffect, useState } from 'react'
@@ -32,7 +32,7 @@ const Customers = () => {
         "#",
         "name",
         "mobile number",
-        "sehr package",
+        // "sehr package",
         "cnic",
         "province", 
         "division",
@@ -43,7 +43,7 @@ const Customers = () => {
       customer = customer.map(obj => {
         const updatedObj = {};
         for (const [key, value] of Object.entries(obj)) {
-          updatedObj[key] = value ? value : 'not defined';
+          updatedObj[key] = value ? value : 'male';
         }
         return updatedObj;
       });
@@ -108,11 +108,8 @@ const Customers = () => {
       setCurrentPage(currentPage + 1)
     }
   }
-  const EditModal = (index)=>{
-    setEditFormData({
-      ...dummyData[index],
-      index,
-    });
+  const EditModal = (data)=>{
+    setEditFormData(data);
     setEditModalVisible(true);
   }
   const handleDelete = (id)=>{
@@ -132,32 +129,12 @@ const Customers = () => {
     });
   }
   // Handle Save Changes button onclicking
-  const handleSaveChanges = () => {
-    const updatedData = dummyData.map((item, index) => {
-      if (index === editFormData.index) {
-        // Update the specific row with the new form values
-        return {
-          ...item,
-          name: editFormData.name || item.name,
-          gender: editFormData.gender || item.gender,
-          role: editFormData.role || item.role,
-          mobile: editFormData.mobile || item.mobile,
-          cnic: editFormData.cnic || item.cnic,
-          province: editFormData.province || item.province,
-          division: editFormData.division || item.division,
-          district: editFormData.district || item.district,
-          tehsil: editFormData.tehsil || item.tehsil,
-          active: editFormData.active || item.active,
-        };
-      }
-      return item;
-    });
-  
-    setDummyData(updatedData);
+  const handleSaveChanges = async() => {
+    let response = await AxiosInstance.put('/api/user/update-profile',JSON.stringify(editFormData));
+    console.log(response);
     setEditModalVisible(false);
     setEditFormData({});
   };
-  
   // Render the current page's records
   const renderData = () => {
     const currentPageData = getCurrentPageData()
@@ -167,19 +144,22 @@ const Customers = () => {
         <td>{index+1}</td>
         <td>{item.firstName+" "+item.lastName}</td>
         <td>{item.mobile}</td>
-        <td>{item.lastRewardPaidAt}</td>
+        {/* <td>{item.lastRewardPaidAt}</td> */}
         <td>{item.cnic}</td>
         <td>{item.province}</td>
         <td>{item.division}</td>
         <td>{item.district}</td>
         <td>{item.tehsil}</td>
         <td>
-          <div className='d-flex justify-content-between flex-wrap' style={{ width:"210px" }}>
-          <button className="btn btn-success text-light" onClick={()=>EditModal(index)}>
-            <CIcon icon={cilPenAlt} size="sm" /> Edit
+          <div className='d-flex justify-content-between flex-wrap' style={{ width:"270px" }}>
+          <button className="btn btn-info text-light" onClick={()=>EditModal({...item,action: 'view'})}>
+            <CIcon icon={cilViewColumn} size="sm" /> View
+          </button>
+          <button className="btn btn-success text-light" onClick={()=>EditModal({...item,action: 'edit'})}>
+            <CIcon icon={cilPenAlt} size="sm" /> Update
           </button>
           <button className="btn btn-warning ms-2 text-light" onClick={()=> handleDelete(index)}>
-            <CIcon icon={cilCog} size="sm"/> Limit Access
+            <CIcon icon={cilCog} size="sm"/> Limit
           </button>
           </div>
         </td>
@@ -199,34 +179,24 @@ const Customers = () => {
         <CModalTitle>Edit Customer Details</CModalTitle>
       </CModalHeader>
       <CModalBody>
-      <CForm>
+      {editFormData.action === 'edit' ? <CForm>
   <CFormInput
     type="text"
     id="name"
-    label="Name"
+    label="Firstname"
     aria-describedby="name"
-    value={editFormData.name || ''}
-  onChange={(e) => setEditFormData({ ...editFormData, name: e.target.value })}
+    value={editFormData?.firstName|| '' }
+  onChange={(e) => setEditFormData({ ...editFormData, firstName: e.target.value })}
   />
-  <div className='my-3'>
-    <p>Gender</p>
-  <CFormCheck type="radio" name="flexRadioDefault" id="mele" label="Male" value="male" checked={editFormData.gender === 'male'}
-  onChange={(e) =>
-    setEditFormData({ ...editFormData, gender: e.target.value })
-  }/>
-<CFormCheck type="radio" name="flexRadioDefault" id="female" label="Female" value="female" checked={editFormData.gender === 'female'}
-  onChange={(e) =>
-    setEditFormData({ ...editFormData, gender: e.target.value })
-  }/>
-  </div>
-  <CFormSelect aria-label="role" value={editFormData.role || ''}
-  onChange={(e) =>
-    setEditFormData({ ...editFormData, role: e.target.value })
-  } >
-  <option id='role' value="admin">Admin</option>
-  <option id='role' value="customer">Customer</option>
-</CFormSelect>
-  <CFormInput
+   <CFormInput
+    type="text"
+    id="name"
+    label="Lastname"
+    aria-describedby="name"
+    value={editFormData?.lastName || '' }
+  onChange={(e) => setEditFormData({ ...editFormData, lastName: e.target.value })}
+  />
+   <CFormInput
     type="tel"
     id="mobile"
     label="Mobile Number"
@@ -274,22 +244,18 @@ const Customers = () => {
     value={editFormData.tehsil || ''}
   onChange={(e) => setEditFormData({ ...editFormData, tehsil: e.target.value })}
   />
-  <div className='my-2'>
-    <p className='mb-2'>Active</p>
-  <CFormSwitch id="formSwitchCheckChecked" defaultChecked={editFormData.active}
-    onChange={(e) =>
-      setEditFormData({ ...editFormData, active: e.target.checked })
-    }/>
-  </div>
-</CForm>
+  
+</CForm> : ""
+}
       </CModalBody>
       <CModalFooter>
         <CButton color="secondary" onClick={() => setEditModalVisible(false)}>
           Close
         </CButton>
-        <CButton color="primary" onClick={handleSaveChanges}>Save changes</CButton>
+        {editFormData.action === 'edit' ? <CButton color="primary" onClick={handleSaveChanges}>Save changes</CButton> : ""}
       </CModalFooter>
     </CModal>
+    
       <div className="card">
         <div className="card-header">Customers</div>
         <div className="card-body">
