@@ -1,6 +1,6 @@
-import { cilCog, cilEyedropper, cilPenAlt, cilViewColumn } from '@coreui/icons'
+import { cilCog, cilPenAlt, cilViewColumn } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
-import { CButton, CForm, CFormCheck, CFormInput, CFormSelect, CFormSwitch, CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle } from '@coreui/react'
+import { CButton, CForm,  CFormInput,  CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle } from '@coreui/react'
 import React, { useEffect, useState } from 'react'
 import AxiosInstance from 'src/utils/axiosInstance'
 import Swal from 'sweetalert2'
@@ -12,12 +12,11 @@ const Customers = () => {
   const [searchValue, setSearchValue] = useState('')
   const [editModalVisible, setEditModalVisible] = useState(false)
   const [editFormData, setEditFormData] = useState({});
-  const [dummyData,setDummyData] = useState([
-  ])
+  
   useEffect(() => {
     fetchData()
     // eslint-disable-next-line
-    }, [ searchValue, dummyData ])
+    }, [ searchValue ])
   const fetchData = async () => {
     try {
       // let count = await AxiosInstance.get('/api/user')
