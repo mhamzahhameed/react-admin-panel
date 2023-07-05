@@ -3,7 +3,7 @@ import CIcon from '@coreui/icons-react'
 import { CButton, CForm, CFormCheck, CFormInput, CFormSelect, CFormSwitch, CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle } from '@coreui/react'
 import React, { useEffect, useState } from 'react'
 import AxiosInstance from 'src/utils/axiosInstance'
-import Swal from 'sweetalert2'
+// import Swal from 'sweetalert2'
 const SehrShops = () => {
   const [title, setTitle] = useState([])
   const [viewTitle, setViewTitle] = useState([])
