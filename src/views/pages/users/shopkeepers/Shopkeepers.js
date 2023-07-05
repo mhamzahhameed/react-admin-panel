@@ -390,7 +390,7 @@ const [code,setCode] = useState("");
     </CModal>
     <CModal alignment="center" visible={viewModalVisible} size='xl' onClose={() => setViewModalVisible(false)}>
       <CModalHeader>
-        <CModalTitle>View Customer Details</CModalTitle>
+        <CModalTitle>View Shopkeeper Details</CModalTitle>
       </CModalHeader>
       <CModalBody>
       <div className="table-responsive">

@@ -333,7 +333,7 @@ const SehrShops = () => {
     </CModal>
     <CModal alignment="center" visible={viewModalVisible} size='xl' onClose={() => setViewModalVisible(false)}>
       <CModalHeader>
-        <CModalTitle>View Customer Details</CModalTitle>
+        <CModalTitle>View SehrShop Details</CModalTitle>
       </CModalHeader>
       <CModalBody>
       <div className="table-responsive">
