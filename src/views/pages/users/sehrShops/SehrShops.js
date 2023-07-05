@@ -135,23 +135,23 @@ const SehrShops = () => {
     setViewModalVisible(true);
   }
   const handleDelete = (id)=>{
-    Swal.fire({
-      title: 'Are you sure you want to limit this shop?',
-      text: 'You won\'t be able to revert this!',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Confirm',
-      cancelButtonText: 'Cancel',
-      reverseButtons: true,
-    }).then((result) => {
-      if (result.isConfirmed) {
-        // Perform the delete operation
-        console.log(id)
-        const newData = [...dummyData];
-        newData.splice(id, 1);
-        setDummyData(newData)
-      }
-    });
+    // Swal.fire({
+    //   title: 'Are you sure you want to limit this shop?',
+    //   text: 'You won\'t be able to revert this!',
+    //   icon: 'warning',
+    //   showCancelButton: true,
+    //   confirmButtonText: 'Confirm',
+    //   cancelButtonText: 'Cancel',
+    //   reverseButtons: true,
+    // }).then((result) => {
+    //   if (result.isConfirmed) {
+    //     // Perform the delete operation
+    //     console.log(id)
+    //     const newData = [...dummyData];
+    //     newData.splice(id, 1);
+    //     setDummyData(newData)
+    //   }
+    // });
   }
   // Handle Save Changes button onclicking
   const handleSaveChanges = () => {
