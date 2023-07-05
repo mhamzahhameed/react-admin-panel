@@ -3,15 +3,18 @@ import CIcon from '@coreui/icons-react'
 import { CButton, CForm,  CFormInput,  CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle } from '@coreui/react'
 import React, { useEffect, useState } from 'react'
 import AxiosInstance from 'src/utils/axiosInstance'
-import Swal from 'sweetalert2'
+// import Swal from 'sweetalert2'
 const Customers = () => {
   const [title, setTitle] = useState([])
+  const [viewTitle, setViewTitle] = useState([])
   const [data, setData] = useState([])
   const [currentPage, setCurrentPage] = useState(1)
   const [perPage, setPerPage] = useState(10)
   const [searchValue, setSearchValue] = useState('')
   const [editModalVisible, setEditModalVisible] = useState(false)
+  const [viewModalVisible, setViewModalVisible] = useState(false)
   const [editFormData, setEditFormData] = useState({});
+  const [viewData, setViewData] = useState([]);
   
   useEffect(() => {
     fetchData()
@@ -38,6 +41,16 @@ const Customers = () => {
         "district",
         "tehsil",
         "action"
+    ])
+    setViewTitle([
+      'gender',
+      'dob',
+      'verifiedAt',
+      'country',
+      'phoneVerifiedAt',
+      'education',
+      'createdAt',
+      'updatedAt',
     ])
       customer = customer.map(obj => {
         const updatedObj = {};
@@ -111,21 +124,25 @@ const Customers = () => {
     setEditFormData(data);
     setEditModalVisible(true);
   }
+  const ViewModal = (data)=>{
+    setViewData([data])
+    setViewModalVisible(true);
+  }
   const handleDelete = (id)=>{
-    Swal.fire({
-      title: 'Are you sure you want to limit this user?',
-      text: 'You won\'t be able to revert this!',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Confirm',
-      cancelButtonText: 'Cancel',
-      reverseButtons: true,
-    }).then((result) => {
-      if (result.isConfirmed) {
-        // Perform the delete operation
-        console.log(id)
-      }
-    });
+    // Swal.fire({
+    //   title: 'Are you sure you want to limit this user?',
+    //   text: 'You won\'t be able to revert this!',
+    //   icon: 'warning',
+    //   showCancelButton: true,
+    //   confirmButtonText: 'Confirm',
+    //   cancelButtonText: 'Cancel',
+    //   reverseButtons: true,
+    // }).then((result) => {
+    //   if (result.isConfirmed) {
+    //     // Perform the delete operation
+    //     console.log(id)
+    //   }
+    // });
   }
   // Handle Save Changes button onclicking
   const handleSaveChanges = async() => {
@@ -151,7 +168,7 @@ const Customers = () => {
         <td>{item.tehsil}</td>
         <td>
           <div className='d-flex justify-content-between flex-wrap' style={{ width:"270px" }}>
-          <button className="btn btn-info text-light" onClick={()=>EditModal({...item,action: 'view'})}>
+          <button className="btn btn-info text-light" onClick={()=>ViewModal(item)}>
             <CIcon icon={cilViewColumn} size="sm" /> View
           </button>
           <button className="btn btn-success text-light" onClick={()=>EditModal({...item,action: 'edit'})}>
@@ -162,6 +179,20 @@ const Customers = () => {
           </button>
           </div>
         </td>
+      </tr>
+    ))
+  }
+  const renderViewData = () => {
+    return viewData.map((item, index) => (
+      <tr key={index}>
+        <td>{item.gender}</td>
+        <td>{item.dob}</td>
+        <td>{item.verifiedAt}</td>
+        <td>{item.country}</td>
+        <td>{item.phoneVerifiedAt}</td>
+        <td>{item.education}</td>
+        <td>{item.createdAt}</td>
+        <td>{item.updatedAt}</td>
       </tr>
     ))
   }
@@ -253,6 +284,29 @@ const Customers = () => {
         </CButton>
         {editFormData.action === 'edit' ? <CButton color="primary" onClick={handleSaveChanges}>Save changes</CButton> : ""}
       </CModalFooter>
+    </CModal>
+    <CModal alignment="center" visible={viewModalVisible} size='xl' onClose={() => setViewModalVisible(false)}>
+      <CModalHeader>
+        <CModalTitle>View Customer Details</CModalTitle>
+      </CModalHeader>
+      <CModalBody>
+      <div className="table-responsive">
+            <table className="table table-striped table-bordered">
+              <thead>
+                <tr>
+                  {viewTitle.map((item, index) => {
+                    return (
+                      <th scope="col" className="text-uppercase" key={index}>
+                        {item}
+                      </th>
+                    )
+                  })}
+                </tr>
+              </thead>
+              <tbody>{renderViewData()}</tbody>
+            </table>
+          </div>
+      </CModalBody>
     </CModal>
     
       <div className="card">

@@ -6,13 +6,17 @@ import AxiosInstance from 'src/utils/axiosInstance'
 import Swal from 'sweetalert2'
 const Shopkeepers = () => {
   const [title, setTitle] = useState([])
+  const [viewTitle, setViewTitle] = useState([])
   const [data, setData] = useState([])
   const [currentPage, setCurrentPage] = useState(1)
   const [perPage, setPerPage] = useState(10)
   const [searchValue, setSearchValue] = useState('')
   const [editModalVisible, setEditModalVisible] = useState(false)
   const [editFormData, setEditFormData] = useState({});
+  const [viewModalVisible, setViewModalVisible] = useState(false)
   const [dummyData,setDummyData] = useState([])
+  const [viewData, setViewData] = useState([]);
+
 const [code,setCode] = useState("");
   useEffect(() => {
     fetchData()
@@ -85,6 +89,16 @@ const [code,setCode] = useState("");
         "tehsil", 
         "action"
     ])
+    setViewTitle([
+      'gender',
+      'dob',
+      'verifiedAt',
+      'country',
+      'phoneVerifiedAt',
+      'education',
+      'createdAt',
+      'updatedAt',
+    ])
       const fetchedData = shopKeeper
       const filteredData = searchValue
         ? fetchedData.filter((item) => {
@@ -154,6 +168,10 @@ const [code,setCode] = useState("");
       index,
     });
     setEditModalVisible(true);
+  }
+  const ViewModal = (data)=>{
+    setViewData([data])
+    setViewModalVisible(true);
   }
   // const handleDelete = (id)=>{
   //   Swal.fire({
@@ -238,17 +256,31 @@ const [code,setCode] = useState("");
       
         <td>
           <div className='d-flex justify-content-between flex-wrap' style={{ width:"380px" }}>
+          <button className="btn btn-info text-light" onClick={()=>ViewModal({...item,action: 'view'})}>
+            <CIcon icon={cilViewColumn} size="sm" /> View
+          </button>
           <button className="btn btn-success text-light" onClick={()=>EditModal(index)}>
             <CIcon icon={cilPenAlt} size="sm" /> Update
-          </button>
-          <button className="btn btn-info text-light" onClick={()=>EditModal({...item,action: 'view'})}>
-            <CIcon icon={cilViewColumn} size="sm" /> View
           </button>
           <button className="btn btn-info ms-2 text-light" onClick={()=> generateCode(index)}>
             <CIcon icon={cilShortText} size="sm" /> Generate sehr code
           </button>
           </div>
         </td>
+      </tr>
+    ))
+  }
+  const renderViewData = () => {
+    return viewData.map((item, index) => (
+      <tr key={index}>
+        <td>{item.gender}</td>
+        <td>{item.dob}</td>
+        <td>{item.verifiedAt}</td>
+        <td>{item.country}</td>
+        <td>{item.phoneVerifiedAt}</td>
+        <td>{item.education}</td>
+        <td>{item.createdAt}</td>
+        <td>{item.updatedAt}</td>
       </tr>
     ))
   }
@@ -355,6 +387,29 @@ const [code,setCode] = useState("");
         </CButton>
         <CButton color="primary" onClick={handleSaveChanges}>Save changes</CButton>
       </CModalFooter>
+    </CModal>
+    <CModal alignment="center" visible={viewModalVisible} size='xl' onClose={() => setViewModalVisible(false)}>
+      <CModalHeader>
+        <CModalTitle>View Customer Details</CModalTitle>
+      </CModalHeader>
+      <CModalBody>
+      <div className="table-responsive">
+            <table className="table table-striped table-bordered">
+              <thead>
+                <tr>
+                  {viewTitle.map((item, index) => {
+                    return (
+                      <th scope="col" className="text-uppercase" key={index}>
+                        {item}
+                      </th>
+                    )
+                  })}
+                </tr>
+              </thead>
+              <tbody>{renderViewData()}</tbody>
+            </table>
+          </div>
+      </CModalBody>
     </CModal>
       <div className="card">
         <div className="card-header">Shopkeepers</div>

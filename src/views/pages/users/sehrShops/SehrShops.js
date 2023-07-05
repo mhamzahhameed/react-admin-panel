@@ -6,13 +6,17 @@ import AxiosInstance from 'src/utils/axiosInstance'
 import Swal from 'sweetalert2'
 const SehrShops = () => {
   const [title, setTitle] = useState([])
+  const [viewTitle, setViewTitle] = useState([])
   const [data, setData] = useState([])
   const [currentPage, setCurrentPage] = useState(1)
   const [perPage, setPerPage] = useState(10)
   const [searchValue, setSearchValue] = useState('')
   const [editModalVisible, setEditModalVisible] = useState(false)
+  const [viewModalVisible, setViewModalVisible] = useState(false)
   const [editFormData, setEditFormData] = useState({});
   const [dummyData,setDummyData] = useState([])
+  const [viewData, setViewData] = useState([]);
+
   useEffect(() => {
     fetchData()
     // eslint-disable-next-line
@@ -60,6 +64,16 @@ const SehrShops = () => {
         "district",
         "tehsil",
         "action"
+    ])
+    setViewTitle([
+      'gender',
+      'dob',
+      'verifiedAt',
+      'country',
+      'phoneVerifiedAt',
+      'education',
+      'createdAt',
+      'updatedAt',
     ])
       const fetchedData = sehrShops
       const filteredData = searchValue
@@ -115,6 +129,10 @@ const SehrShops = () => {
       index,
     });
     setEditModalVisible(true);
+  }
+  const ViewModal = (data)=>{
+    setViewData([data])
+    setViewModalVisible(true);
   }
   const handleDelete = (id)=>{
     Swal.fire({
@@ -180,17 +198,32 @@ const SehrShops = () => {
         <td>{item.tehsil}</td>
         <td>
           <div className='d-flex justify-content-between flex-wrap' style={{ width:"270px" }}>
+          <button className="btn btn-info text-light" onClick={()=>ViewModal({...item,action: 'view'})}>
+            <CIcon icon={cilViewColumn} size="sm" /> View
+          </button>
           <button className="btn btn-success text-light" onClick={()=>EditModal(index)}>
             <CIcon icon={cilPenAlt} size="sm" /> Update
-          </button>
-          <button className="btn btn-info text-light" onClick={()=>EditModal({...item,action: 'view'})}>
-            <CIcon icon={cilViewColumn} size="sm" /> View
           </button>
           <button className="btn btn-warning ms-2 text-light" onClick={()=> handleDelete(index)}>
             <CIcon icon={cilLockLocked} size="sm" /> Limit
           </button>
           </div>
         </td>
+      </tr>
+    ))
+  }
+
+  const renderViewData = () => {
+    return viewData.map((item, index) => (
+      <tr key={index}>
+        <td>{item.gender}</td>
+        <td>{item.dob}</td>
+        <td>{item.verifiedAt}</td>
+        <td>{item.country}</td>
+        <td>{item.phoneVerifiedAt}</td>
+        <td>{item.education}</td>
+        <td>{item.createdAt}</td>
+        <td>{item.updatedAt}</td>
       </tr>
     ))
   }
@@ -297,6 +330,29 @@ const SehrShops = () => {
         </CButton>
         <CButton color="primary" onClick={handleSaveChanges}>Save changes</CButton>
       </CModalFooter>
+    </CModal>
+    <CModal alignment="center" visible={viewModalVisible} size='xl' onClose={() => setViewModalVisible(false)}>
+      <CModalHeader>
+        <CModalTitle>View Customer Details</CModalTitle>
+      </CModalHeader>
+      <CModalBody>
+      <div className="table-responsive">
+            <table className="table table-striped table-bordered">
+              <thead>
+                <tr>
+                  {viewTitle.map((item, index) => {
+                    return (
+                      <th scope="col" className="text-uppercase" key={index}>
+                        {item}
+                      </th>
+                    )
+                  })}
+                </tr>
+              </thead>
+              <tbody>{renderViewData()}</tbody>
+            </table>
+          </div>
+      </CModalBody>
     </CModal>
       <div className="card">
         <div className="card-header">Sehr Shops</div>
