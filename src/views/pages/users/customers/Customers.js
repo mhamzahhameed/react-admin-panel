@@ -95,10 +95,14 @@ const Customers = () => {
   
     return Array.from({ length: endPage - startPage + 1 }, (_, index) => startPage + index);
   };
+   let endIndex = currentPage * perPage
+    const startIndex = endIndex - perPage
+    const diff = data.length - startIndex
+    if(diff < perPage) {
+      endIndex = startIndex + diff
+    }
   // Function to calculate the current page's records
   const getCurrentPageData = () => {
-    const startIndex = (currentPage - 1) * perPage
-    const endIndex = startIndex + perPage
     return data.slice(startIndex, endIndex)
   }
 
@@ -128,6 +132,10 @@ const Customers = () => {
   const ViewModal = (data)=>{
     setViewData([data])
     setViewModalVisible(true);
+  }
+  const clickPageData = (value)=>{
+    setPerPage(value);
+    setCurrentPage(1);
   }
   const handleDelete = (id)=>{
     // Swal.fire({
@@ -352,7 +360,7 @@ const Customers = () => {
           <div className="col-4">
             <select
               className="form-select form-select"
-              onChange={(e) => setPerPage(e.target.value)}
+              onChange={(e) => clickPageData(e.target.value)}
             >
               <option value="10" defaultValue>
                 10
