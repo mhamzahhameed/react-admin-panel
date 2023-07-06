@@ -1,6 +1,4 @@
-import { cilReload } from '@coreui/icons'
-import CIcon from '@coreui/icons-react'
-import { CDropdown, CDropdownItem, CDropdownMenu, CDropdownToggle, CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle } from '@coreui/react'
+import { CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle } from '@coreui/react'
 import React, { useEffect, useState } from 'react'
 import AxiosInstance from 'src/utils/axiosInstance'
 
@@ -8,7 +6,7 @@ const UserByEducation = () => {
   const [title, setTitle] = useState([])
   const [userTitle] = useState(['#', 'name', 'education', 'cell', 'cnic'  ])
   const [data, setData] = useState([])
-  const [userByEducation, setUserByEducation] = useState([])
+  // const [userByEducation, setUserByEducation] = useState([])
   const [educationList, setEducationList] = useState([])
   const [userListByEducation, setUserListByEducation] = useState([])
   const [detailModal, setDetailModal] = useState(false)
@@ -65,7 +63,6 @@ const UserByEducation = () => {
         : fetchedData
 
       setData(filteredData)
-      setUserByEducation(filteredData)
     } catch (error) {
       console.error(error)
     }
@@ -95,10 +92,17 @@ const UserByEducation = () => {
     setUserCurrentPage(pageNumber)
   }
 
-const OnPageClick = (page)=> {
-  setUserPerPage(page)
-  setUserCurrentPage(1)
-}
+  const OnUserPageClick = (page)=> {
+    setUserPerPage(page)
+    setUserCurrentPage(1)
+  }
+
+  // Function to handle page change or limit change
+  const OnPageClick = (page)=> {
+    setPerPage(page)
+    setCurrentPage(1)
+  }
+  
   // Function to handle previous page
   const goToPreviousPage = () => {
     if (currentPage > 1) {
@@ -127,12 +131,6 @@ const OnPageClick = (page)=> {
     }
   }
 
-  const handleDropdownItemClick = (item) => {
-    // Handle the click event for each dropdown item
-     const newData = data.filter((user) => user.education === item.title);
-      setData(newData);
-    
-  };
   const detailModalHandler = (item) => {
     setDetailModal(true)
     setUserListByEducation(data.filter((user) => user.education === item.title))
@@ -181,20 +179,6 @@ const OnPageClick = (page)=> {
     
   return (
     <div className="container">
-  
-    <CDropdown className="custom-dropdown mb-3" size="lg">
-      <CDropdownToggle caret>Dropdown</CDropdownToggle>
-      <CDropdownMenu className="custom-dropdown-menu" style={{ zIndex: '100' }}>
-        {educationList.map((item, index) => (
-          <CDropdownItem key={item.id} onClick={() => handleDropdownItemClick(item)}>
-            {item.title}
-          </CDropdownItem>
-        ))}
-      </CDropdownMenu>
-      <button className="btn btn-success text-light ms-5" onClick={()=>setData(userByEducation)}>
-            <CIcon icon={cilReload} size="lg" /> Refresh Table Data
-          </button>
-    </CDropdown>
     <CModal alignment="center" size='lg' visible={detailModal} onClose={() => setDetailModal(false)}>
         <CModalHeader>
           <CModalTitle>User List by Education</CModalTitle>
@@ -222,7 +206,7 @@ const OnPageClick = (page)=> {
           <div className="col-4">
             <select
               className="form-select form-select"
-              onChange={(e) => OnPageClick(e.target.value)}
+              onChange={(e) => OnUserPageClick(e.target.value)}
             >
               <option value="10" defaultValue>
                 10
@@ -310,7 +294,7 @@ const OnPageClick = (page)=> {
           <div className="col-4">
             <select
               className="form-select form-select"
-              onChange={(e) => setPerPage(e.target.value)}
+              onChange={(e) => OnPageClick(e.target.value)}
             >
               <option value="10" defaultValue>
                 10
