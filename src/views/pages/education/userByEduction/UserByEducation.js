@@ -1,23 +1,25 @@
 import { cilReload } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
-import { CDropdown, CDropdownItem, CDropdownMenu, CDropdownToggle } from '@coreui/react'
+import { CDropdown, CDropdownItem, CDropdownMenu, CDropdownToggle, CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle } from '@coreui/react'
 import React, { useEffect, useState } from 'react'
 import AxiosInstance from 'src/utils/axiosInstance'
 
 const UserByEducation = () => {
   const [title, setTitle] = useState([])
+  const [userTitle] = useState(['#', 'name', 'education', 'cell', 'cnic'  ])
   const [data, setData] = useState([])
   const [userByEducation, setUserByEducation] = useState([])
   const [educationList, setEducationList] = useState([])
-
+  const [userListByEducation, setUserListByEducation] = useState([])
+  const [detailModal, setDetailModal] = useState(false)
   const [currentPage, setCurrentPage] = useState(1)
+  const [userCurrentPage, setUserCurrentPage] = useState(1)
   const [perPage, setPerPage] = useState(10)
+  const [userPerPage, setUserPerPage] = useState(10)
   const [searchValue, setSearchValue] = useState('')
   
   useEffect(() => {
-    
       fetchData()
-    
     fetchEducationList()
     // eslint-disable-next-line
     }, [searchValue])
@@ -34,19 +36,12 @@ const UserByEducation = () => {
   const fetchData = async () => {
     try {
         let response = await AxiosInstance.get("/api/user?limit=0")
-        let customer = await response.data.users;
-       
+        let customer =    response.data.users;
       setTitle([
         "#",
-        "name",
         "education",
-        "mobile number",
-        "sehr package",
-        "cnic",
-        "province", 
-        "division",
-        "district",
-        "tehsil",
+        "Total Users",
+        "details",
     ])
       customer = customer.map(obj => {
         const updatedObj = {};
@@ -60,7 +55,6 @@ const UserByEducation = () => {
         ? fetchedData.filter((item) => {
           const name = item.firstName+" "+item.lastName;
          return name.toLowerCase().includes(searchValue) ||
-          item.education.toLowerCase().includes(searchValue) ||
           item.mobile.toLowerCase().includes(searchValue) ||
           item.cnic.toLowerCase().includes(searchValue) ||
           item.tehsil.toLowerCase().includes(searchValue) ||
@@ -80,12 +74,21 @@ const UserByEducation = () => {
   const getCurrentPageData = () => {
     const startIndex = (currentPage - 1) * perPage
     const endIndex = startIndex + perPage
-    return data.slice(startIndex, endIndex)
+    return educationList.slice(startIndex, endIndex)
+  }
+  const getUserCurrentPageData = () => {
+    const startIndex = (userCurrentPage - 1) * perPage
+    const endIndex = startIndex + userPerPage
+    return userListByEducation.slice(startIndex, endIndex)
   }
 
   // Function to handle page changes
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber)
+  }
+  // Function to handle page changes for user list
+  const handleUserPageChange = (pageNumber) => {
+    setUserCurrentPage(pageNumber)
   }
 
   // Function to handle previous page
@@ -94,12 +97,25 @@ const UserByEducation = () => {
       setCurrentPage(currentPage - 1)
     }
   }
+    // Function to handle previous page for user list
+    const goToUserPreviousPage = () => {
+      if (userCurrentPage > 1) {
+        setCurrentPage(userCurrentPage - 1)
+      }
+    }
 
   // Function to handle next page
   const goToNextPage = () => {
-    const totalPages = Math.ceil(data.length / perPage)
+    const totalPages = Math.ceil(educationList.length / perPage)
     if (currentPage < totalPages) {
       setCurrentPage(currentPage + 1)
+    }
+  }
+  // Function to handle next page
+  const goToUserNextPage = () => {
+    const totalPages = Math.ceil(userListByEducation.length / userPerPage)
+    if (userCurrentPage < totalPages) {
+      setUserCurrentPage(userCurrentPage + 1)
     }
   }
 
@@ -109,6 +125,10 @@ const UserByEducation = () => {
       setData(newData);
     
   };
+  const detailModalHandler = (item) => {
+    setDetailModal(true)
+    setUserListByEducation(data.filter((user) => user.education === item.title))
+  }
   
   // Render the current page's records
   const renderData = () => {
@@ -117,26 +137,40 @@ const UserByEducation = () => {
     return currentPageData.map((item, index) => (
       <tr key={item.id}>
         <td>{index+1}</td>
+        {/* <td>{item.firstName+" "+item.lastName}</td> */}
+        <td>{item.title}</td>
+        <td>{(data.filter((user) => user.education === item.title).length)}</td>
+        <td>
+          <button className="btn btn-primary ms-2" onClick={() => detailModalHandler(item)}>
+                View
+              </button>
+        </td>
+      </tr>
+    ))
+  }  
+  const renderUserData = () => {
+    const currentPageData = getUserCurrentPageData()
+
+    return currentPageData.map((item, index) => (
+      <tr key={item.id}>
+        <td>{index+1}</td>
         <td>{item.firstName+" "+item.lastName}</td>
         <td>{item.education}</td>
         <td>{item.mobile}</td>
-        <td>{item.lastRewardPaidAt}</td>
         <td>{item.cnic}</td>
-        <td>{item.province}</td>
-        <td>{item.division}</td>
-        <td>{item.district}</td>
-        <td>{item.tehsil}</td>
-        <td>
-        </td>
       </tr>
     ))
   }
 
   // Calculate total number of pages
-  const totalPages = Math.ceil(data.length / perPage)
+  const totalPages = Math.ceil(educationList.length / perPage)
   // Generate an array of page numbers
   const pageNumbers = Array.from({ length: totalPages }, (_, index) => index + 1)
-  
+  // Calculate total number of pages
+  const totalUserPages = Math.ceil(userListByEducation.length / userPerPage)
+  // Generate an array of page numbers
+  const userPageNumbers = Array.from({ length: totalUserPages }, (_, index) => index + 1)
+    
   return (
     <div className="container">
   
@@ -149,13 +183,85 @@ const UserByEducation = () => {
           </CDropdownItem>
         ))}
       </CDropdownMenu>
-    </CDropdown>
       <button className="btn btn-success text-light ms-5" onClick={()=>setData(userByEducation)}>
             <CIcon icon={cilReload} size="lg" /> Refresh Table Data
           </button>
+    </CDropdown>
+    <CModal alignment="center" size='lg' visible={detailModal} onClose={() => setDetailModal(false)}>
+        <CModalHeader>
+          <CModalTitle>User List by Education</CModalTitle>
+        </CModalHeader>
+        <CModalBody>
+        <div className="table-responsive">
+            <table className="table table-striped table-bordered">
+              <thead>
+                <tr>
+                  {userTitle.map((item, index) => {
+                    return (
+                      <th scope="col" className="text-uppercase" key={index}>
+                        {item}
+                      </th>
+                    )
+                  })}
+                </tr>
+              </thead>
+              <tbody>{renderUserData()}</tbody>
+            </table>
+          </div> 
+        </CModalBody>
+        <CModalFooter>
+        <div className="card-footer d-flex justify-content-between flex-wrap">
+          <div className="col-4">
+            <select
+              className="form-select form-select"
+              onChange={(e) => setUserPerPage(e.target.value)}
+            >
+              <option value="10" defaultValue>
+                10
+              </option>
+              <option value="25">25</option>
+              <option value="30">30</option>
+              <option value="50">50</option>
+            </select>
+          </div>
+          <nav aria-label="...">
+            <ul className="pagination">
+              <li className={userCurrentPage === 1 ? 'page-item disabled' : 'page-item'}>
+                <button
+                  className="page-link"
+                  onClick={goToUserPreviousPage}
+                  disabled={userCurrentPage === 1}
+                >
+                  Previous
+                </button>
+              </li>
+
+              {userPageNumbers.map((pageNumber, index) => {
+                return (
+                  <li
+                    className={userPageNumbers === pageNumber ? 'active page-item' : 'page-item'}
+                    aria-current="page"
+                    key={index}
+                  >
+                    <button className="page-link" onClick={() => handleUserPageChange(pageNumber)}>
+                      {pageNumber}
+                    </button>
+                  </li>
+                )
+              })}
+              <li className={userCurrentPage === totalUserPages ? 'page-item disabled' : 'page-item'}>
+                <button className="page-link" onClick={goToUserNextPage}>
+                  Next
+                </button>
+              </li>
+            </ul>
+          </nav>
+        </div>
+        </CModalFooter>
+      </CModal>
     <h4 className='d-inline-block m-5 align-end' ><strong> Total Users : {data.length} </strong></h4>
       <div className="card">
-        <div className="card-header">User List by Education</div>
+        <div className="card-header">Users</div>
         <div className="card-body">
           <div>
             <div className="d-flex my-2 justify-content-end">

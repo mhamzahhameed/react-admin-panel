@@ -55,7 +55,7 @@ const Customers = () => {
       customer = customer.map(obj => {
         const updatedObj = {};
         for (const [key, value] of Object.entries(obj)) {
-          updatedObj[key] = value ? value : 'male';
+          updatedObj[key] = value ? value : 'not defined';
         }
         return updatedObj;
       });
