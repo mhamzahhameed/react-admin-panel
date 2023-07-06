@@ -11,7 +11,8 @@ const Province = () => {
   const [perPage, setPerPage] = useState(10)
   const [provinceCollapse,setProvinceCollapse] = useState({});
   const [modalTitle,setmodalTitle] = useState([])
-  
+  const [overAllData,setOverAllData] = useState([]);
+  const [sehrShopsData,setSehrShops] = useState([]);
   const [visible, setVisible] = useState(false)
   const [editData,setEditData] = useState({});
   useEffect(() => {
@@ -29,6 +30,7 @@ const Province = () => {
         "#",
         "province",
         "Total Users",
+        "Total Sehr Shops",
         "action"
     ])
       let provinces = response;
@@ -41,19 +43,46 @@ const Province = () => {
         let business = await AxiosInstance.get(`/api/business/all?limit=${businessCount}`)
         // eslint-disable-next-line
         business = business.data.businesses;
-        let shopKeeper = response2;
+        let overallData = response2;
+        let shopKeepers =  response2.filter(item => {
+          return item.roles.some(role => role.role === 'shopKeeper');
+        });
+      let sehrShops = shopKeepers;
+      for (const element of sehrShops) {
+        const obj1 = element;
+
+        const obj2 = business.find((item) => item.userId === obj1.id);
+        if (obj2) {
+          obj1.category = obj2.district;
+          obj1.businessName = obj2.businessName;
+          obj1.ownerName = obj2.ownerName;
+          obj1.sehrCode = obj2.sehrCode;
+        }
+      }
+      sehrShops = sehrShops.filter(obj => obj.sehrCode !== 'string' && obj.sehrCode !== null);
+      const unmatchedData = overallData.filter(obj1 => !sehrShops.some(obj2 => obj2.id === obj1.id));
       
-        
-        provinces.forEach(obj2 => {
+      
+      provinces.forEach(obj2 => {
   
-          const filteredArray = shopKeeper.filter(obj1 => obj1.province === obj2.title);
+          const filteredArray = unmatchedData.filter(obj1 => obj1.province === obj2.title);
         
           const totalUsers = filteredArray.length;
         
         
           obj2.totalUsers = totalUsers;
         });
-        console.log(provinces);
+        provinces.forEach(obj2 => {
+  
+          const filteredArray = sehrShops.filter(obj1 => obj1.province === obj2.title);
+        
+          const totalUsers = filteredArray.length;
+        
+        
+          obj2.totalsehrShops = totalUsers;
+        });
+        setOverAllData(unmatchedData);
+        setSehrShops(sehrShops)
       setData(provinces)
       setmodalTitle(['initial','initial']);
     } catch (error) {
@@ -67,8 +96,29 @@ const Province = () => {
   {
         let divisions = await AxiosInstance.get(`/api/divisions?provinceId=${Id}&limit=0`);
        divisions = divisions.data.divisions;
-       data[provinceIndex].divisions = divisions;
+         //////////////////////
 
+         divisions.forEach(obj2 => {
+  
+        const filteredArray = overAllData.filter(obj1 => obj1.division === obj2.title);
+      
+        const totalUsers = filteredArray.length;
+      
+      
+        obj2.totalUsers = totalUsers;
+      });
+      divisions.forEach(obj2 => {
+
+        const filteredArray = sehrShopsData.filter(obj1 => obj1.division === obj2.title);
+      
+        const totalUsers = filteredArray.length;
+      
+      
+        obj2.totalsehrShops = totalUsers;
+      });
+      /////////////////////
+       data[provinceIndex].divisions = divisions;
+    
        
     title[0] = '-';
     
@@ -76,6 +126,27 @@ const Province = () => {
   {
        let district = await AxiosInstance.get(`/api/divisions/${Id}/district?limit=0`);
       district = district.data.districts
+       //////////////////////
+
+       district.forEach(obj2 => {
+  
+        const filteredArray = overAllData.filter(obj1 => obj1.district === obj2.title);
+      
+        const totalUsers = filteredArray.length;
+      
+      
+        obj2.totalUsers = totalUsers;
+      });
+      district.forEach(obj2 => {
+
+        const filteredArray = sehrShopsData.filter(obj1 => obj1.district === obj2.title);
+      
+        const totalUsers = filteredArray.length;
+      
+      
+        obj2.totalsehrShops = totalUsers;
+      });
+      /////////////////////
       data[provinceIndex].divisions[divisionIndex].districts = district;
     document.getElementById('division_title').innerText = '-'
   }
@@ -83,6 +154,27 @@ const Province = () => {
   {
        let tehsil = await AxiosInstance.get(`/api/divisions/${divisionId}/district/${districtId}/tehsils?limit=0`);
        tehsil = tehsil.data.tehsils; 
+          //////////////////////
+
+          tehsil.forEach(obj2 => {
+  
+            const filteredArray = overAllData.filter(obj1 => obj1.tehsil === obj2.title);
+          
+            const totalUsers = filteredArray.length;
+          
+          
+            obj2.totalUsers = totalUsers;
+          });
+          tehsil.forEach(obj2 => {
+    
+            const filteredArray = sehrShopsData.filter(obj1 => obj1.tehsil === obj2.title);
+          
+            const totalUsers = filteredArray.length;
+          
+          
+            obj2.totalsehrShops = totalUsers;
+          });
+          /////////////////////
       data[provinceIndex].divisions[divisionIndex].districts[districtIndex].tehsils = tehsil;
     document.getElementById('district_title').innerText = '-'
   }
@@ -335,6 +427,7 @@ message = `${name.split('-')[0]} is not deleted due to some error`
         <td>{index+1}</td>
        <td>{item.title}</td>
        <td>{item.totalUsers}</td>
+       <td>{item.totalsehrShops}</td>
         <td className='d-flex justify-content-center align-items-center flex-wrap'>
           
           <button className="btn btn-success text-light" onClick={()=>EditModal(item.id,item.title,'province-edit')}>
@@ -348,7 +441,7 @@ message = `${name.split('-')[0]} is not deleted due to some error`
       </tr>
       <tr>
         { item?.divisions ? 
-        <td colSpan={4}>
+        <td colSpan={6}>
           
           <CCollapse visible={provinceCollapse[`province-${item.id}`]} >
       <CCard>
@@ -368,6 +461,12 @@ message = `${name.split('-')[0]} is not deleted due to some error`
                         title
                       </th>
                       <th scope="col" className="text-uppercase text-center">
+                        Total Users
+                      </th>
+                      <th scope="col" className="text-uppercase text-center">
+                        Total Sehr Shops
+                      </th>
+                      <th scope="col" className="text-uppercase text-center">
                         action
                       </th>
                 </tr>
@@ -381,6 +480,8 @@ message = `${name.split('-')[0]} is not deleted due to some error`
         </td>
                     <td>{divIndex + 1}</td>
                     <td>{division.title}</td>
+                    <td>{division.totalUsers}</td>
+                    <td>{division.totalsehrShops}</td>
                     <td className='d-flex justify-content-center align-items-center flex-wrap'>
           
           <button className="btn btn-success text-light" onClick={()=>EditModal(division.id,division.title,'division-edit',item.id)}>
@@ -394,7 +495,7 @@ message = `${name.split('-')[0]} is not deleted due to some error`
                   </tr>
                   <tr>
                     {division?.districts ?
-                    <td colSpan={4}>
+                    <td colSpan={6}>
                   <CCollapse visible={provinceCollapse[`division-${division.id}`]} >
       <CCard>
       <CCardHeader className='text-uppercase h4 fw-bold bg-primary text-light d-flex justify-content-between'><p className='text-uppercase'>Districts</p><button className='btn btn-info text-light' onClick={() => openAddData('district',division.id)}><CIcon icon={cilLibraryAdd} size="sm"  /> Add</button></CCardHeader>
@@ -413,6 +514,12 @@ message = `${name.split('-')[0]} is not deleted due to some error`
                         title
                       </th>
                       <th scope="col" className="text-uppercase text-center">
+                        total users
+                      </th>
+                      <th scope="col" className="text-uppercase text-center">
+                        total sehr shops
+                      </th>
+                      <th scope="col" className="text-uppercase text-center">
                         action
                       </th>
                 </tr>
@@ -426,6 +533,8 @@ message = `${name.split('-')[0]} is not deleted due to some error`
         </td>
                     <td>{disIndex + 1}</td>
                     <td>{district.title}</td>
+                    <td>{district.totalUsers}</td>
+                    <td>{district.totalsehrShops}</td>
                     <td className='d-flex justify-content-center align-items-center flex-wrap'>
           
           <button className="btn btn-success text-light" onClick={()=>EditModal(district.id,district.title,'district-edit',division.id)}>
@@ -439,7 +548,7 @@ message = `${name.split('-')[0]} is not deleted due to some error`
                   </tr>
                   <tr>
                     {district?.tehsils ?
-                    <td colSpan={4}>
+                    <td colSpan={6}>
                   <CCollapse visible={provinceCollapse[`district-${district.id}`]} >
       <CCard>
         <CCardHeader className='text-uppercase h4 fw-bold bg-dark text-light d-flex justify-content-between'><p className='text-uppercase'>Tehsils</p><button className='btn btn-info text-light' onClick={() => openAddData('tehsil',division.id,district.id)}><CIcon icon={cilLibraryAdd} size="sm"  /> Add</button></CCardHeader>
@@ -456,6 +565,12 @@ message = `${name.split('-')[0]} is not deleted due to some error`
                         title
                       </th>
                       <th scope="col" className="text-uppercase text-center">
+                        total users
+                      </th>
+                      <th scope="col" className="text-uppercase text-center">
+                        total sehr shops
+                      </th>
+                      <th scope="col" className="text-uppercase text-center">
                         action
                       </th>
                 </tr>
@@ -466,6 +581,8 @@ message = `${name.split('-')[0]} is not deleted due to some error`
                
                     <td>{tehIndex + 1}</td>
                     <td>{tehsil.title}</td>
+                    <td>{tehsil.totalUsers}</td>
+                    <td>{tehsil.totalsehrShops}</td>
                     <td className='d-flex justify-content-center align-items-center flex-wrap'>
           
           <button className="btn btn-success text-light" onClick={()=>EditModal(tehsil.id,tehsil.title,'tehsil-edit',division.id,district.id)}>
