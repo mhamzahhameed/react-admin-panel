@@ -39,6 +39,7 @@ const Province = () => {
         let response2 = await AxiosInstance.get(`/api/user?limit=${count}`)
         response2 = response2.data.users;
         let business = await AxiosInstance.get(`/api/business/all?limit=${businessCount}`)
+        // eslint-disable-next-line
         business = business.data.businesses;
         let shopKeeper = response2;
       
