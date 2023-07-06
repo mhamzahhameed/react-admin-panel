@@ -76,11 +76,15 @@ const UserByEducation = () => {
     const endIndex = startIndex + perPage
     return educationList.slice(startIndex, endIndex)
   }
-  const getUserCurrentPageData = () => {
-    const startIndex = (userCurrentPage - 1) * perPage
-    const endIndex = startIndex + userPerPage
-    return userListByEducation.slice(startIndex, endIndex)
+
+  let endIndex = userCurrentPage * userPerPage
+  const startIndex = endIndex - userPerPage
+  const diff = userListByEducation.length - startIndex
+  if(diff < userPerPage) {
+    endIndex = startIndex + diff
   }
+  const getUserCurrentPageData = () => userListByEducation.slice(startIndex, endIndex)
+  
 
   // Function to handle page changes
   const handlePageChange = (pageNumber) => {
@@ -91,6 +95,10 @@ const UserByEducation = () => {
     setUserCurrentPage(pageNumber)
   }
 
+const OnPageClick = (page)=> {
+  setUserPerPage(page)
+  setUserCurrentPage(1)
+}
   // Function to handle previous page
   const goToPreviousPage = () => {
     if (currentPage > 1) {
@@ -214,7 +222,7 @@ const UserByEducation = () => {
           <div className="col-4">
             <select
               className="form-select form-select"
-              onChange={(e) => setUserPerPage(e.target.value)}
+              onChange={(e) => OnPageClick(e.target.value)}
             >
               <option value="10" defaultValue>
                 10
