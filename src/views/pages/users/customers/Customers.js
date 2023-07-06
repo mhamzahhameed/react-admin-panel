@@ -69,8 +69,7 @@ const Customers = () => {
           item.tehsil.toLowerCase().includes(searchValue) ||
           item.district.toLowerCase().includes(searchValue) ||
           item.lastRewardPaidAt.toLowerCase().includes(searchValue) ||
-          item.division.toLowerCase().includes(searchValue) ||
-          item.province.toLowerCase().includes(searchValue)
+          item.division.toLowerCase().includes(searchValue)
         })
         : fetchedData
 
