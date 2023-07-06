@@ -100,7 +100,7 @@ const UserByEducation = () => {
     // Function to handle previous page for user list
     const goToUserPreviousPage = () => {
       if (userCurrentPage > 1) {
-        setCurrentPage(userCurrentPage - 1)
+        setUserCurrentPage(userCurrentPage - 1)
       }
     }
 
@@ -210,7 +210,7 @@ const UserByEducation = () => {
           </div> 
         </CModalBody>
         <CModalFooter>
-        <div className="card-footer d-flex justify-content-between flex-wrap">
+        <div className="card-footer d-flex justify-content-between flex-wrap w-100">
           <div className="col-4">
             <select
               className="form-select form-select"
@@ -239,7 +239,7 @@ const UserByEducation = () => {
               {userPageNumbers.map((pageNumber, index) => {
                 return (
                   <li
-                    className={userPageNumbers === pageNumber ? 'active page-item' : 'page-item'}
+                    className={userCurrentPage === pageNumber ? 'active page-item' : 'page-item'}
                     aria-current="page"
                     key={index}
                   >

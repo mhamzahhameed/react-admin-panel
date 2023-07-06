@@ -28,34 +28,31 @@ const Province = () => {
         "+",
         "#",
         "province",
+        "Total Users",
         "action"
     ])
       let provinces = response;
-    //   for(let i = 0; i<provinces.length;i++)
-    //   {
+      let count = await AxiosInstance.get(`/api/user`)
+      let businessCount = await AxiosInstance.get(`/api/business/all`)
+      count = count.data.total;
+      businessCount = businessCount.data.total;
+        let response2 = await AxiosInstance.get(`/api/user?limit=${count}`)
+        response2 = response2.data.users;
+        let business = await AxiosInstance.get(`/api/business/all?limit=${businessCount}`)
+        business = business.data.businesses;
+        let shopKeeper = response2;
+      
         
-    //    let divisions = await AxiosInstance.get(`http://3.133.0.29/api/divisions?provinceId=${provinces[i].id}&limit=0`);
-    //    divisions = divisions.data.divisions;
-    // for(let j = 0; j<divisions.length;j++)
-    // {
-      
-    //   let district = await AxiosInstance.get(`http://3.133.0.29/api/divisions/${divisions[j].id}/district?limit=0`);
-    //   district = district.data.districts
-    //   divisions[j].districts = district; 
-      
-    //   for(let k = 0; k< district.length;k++)
-    // {
-      
-    //   // console.log(tehsilCount);
-    //   let tehsil = await AxiosInstance.get(`http://3.133.0.29/api/divisions/${divisions[j].id}/district/${district[k].id}/tehsils?limit=0`);
-    //   district[k].tehsils = tehsil.data.tehsils; 
-    // }
-    // }
-    // // console.log(provinces);
-    //    provinces[i].divisions = divisions;
-    
-    //   }
-      // console.log(provinces);
+        provinces.forEach(obj2 => {
+  
+          const filteredArray = shopKeeper.filter(obj1 => obj1.province === obj2.title);
+        
+          const totalUsers = filteredArray.length;
+        
+        
+          obj2.totalUsers = totalUsers;
+        });
+        console.log(provinces);
       setData(provinces)
       setmodalTitle(['initial','initial']);
     } catch (error) {
@@ -336,6 +333,7 @@ message = `${name.split('-')[0]} is not deleted due to some error`
         </td>
         <td>{index+1}</td>
        <td>{item.title}</td>
+       <td>{item.totalUsers}</td>
         <td className='d-flex justify-content-center align-items-center flex-wrap'>
           
           <button className="btn btn-success text-light" onClick={()=>EditModal(item.id,item.title,'province-edit')}>
