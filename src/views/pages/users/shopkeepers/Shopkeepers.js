@@ -136,16 +136,21 @@ const [code,setCode] = useState("");
   
     return Array.from({ length: endPage - startPage + 1 }, (_, index) => startPage + index);
   };
+   let endIndex = currentPage * perPage
+    const startIndex = endIndex - perPage
+    const diff = data.length - startIndex
+    if(diff < perPage) {
+      endIndex = startIndex + diff
+    }
   // Function to calculate the current page's records
-  const getCurrentPageData = () => {
-    const startIndex = (currentPage - 1) * perPage
-    const endIndex = startIndex + perPage
-    return data.slice(startIndex, endIndex)
-  }
-
+  const getCurrentPageData = () => data.slice(startIndex, endIndex)
+  
   // Function to handle page changes
-  const handlePageChange = (pageNumber) => {
-    setCurrentPage(pageNumber)
+  const handlePageChange = (pageNumber) => setCurrentPage(pageNumber)
+
+  const clickPageData = (value)=>{
+    setPerPage(value);
+    setCurrentPage(1);
   }
 
   // Function to handle previous page
@@ -453,7 +458,7 @@ const [code,setCode] = useState("");
           <div className="col-4">
             <select
               className="form-select form-select"
-              onChange={(e) => setPerPage(e.target.value)}
+              onChange={(e) => clickPageData(e.target.value)}
             >
               <option value="10" defaultValue>
                 10

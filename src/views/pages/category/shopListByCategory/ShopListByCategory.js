@@ -1,23 +1,21 @@
-import { cilReload } from '@coreui/icons'
-import CIcon from '@coreui/icons-react'
-import { CDropdown, CDropdownItem, CDropdownMenu, CDropdownToggle } from '@coreui/react'
+import { CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle } from '@coreui/react'
 import React, { useEffect, useState } from 'react'
 import AxiosInstance from 'src/utils/axiosInstance'
 
 const ShopListByCommission = () => {
   const [title, setTitle] = useState([])
+  const [shopTitle] = useState(['#', 'owner name', 'shop name','sehr code', 'category', 'cell', 'cnic'  ])
+  const [detailModal, setDetailModal] = useState(false)
   const [data, setData] = useState([])
-  const [ShopListByCategory , setShopListByCategory] = useState([])
+  const [shopListByCategory , setShopListByCategory] = useState([])
   const [categoryList, setCategoryList] = useState([])
   const [currentPage, setCurrentPage] = useState(1)
-  const [perPage, setPerPage] = useState(10)
-  const [searchValue, setSearchValue] = useState('')
+  const [shopCurrentPage, setShopCurrentPage] = useState(1)
+  const [perPage, setPerPage] = useState(5)
+  const [shopPerPage, setShopPerPage] = useState(5)
   
   useEffect(() => {
-    if(data.length < 1)
-    {
       fetchData()
-    }
     fetchCategoryList()
     // eslint-disable-next-line
     }, [])
@@ -64,49 +62,63 @@ const ShopListByCommission = () => {
     });
     setTitle([
       "#",
-      "owner name",
-      "shop name",
-      "sehr code",
-      "mobile number",
       "category",
-      "province", 
-      "division",
-      "district",
-      "tehsil",
+      "total shops",
+      "details",
   ])
-    const fetchedData = sehrShops
-    const filteredData = searchValue
-      ? fetchedData.filter((item) => {
-        
-       return item.ownerName.toLowerCase().includes(searchValue) ||
-        item.mobile.toLowerCase().includes(searchValue) ||
-        item.sehrCode.toLowerCase().includes(searchValue) ||
-        item.businessName.toLowerCase().includes(searchValue) ||
-        item.division.toLowerCase().includes(searchValue) ||
-        item.province.toLowerCase().includes(searchValue) ||
-        item.tehsil.toLowerCase().includes(searchValue) ||
-        item.district.toLowerCase().includes(searchValue) ||
-        item.category.toLowerCase().includes(searchValue)
-      
-      })
-      : fetchedData
-
-    setData(filteredData)
-    setShopListByCategory(filteredData)
+    setData(sehrShops)
   } catch (error) {
     console.error(error)
   }
 }
-  // Function to calculate the current page's records
-  const getCurrentPageData = () => {
-    const startIndex = (currentPage - 1) * perPage
-    const endIndex = startIndex + perPage
-    return data.slice(startIndex, endIndex)
+const getPageNumbers = (currentPage, totalPages, displayRange = 3) => {
+  let startPage = currentPage - Math.floor(displayRange / 2);
+  let endPage = currentPage + Math.floor(displayRange / 2);
+
+  if (startPage < 1) {
+    startPage = 1;
+    endPage = Math.min(displayRange, totalPages);
   }
 
-  // Function to handle page changes
-  const handlePageChange = (pageNumber) => {
-    setCurrentPage(pageNumber)
+  if (endPage > totalPages) {
+    endPage = totalPages;
+    startPage = Math.max(totalPages - displayRange + 1, 1);
+  }
+
+  return Array.from({ length: endPage - startPage + 1 }, (_, index) => startPage + index);
+};
+ let endIndex = currentPage * perPage
+  const startIndex = endIndex - perPage
+  const diff = categoryList.length - startIndex
+  if(diff < perPage) {
+    endIndex = startIndex + diff
+  }
+// Function to calculate the current page's records
+const getCurrentPageData = () => categoryList.slice(startIndex, endIndex)
+
+let shopEndIndex = shopCurrentPage * shopPerPage
+let shopStartIndex = shopEndIndex - shopPerPage
+let shopDiff = shopListByCategory.length - shopStartIndex
+if(shopDiff < shopPerPage) {
+  shopEndIndex = shopStartIndex + shopDiff
+}
+const getShopCurrentPageData = () => shopListByCategory.slice(shopStartIndex, shopEndIndex)
+// Function to handle page changes
+const handlePageChange = (pageNumber) => setCurrentPage(pageNumber)
+
+// Function to handle page changes for shop list
+const handleShopPageChange = (pageNumber) => setShopCurrentPage(pageNumber)
+
+  // Function to handle page change or limit change
+  const OnPageClick = (page)=> {
+    setPerPage(page)
+    setCurrentPage(1)
+  }
+
+
+  const OnShopPageClick = (page)=> {
+    setShopPerPage(page)
+    setShopCurrentPage(1)
   }
 
   // Function to handle previous page
@@ -116,91 +128,168 @@ const ShopListByCommission = () => {
     }
   }
 
+      // Function to handle previous page for shop list
+      const goToShopPreviousPage = () => {
+        if (shopCurrentPage > 1) {
+          setShopCurrentPage(shopCurrentPage - 1)
+        }
+      }
+
   // Function to handle next page
   const goToNextPage = () => {
-    const totalPages = Math.ceil(data.length / perPage)
+    const totalPages = Math.ceil(categoryList.length / perPage)
     if (currentPage < totalPages) {
       setCurrentPage(currentPage + 1)
     }
   }
 
-  // Handle Save Changes button onclicking
-  const handleDropdownItemClick = (item) => {
-    // Handle the click event for each dropdown item
-     const newData = data.filter((user) => user.category.toLowerCase() === item.title.toLowerCase());
-      setData(newData);
-    
-  };
+    // Function to handle next page
+    const goToShopNextPage = () => {
+      const totalPages = Math.ceil(shopListByCategory.length / shopPerPage)
+      if (shopCurrentPage < totalPages) {
+        setShopCurrentPage(shopCurrentPage + 1)
+      }
+    }
+
+  const detailModalHandler =  (item) => {
+    setDetailModal(true)
+    setShopListByCategory(data.filter((shop) => shop.category === item.title))
+  }
   
   // Render the current page's records
   const renderData = () => {
     const currentPageData = getCurrentPageData()
-
+    console.log(('current page data :',currentPageData));
     return currentPageData.map((item, index) => (
       <tr key={ item.id }>
       <td>{index+1}</td>
-      <td>{item.ownerName}</td>
-      <td>{item.businessName}</td>
-      <td>{item.sehrCode}</td>
-      <td>{item.mobile}</td>
-      <td>{item.category}</td>
-      <td>{item.province}</td>
-      <td>{item.division}</td>
-      <td>{item.district}</td>
-      <td>{item.tehsil}</td>
+      <td>{item.title}</td>
+      <td>{(data.filter((shop) => shop.category === item.title).length)}</td>
+        <td>
+          <button className="btn btn-primary ms-2" onClick={() => detailModalHandler(item)}>
+                View
+              </button>
+        </td>
       <td>
         </td>
       </tr>
     ))
   }
 
+  const renderShopData = () => {
+    const currentPageData = getShopCurrentPageData()
+    return currentPageData.map((item, index) => (
+      <tr key={item.id}>
+        <td>{index+1}</td>
+        <td>{item.ownerName}</td>
+        <td>{item.businessName}</td>
+        <td>{item.sehrCode}</td>
+        <td>{item.category}</td>        
+        <td>{item.mobile}</td>
+        <td>{item.cnic}</td>
+      </tr>
+    ))
+  }
+
   // Calculate total number of pages
-  const totalPages = Math.ceil(data.length / perPage)
+  const totalPages = Math.ceil(categoryList.length / perPage)
   // Generate an array of page numbers
-  const pageNumbers = Array.from({ length: totalPages }, (_, index) => index + 1)
+  const pageNumbers = getPageNumbers(currentPage,totalPages);
   
+  const totalShopPages = Math.ceil(shopListByCategory.length / shopPerPage)
+  // Generate an array of page numbers
+  const shopPageNumbers = getPageNumbers(shopCurrentPage,totalShopPages)
+
   return (
     <div className="container">
-
-    <CDropdown className="custom-dropdown mb-3" size="lg">
-      <CDropdownToggle caret>Dropdown</CDropdownToggle>
-      <CDropdownMenu className="custom-dropdown-menu" style={{ zIndex: '100' }}>
-        {categoryList.map((item, index) => (
-          <CDropdownItem key={item.id} onClick={() => handleDropdownItemClick(item)}>
-            {item.title}
-          </CDropdownItem>
-        ))}
-      </CDropdownMenu>
-      <button className="btn btn-success text-light ms-5" onClick={()=>setData(ShopListByCategory)}>
-            <CIcon icon={cilReload} size="lg" /> Refresh Table Data
-          </button>
-    </CDropdown>
-    <h4 className='d-inline-block m-5 align-end' ><strong> Total Users : {data.length} </strong></h4>
-      <div className="card">
-        <div className="card-header">Shops</div>
-        <div className="card-body">
-          <div>
-            <div className="d-flex my-2 justify-content-end">
-              <div className="col-lg-4 col-md-6 col-sm-6">
-                <input
-                  type="text"
-                  className="form-control"
-                  placeholder="Search"
-                  value={searchValue}
-                  onChange={(e) => setSearchValue(e.target.value)}
-                />
-                
-              </div>
-              <button className="btn btn-primary ms-2" onClick={() => setSearchValue('')}>
-                Clear
-              </button>
-            </div>
-          </div>
-          <div className="table-responsive">
+    <CModal alignment="center" size='lg' visible={detailModal} onClose={() => {
+      setDetailModal(false)
+      setShopCurrentPage(1)
+      setShopPerPage(10)
+      }}>
+        <CModalHeader>
+          <CModalTitle>Shop List by Category</CModalTitle>
+        </CModalHeader>
+        <CModalBody>
+        <div className="table-responsive">
             <table className="table table-striped table-bordered">
               <thead>
                 <tr>
-                  {title.map((item, index) => {
+                  {shopTitle.map((item, index) => {
+                    return (
+                      <th scope="col" className="text-uppercase" key={index}>
+                        {item}
+                      </th>
+                    )
+                  })}
+                </tr>
+              </thead>
+              <tbody>{renderShopData()}</tbody>
+            </table>
+          </div> 
+        </CModalBody>
+        <CModalFooter>
+        <div className="card-footer d-flex justify-content-between flex-wrap w-100">
+          <div className="col-4">
+            <select
+              className="form-select form-select"
+              onChange={(e) => OnShopPageClick(e.target.value)}
+            >
+              <option value="5" defaultValue>
+                5
+              </option>
+              <option value="10">10</option>
+
+              <option value="29">20</option>
+              <option value="30">30</option>
+              <option value="50">50</option>
+            </select>
+          </div>
+          <nav aria-label="...">
+            <ul className="pagination">
+              <li className={shopCurrentPage === 1 ? 'page-item disabled' : 'page-item'}>
+                <button
+                  className="page-link"
+                  onClick={goToShopPreviousPage}
+                  disabled={shopCurrentPage === 1}
+                >
+                  Previous
+                </button>
+              </li>
+
+              {shopPageNumbers.map((pageNumber, index) => {
+                return (
+                  <li
+                    className={shopCurrentPage === pageNumber ? 'active page-item' : 'page-item'}
+                    aria-current="page"
+                    key={index}
+                  >
+                    <button className="page-link" onClick={() => handleShopPageChange(pageNumber)}>
+                      {pageNumber}
+                    </button>
+                  </li>
+                )
+              })}
+              <li className={shopCurrentPage === totalShopPages ? 'page-item disabled' : 'page-item'}>
+                <button className="page-link" onClick={goToShopNextPage}>
+                  Next
+                </button>
+              </li>
+            </ul>
+          </nav>
+        </div>
+        </CModalFooter>
+      </CModal>
+
+    <h4 className='d-inline-block m-5 align-end' ><strong> Total Shops : {data.length} </strong></h4>
+      <div className="card">
+        <div className="card-header">Shops</div>
+        <div className="card-body">
+        <div className="table-responsive">
+            <table className="table table-striped table-bordered">
+              <thead>
+                <tr>
+                  {title.map((item) => {
                     return (
                       <th scope="col" className="text-uppercase" key={item.id}>
                         {item}
@@ -218,12 +307,13 @@ const ShopListByCommission = () => {
           <div className="col-4">
             <select
               className="form-select form-select"
-              onChange={(e) => setPerPage(e.target.value)}
+              onChange={(e) => OnPageClick(e.target.value)}
             >
-              <option value="10" defaultValue>
-                10
+              <option value="5" defaultValue>
+                5
               </option>
-              <option value="25">25</option>
+              <option value="10">10</option>
+              <option value="20">20</option>
               <option value="30">30</option>
               <option value="50">50</option>
             </select>

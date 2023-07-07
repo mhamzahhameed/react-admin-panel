@@ -101,13 +101,14 @@ const Customers = () => {
       endIndex = startIndex + diff
     }
   // Function to calculate the current page's records
-  const getCurrentPageData = () => {
-    return data.slice(startIndex, endIndex)
-  }
-
+  const getCurrentPageData = () => data.slice(startIndex, endIndex)
+  
   // Function to handle page changes
-  const handlePageChange = (pageNumber) => {
-    setCurrentPage(pageNumber)
+  const handlePageChange = (pageNumber) => setCurrentPage(pageNumber)
+  
+  const clickPageData = (value)=>{
+    setPerPage(value);
+    setCurrentPage(1);
   }
 
   // Function to handle previous page
@@ -131,10 +132,6 @@ const Customers = () => {
   const ViewModal = (data)=>{
     setViewData([data])
     setViewModalVisible(true);
-  }
-  const clickPageData = (value)=>{
-    setPerPage(value);
-    setCurrentPage(1);
   }
   const handleDelete = (id)=>{
     // Swal.fire({

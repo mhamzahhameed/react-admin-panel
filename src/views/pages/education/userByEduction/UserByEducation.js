@@ -14,13 +14,12 @@ const UserByEducation = () => {
   const [userCurrentPage, setUserCurrentPage] = useState(1)
   const [perPage, setPerPage] = useState(10)
   const [userPerPage, setUserPerPage] = useState(10)
-  const [searchValue, setSearchValue] = useState('')
   
   useEffect(() => {
       fetchData()
     fetchEducationList()
     // eslint-disable-next-line
-    }, [searchValue])
+    }, [])
 
   const fetchEducationList = async() => {
     try{
@@ -34,59 +33,65 @@ const UserByEducation = () => {
   const fetchData = async () => {
     try {
         let response = await AxiosInstance.get("/api/user?limit=0")
-        let customer =    response.data.users;
+        let data =    response.data.users;
       setTitle([
         "#",
         "education",
         "Total Users",
         "details",
     ])
-      customer = customer.map(obj => {
+      data = data.map(obj => {
         const updatedObj = {};
         for (const [key, value] of Object.entries(obj)) {
           updatedObj[key] = value ? value : 'not defined';
         }
         return updatedObj;
       });
-      const fetchedData = customer
-      const filteredData = searchValue
-        ? fetchedData.filter((item) => {
-          const name = item.firstName+" "+item.lastName;
-         return name.toLowerCase().includes(searchValue) ||
-          item.mobile.toLowerCase().includes(searchValue) ||
-          item.cnic.toLowerCase().includes(searchValue) ||
-          item.tehsil.toLowerCase().includes(searchValue) ||
-          item.district.toLowerCase().includes(searchValue) ||
-          item.lastRewardPaidAt.toLowerCase().includes(searchValue) ||
-          item.division.toLowerCase().includes(searchValue)
-        })
-        : fetchedData
 
-      setData(filteredData)
+      setData(data)
     } catch (error) {
       console.error(error)
     }
   }
-  // Function to calculate the current page's records
-  const getCurrentPageData = () => {
-    const startIndex = (currentPage - 1) * perPage
-    const endIndex = startIndex + perPage
-    return educationList.slice(startIndex, endIndex)
-  }
+  const getPageNumbers = (currentPage, totalPages, displayRange = 3) => {
+    let startPage = currentPage - Math.floor(displayRange / 2);
+    let endPage = currentPage + Math.floor(displayRange / 2);
+  
+    if (startPage < 1) {
+      startPage = 1;
+      endPage = Math.min(displayRange, totalPages);
+    }
+  
+    if (endPage > totalPages) {
+      endPage = totalPages;
+      startPage = Math.max(totalPages - displayRange + 1, 1);
+    }
+  
+    return Array.from({ length: endPage - startPage + 1 }, (_, index) => startPage + index);
+  };
 
-  let endIndex = userCurrentPage * userPerPage
-  const startIndex = endIndex - userPerPage
-  const diff = userListByEducation.length - startIndex
-  if(diff < userPerPage) {
-    endIndex = startIndex + diff
+   let endIndex = currentPage * perPage
+    const startIndex = endIndex - perPage
+    const diff = educationList.length - startIndex
+    if(diff < perPage) {
+      endIndex = startIndex + diff
+    }
+  // Function to calculate the current page's records
+  const getCurrentPageData = () => educationList.slice(startIndex, endIndex)
+  
+  // Function to handle page changes
+  const handlePageChange = (pageNumber) => setCurrentPage(pageNumber)
+
+  let userEndIndex = userCurrentPage * userPerPage
+  let userStartIndex = userEndIndex - userPerPage
+  let userDiff = userListByEducation.length - userStartIndex
+  if(userDiff < userPerPage) {
+    userEndIndex = userStartIndex + userDiff
   }
-  const getUserCurrentPageData = () => userListByEducation.slice(startIndex, endIndex)
+  const getUserCurrentPageData = () => userListByEducation.slice(userStartIndex, userEndIndex)
   
 
-  // Function to handle page changes
-  const handlePageChange = (pageNumber) => {
-    setCurrentPage(pageNumber)
-  }
+
   // Function to handle page changes for user list
   const handleUserPageChange = (pageNumber) => {
     setUserCurrentPage(pageNumber)
@@ -102,7 +107,7 @@ const UserByEducation = () => {
     setPerPage(page)
     setCurrentPage(1)
   }
-  
+
   // Function to handle previous page
   const goToPreviousPage = () => {
     if (currentPage > 1) {
@@ -131,7 +136,7 @@ const UserByEducation = () => {
     }
   }
 
-  const detailModalHandler = (item) => {
+  const detailModalHandler =  (item) => {
     setDetailModal(true)
     setUserListByEducation(data.filter((user) => user.education === item.title))
   }
@@ -143,7 +148,6 @@ const UserByEducation = () => {
     return currentPageData.map((item, index) => (
       <tr key={item.id}>
         <td>{index+1}</td>
-        {/* <td>{item.firstName+" "+item.lastName}</td> */}
         <td>{item.title}</td>
         <td>{(data.filter((user) => user.education === item.title).length)}</td>
         <td>
@@ -156,7 +160,6 @@ const UserByEducation = () => {
   }  
   const renderUserData = () => {
     const currentPageData = getUserCurrentPageData()
-
     return currentPageData.map((item, index) => (
       <tr key={item.id}>
         <td>{index+1}</td>
@@ -171,15 +174,19 @@ const UserByEducation = () => {
   // Calculate total number of pages
   const totalPages = Math.ceil(educationList.length / perPage)
   // Generate an array of page numbers
-  const pageNumbers = Array.from({ length: totalPages }, (_, index) => index + 1)
+  const pageNumbers = getPageNumbers(currentPage,totalPages);
   // Calculate total number of pages
   const totalUserPages = Math.ceil(userListByEducation.length / userPerPage)
   // Generate an array of page numbers
-  const userPageNumbers = Array.from({ length: totalUserPages }, (_, index) => index + 1)
+  const userPageNumbers = getPageNumbers(userCurrentPage,totalUserPages)
     
   return (
     <div className="container">
-    <CModal alignment="center" size='lg' visible={detailModal} onClose={() => setDetailModal(false)}>
+    <CModal alignment="center" size='lg' visible={detailModal} onClose={() => {
+      setDetailModal(false)
+      setUserCurrentPage(1)
+      setUserPerPage(10)
+      }}>
         <CModalHeader>
           <CModalTitle>User List by Education</CModalTitle>
         </CModalHeader>
@@ -253,25 +260,8 @@ const UserByEducation = () => {
       </CModal>
     <h4 className='d-inline-block m-5 align-end' ><strong> Total Users : {data.length} </strong></h4>
       <div className="card">
-        <div className="card-header">Users</div>
+        <div className="card-header">User List by Education</div>
         <div className="card-body">
-          <div>
-            <div className="d-flex my-2 justify-content-end">
-              <div className="col-lg-4 col-md-6 col-sm-6">
-                <input
-                  type="text"
-                  className="form-control"
-                  placeholder="Search"
-                  value={searchValue}
-                  onChange={(e) => setSearchValue(e.target.value)}
-                />
-                
-              </div>
-              <button className="btn btn-primary ms-2" onClick={() => setSearchValue('')}>
-                Clear
-              </button>
-            </div>
-          </div>
           <div className="table-responsive">
             <table className="table table-striped table-bordered">
               <thead>

@@ -97,18 +97,40 @@ const SehrShops = () => {
       console.error(error)
     }
   }
+
+  const getPageNumbers = (currentPage, totalPages, displayRange = 3) => {
+    let startPage = currentPage - Math.floor(displayRange / 2);
+    let endPage = currentPage + Math.floor(displayRange / 2);
+  
+    if (startPage < 1) {
+      startPage = 1;
+      endPage = Math.min(displayRange, totalPages);
+    }
+  
+    if (endPage > totalPages) {
+      endPage = totalPages;
+      startPage = Math.max(totalPages - displayRange + 1, 1);
+    }
+  
+    return Array.from({ length: endPage - startPage + 1 }, (_, index) => startPage + index);
+  };
+   let endIndex = currentPage * perPage
+    const startIndex = endIndex - perPage
+    const diff = data.length - startIndex
+    if(diff < perPage) {
+      endIndex = startIndex + diff
+    }
   // Function to calculate the current page's records
-  const getCurrentPageData = () => {
-    const startIndex = (currentPage - 1) * perPage
-    const endIndex = startIndex + perPage
-    return data.slice(startIndex, endIndex)
-  }
-
+  const getCurrentPageData = () => data.slice(startIndex, endIndex)
+  
   // Function to handle page changes
-  const handlePageChange = (pageNumber) => {
-    setCurrentPage(pageNumber)
-  }
+  const handlePageChange = (pageNumber) => setCurrentPage(pageNumber)
 
+  const clickPageData = (value)=>{
+    setPerPage(value);
+    setCurrentPage(1);
+  }
+  
   // Function to handle previous page
   const goToPreviousPage = () => {
     if (currentPage > 1) {
@@ -231,7 +253,7 @@ const SehrShops = () => {
   // Calculate total number of pages
   const totalPages = Math.ceil(data.length / perPage)
   // Generate an array of page numbers
-  const pageNumbers = Array.from({ length: totalPages }, (_, index) => index + 1)
+  const pageNumbers = getPageNumbers(currentPage,totalPages);
   
   return (
     <div className="container">
@@ -396,7 +418,7 @@ const SehrShops = () => {
           <div className="col-4">
             <select
               className="form-select form-select"
-              onChange={(e) => setPerPage(e.target.value)}
+              onChange={(e) => clickPageData(e.target.value)}
             >
               <option value="10" defaultValue>
                 10
