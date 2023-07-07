@@ -1,4 +1,4 @@
-import {  cilShortText } from '@coreui/icons'
+import { cilPenAlt, cilShortText, cilViewColumn } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
 import { CButton, CForm, CFormCheck, CFormInput, CFormSelect, CFormSwitch, CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle } from '@coreui/react';
 import React, { useEffect, useState } from 'react'
@@ -6,43 +6,32 @@ import AxiosInstance from 'src/utils/axiosInstance'
 import Swal from 'sweetalert2'
 const SehrCodeRequests = () => {
   const [title, setTitle] = useState([])
+  const [viewTitle, setViewTitle] = useState([])
   const [data, setData] = useState([])
   const [currentPage, setCurrentPage] = useState(1)
   const [perPage, setPerPage] = useState(10)
   const [searchValue, setSearchValue] = useState('')
   const [editModalVisible, setEditModalVisible] = useState(false)
   const [editFormData, setEditFormData] = useState({});
+  const [viewModalVisible, setViewModalVisible] = useState(false)
   const [dummyData,setDummyData] = useState([])
+  const [viewData, setViewData] = useState([]);
+
+const [code,setCode] = useState("");
   useEffect(() => {
     fetchData()
     // eslint-disable-next-line
-    }, [ searchValue, dummyData ])
+    }, [searchValue])
   const fetchData = async () => {
-    let token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Iis5MjMwNzg0ODg5MDMiLCJzdWIiOjEsImlhdCI6MTY4Nzg2NDAwNSwiZXhwIjoxNjg3OTUwNDA1fQ.sRv7kV9P_9YGuxm_h2ccvk-oFD75ve_0KQf-TFF_YXU';
+    // let token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Iis5MjMwNzg0ODg5MDMiLCJzdWIiOjEsImlhdCI6MTY4Nzc5OTMyMCwiZXhwIjoxNjg3ODg1NzIwfQ.xyM4Ha6iDlnSVqdI5jNQ2YQOJgdW0mgiigTT88HWU4A';
     try {
-      let count = await AxiosInstance.get(`/api/user`,{
-        headers:{
-          "Authorization": `Bearer ${token}`
-        }
-      })
-      let businessCount = await AxiosInstance.get(`/api/business/all`,{
-        headers:{
-          "Authorization": `Bearer ${token}`
-        }
-      })
+      let count = await AxiosInstance.get(`/api/user`)
+      let businessCount = await AxiosInstance.get(`/api/business/all`)
       count = count.data.total;
       businessCount = businessCount.data.total;
-        let response = await AxiosInstance.get(`/api/user?limit=${count}`,{
-          headers:{
-            "Authorization": `Bearer ${token}`
-          }
-        })
+        let response = await AxiosInstance.get(`/api/user?limit=${count}`)
         response = response.data.users;
-        let business = await AxiosInstance.get(`/api/business/all?limit=${businessCount}`,{
-          headers:{
-            "Authorization": `Bearer ${token}`
-          }
-        })
+        let business = await AxiosInstance.get(`/api/business/all?limit=${businessCount}`)
         business = business.data.businesses;
         let shopKeepers =  response.filter(item => {
           return item.roles.some(role => role.role === 'shopKeeper');
@@ -59,7 +48,28 @@ const SehrCodeRequests = () => {
           obj1.sehrCode = obj2.sehrCode;
         }
       }
+      let filterSehrCode = shopKeeper.filter(obj => obj.sehrCode !== 'string' && obj.sehrCode !== null);
+      filterSehrCode.sort((a, b) => a.sehrCode.localeCompare(b.sehrCode));
+      let lastSehrCode = filterSehrCode[filterSehrCode.length-1].sehrCode;
+      let newCode
+        let getCodeNumber = 1;
+      if(lastSehrCode)
+      {  
+        if(lastSehrCode.includes('PDDT'))
+        {
+           getCodeNumber =  parseInt(lastSehrCode.split('PDDT')[1]) + 1;
+           newCode = `PDDT${getCodeNumber.toString().padStart(3, '0')}`;
+        }
+        else{
+          newCode = `PDDT${getCodeNumber.toString().padStart(3, '0')}`;
+        }
+      }else
+      {
+        newCode = `PDDT${getCodeNumber.toString().padStart(3, '0')}`;
+      }
+      setCode(newCode);
       shopKeeper = shopKeeper.filter(obj => obj.sehrCode === 'string' || obj.sehrCode === null);
+      
       shopKeeper = shopKeeper.map(obj => {
         const updatedObj = {};
         for (const [key, value] of Object.entries(obj)) {
@@ -78,6 +88,16 @@ const SehrCodeRequests = () => {
         "district",
         "tehsil", 
         "action"
+    ])
+    setViewTitle([
+      'gender',
+      'dob',
+      'verifiedAt',
+      'country',
+      'phoneVerifiedAt',
+      'education',
+      'createdAt',
+      'updatedAt',
     ])
       const fetchedData = shopKeeper
       const filteredData = searchValue
@@ -100,16 +120,37 @@ const SehrCodeRequests = () => {
       console.error(error)
     }
   }
+  const getPageNumbers = (currentPage, totalPages, displayRange = 3) => {
+    let startPage = currentPage - Math.floor(displayRange / 2);
+    let endPage = currentPage + Math.floor(displayRange / 2);
+  
+    if (startPage < 1) {
+      startPage = 1;
+      endPage = Math.min(displayRange, totalPages);
+    }
+  
+    if (endPage > totalPages) {
+      endPage = totalPages;
+      startPage = Math.max(totalPages - displayRange + 1, 1);
+    }
+  
+    return Array.from({ length: endPage - startPage + 1 }, (_, index) => startPage + index);
+  };
+   let endIndex = currentPage * perPage
+    const startIndex = endIndex - perPage
+    const diff = data.length - startIndex
+    if(diff < perPage) {
+      endIndex = startIndex + diff
+    }
   // Function to calculate the current page's records
-  const getCurrentPageData = () => {
-    const startIndex = (currentPage - 1) * perPage
-    const endIndex = startIndex + perPage
-    return data.slice(startIndex, endIndex)
-  }
-
+  const getCurrentPageData = () => data.slice(startIndex, endIndex)
+  
   // Function to handle page changes
-  const handlePageChange = (pageNumber) => {
-    setCurrentPage(pageNumber)
+  const handlePageChange = (pageNumber) => setCurrentPage(pageNumber)
+
+  const clickPageData = (value)=>{
+    setPerPage(value);
+    setCurrentPage(1);
   }
 
   // Function to handle previous page
@@ -126,7 +167,6 @@ const SehrCodeRequests = () => {
       setCurrentPage(currentPage + 1)
     }
   }
-  // eslint-disable-next-line
   const EditModal = (index)=>{
     setEditFormData({
       ...dummyData[index],
@@ -134,22 +174,43 @@ const SehrCodeRequests = () => {
     });
     setEditModalVisible(true);
   }
-  const handleDelete = (id)=>{
+  const ViewModal = (data)=>{
+    setViewData([data])
+    setViewModalVisible(true);
+  }
+  // const handleDelete = (id)=>{
+  //   Swal.fire({
+  //     title: 'Are you sure?',
+  //     text: 'You won\'t be able to revert this!',
+  //     icon: 'warning',
+  //     showCancelButton: true,
+  //     confirmButtonText: 'Yes, delete it!',
+  //     cancelButtonText: 'Cancel',
+  //     reverseButtons: true,
+  //   }).then((result) => {
+  //     if (result.isConfirmed) {
+  //       // Perform the delete operation
+  //       console.log(id)
+  //       const newData = [...dummyData];
+  //       newData.splice(id, 1);
+  //       setDummyData(newData)
+  //     }
+  //   });
+  // }
+  const generateCode = (id)=>{
     Swal.fire({
-      title: 'Are you sure?',
+      title: `Confirm to assign ${code} to this user!`,
       text: 'You won\'t be able to revert this!',
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonText: 'Yes, delete it!',
+      confirmButtonText: 'Confirm',
       cancelButtonText: 'Cancel',
       reverseButtons: true,
     }).then((result) => {
       if (result.isConfirmed) {
         // Perform the delete operation
         console.log(id)
-        const newData = [...dummyData];
-        newData.splice(id, 1);
-        setDummyData(newData)
+      
       }
     });
   }
@@ -200,12 +261,31 @@ const SehrCodeRequests = () => {
       
         <td>
           <div className='d-flex justify-content-between flex-wrap' style={{ width:"380px" }}>
-          
-          <button className="btn btn-info ms-2 text-light" onClick={()=> handleDelete(index)}>
-            <CIcon icon={cilShortText} size="sm" /> Accept Request
-         </button>
+          <button className="btn btn-info text-light" onClick={()=>ViewModal({...item,action: 'view'})}>
+            <CIcon icon={cilViewColumn} size="sm" /> View
+          </button>
+          <button className="btn btn-success text-light" onClick={()=>EditModal(index)}>
+            <CIcon icon={cilPenAlt} size="sm" /> Update
+          </button>
+          <button className="btn btn-info ms-2 text-light" onClick={()=> generateCode(index)}>
+            <CIcon icon={cilShortText} size="sm" /> Generate sehr code
+          </button>
           </div>
         </td>
+      </tr>
+    ))
+  }
+  const renderViewData = () => {
+    return viewData.map((item, index) => (
+      <tr key={index}>
+        <td>{item.gender}</td>
+        <td>{item.dob}</td>
+        <td>{item.verifiedAt}</td>
+        <td>{item.country}</td>
+        <td>{item.phoneVerifiedAt}</td>
+        <td>{item.education}</td>
+        <td>{item.createdAt}</td>
+        <td>{item.updatedAt}</td>
       </tr>
     ))
   }
@@ -213,13 +293,13 @@ const SehrCodeRequests = () => {
   // Calculate total number of pages
   const totalPages = Math.ceil(data.length / perPage)
   // Generate an array of page numbers
-  const pageNumbers = Array.from({ length: totalPages }, (_, index) => index + 1)
+  const pageNumbers = getPageNumbers(currentPage,totalPages);
   
   return (
     <div className="container">
     <CModal alignment="center" visible={editModalVisible} onClose={() => setEditModalVisible(false)}>
       <CModalHeader>
-        <CModalTitle>Edit Customer Details</CModalTitle>
+        <CModalTitle>Edit Shopkeeper Details</CModalTitle>
       </CModalHeader>
       <CModalBody>
       <CForm>
@@ -313,8 +393,31 @@ const SehrCodeRequests = () => {
         <CButton color="primary" onClick={handleSaveChanges}>Save changes</CButton>
       </CModalFooter>
     </CModal>
+    <CModal alignment="center" visible={viewModalVisible} size='xl' onClose={() => setViewModalVisible(false)}>
+      <CModalHeader>
+        <CModalTitle>View Shopkeeper Details</CModalTitle>
+      </CModalHeader>
+      <CModalBody>
+      <div className="table-responsive">
+            <table className="table table-striped table-bordered">
+              <thead>
+                <tr>
+                  {viewTitle.map((item, index) => {
+                    return (
+                      <th scope="col" className="text-uppercase" key={index}>
+                        {item}
+                      </th>
+                    )
+                  })}
+                </tr>
+              </thead>
+              <tbody>{renderViewData()}</tbody>
+            </table>
+          </div>
+      </CModalBody>
+    </CModal>
       <div className="card">
-        <div className="card-header">Sehr Code Request</div>
+        <div className="card-header">Sehr Code Requests</div>
         <div className="card-body">
           <div>
             <div className="d-flex my-2 justify-content-end">
@@ -355,7 +458,7 @@ const SehrCodeRequests = () => {
           <div className="col-4">
             <select
               className="form-select form-select"
-              onChange={(e) => setPerPage(e.target.value)}
+              onChange={(e) => clickPageData(e.target.value)}
             >
               <option value="10" defaultValue>
                 10
