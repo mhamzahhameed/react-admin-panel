@@ -6,7 +6,6 @@ import AxiosInstance from 'src/utils/axiosInstance'
 // import Swal from 'sweetalert2'
 const SehrShops = () => {
   const [title, setTitle] = useState([])
-  const [viewTitle, setViewTitle] = useState([])
   const [data, setData] = useState([])
   const [currentPage, setCurrentPage] = useState(1)
   const [perPage, setPerPage] = useState(10)
@@ -15,7 +14,6 @@ const SehrShops = () => {
   const [viewModalVisible, setViewModalVisible] = useState(false)
   const [editFormData, setEditFormData] = useState({});
   const [dummyData,setDummyData] = useState([])
-  const [viewData, setViewData] = useState([]);
 
   useEffect(() => {
     fetchData()
@@ -64,16 +62,6 @@ const SehrShops = () => {
         "district",
         "tehsil",
         "action"
-    ])
-    setViewTitle([
-      'gender',
-      'dob',
-      'verifiedAt',
-      'country',
-      'phoneVerifiedAt',
-      'education',
-      'createdAt',
-      'updatedAt',
     ])
       const fetchedData = sehrShops
       const filteredData = searchValue
@@ -153,7 +141,7 @@ const SehrShops = () => {
     setEditModalVisible(true);
   }
   const ViewModal = (data)=>{
-    setViewData([data])
+    setEditFormData(data)
     setViewModalVisible(true);
   }
   const handleDelete = (id)=>{
@@ -231,21 +219,6 @@ const SehrShops = () => {
           </button>
           </div>
         </td>
-      </tr>
-    ))
-  }
-
-  const renderViewData = () => {
-    return viewData.map((item, index) => (
-      <tr key={index}>
-        <td>{item.gender}</td>
-        <td>{item.dob}</td>
-        <td>{item.verifiedAt}</td>
-        <td>{item.country}</td>
-        <td>{item.phoneVerifiedAt}</td>
-        <td>{item.education}</td>
-        <td>{item.createdAt}</td>
-        <td>{item.updatedAt}</td>
       </tr>
     ))
   }
@@ -353,27 +326,101 @@ const SehrShops = () => {
         <CButton color="primary" onClick={handleSaveChanges}>Save changes</CButton>
       </CModalFooter>
     </CModal>
-    <CModal alignment="center" visible={viewModalVisible} size='xl' onClose={() => setViewModalVisible(false)}>
+    <CModal alignment="center" visible={viewModalVisible} size='sm' onClose={() => setViewModalVisible(false)}>
       <CModalHeader>
         <CModalTitle>View SehrShop Details</CModalTitle>
       </CModalHeader>
       <CModalBody>
-      <div className="table-responsive">
-            <table className="table table-striped table-bordered">
-              <thead>
-                <tr>
-                  {viewTitle.map((item, index) => {
-                    return (
-                      <th scope="col" className="text-uppercase" key={index}>
-                        {item}
-                      </th>
-                    )
-                  })}
-                </tr>
-              </thead>
-              <tbody>{renderViewData()}</tbody>
-            </table>
-          </div>
+      <CForm>
+        <CFormInput
+              type="text"
+              id="ownerName"
+              label="Owner Name"
+              aria-describedby="name"
+              value={editFormData.ownerName || ''}
+              disabled
+        />
+        <CFormInput
+              type="text"
+              id="businessName"
+              label="Shop Name"
+              aria-describedby="name"
+              value={editFormData.businessName || ''}
+              disabled
+        />
+        <CFormInput
+              type="text"
+              id="sehrCode"
+              label="Sehr Code"
+              aria-describedby="name"
+              value={editFormData.sehrCode || ''}
+              disabled
+        />
+        <CFormInput
+              type="text"
+              id="category"
+              label="Category"
+              aria-describedby="name"
+              value={editFormData.category || ''}
+              disabled
+        />
+        <CFormInput
+              type="text"
+              id="mobile"
+              label="Cell"
+              aria-describedby="name"
+              value={editFormData.mobile || ''}
+              disabled
+        />
+        <CFormInput
+              type="text"
+              id="cnic"
+              label="CNIC"
+              aria-describedby="name"
+              value={editFormData.cnic || ''}
+              disabled
+        />
+        <CFormInput
+              type="text"
+              id="tehsil"
+              label="Tehsil"
+              aria-describedby="name"
+              value={editFormData.tehsil || ''}
+              disabled
+        />
+        <CFormInput
+              type="text"
+              id="district"
+              label="District"
+              aria-describedby="name"
+              value={editFormData.district || ''}
+              disabled
+        />
+        <CFormInput
+              type="text"
+              id="division"
+              label="Division"
+              aria-describedby="name"
+              value={(editFormData.division? editFormData.division: 'Not defined') || ""}
+              disabled
+        />
+        <CFormInput
+              type="text"
+              id="province"
+              label="Province"
+              aria-describedby="name"
+              value={editFormData.province || ''}
+              disabled
+        />
+        <CFormInput
+              type="text"
+              id="createdAt"
+              label="Created At"
+              aria-describedby="name"
+              value={editFormData?.createdAt?.slice(0, 10) || ''}
+              disabled
+        />
+        </CForm>
       </CModalBody>
     </CModal>
       <div className="card">

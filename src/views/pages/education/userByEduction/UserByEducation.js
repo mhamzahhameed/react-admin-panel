@@ -4,7 +4,7 @@ import AxiosInstance from 'src/utils/axiosInstance'
 
 const UserByEducation = () => {
   const [title, setTitle] = useState([])
-  const [userTitle] = useState(['#', 'name', 'education', 'cell', 'cnic'  ])
+  const [userTitle] = useState(['#', 'name', 'education', 'cell', 'cnic', "tehsil", 'district', "division", 'province', 'createdat'])
   const [data, setData] = useState([])
   // const [userByEducation, setUserByEducation] = useState([])
   const [educationList, setEducationList] = useState([])
@@ -167,6 +167,11 @@ const UserByEducation = () => {
         <td>{item.education}</td>
         <td>{item.mobile}</td>
         <td>{item.cnic}</td>
+        <td>{item.tehsil}</td>
+        <td>{item.district}</td>
+        <td>{item.division}</td>
+        <td>{item.province}</td>
+        <td>{item.createdAt?.slice(0, 10)}</td>
       </tr>
     ))
   }
@@ -182,7 +187,7 @@ const UserByEducation = () => {
     
   return (
     <div className="container">
-    <CModal alignment="center" size='lg' visible={detailModal} onClose={() => {
+    <CModal alignment="center" size='xl' visible={detailModal} onClose={() => {
       setDetailModal(false)
       setUserCurrentPage(1)
       setUserPerPage(10)

@@ -6,7 +6,6 @@ import AxiosInstance from 'src/utils/axiosInstance'
 // import Swal from 'sweetalert2'
 const Customers = () => {
   const [title, setTitle] = useState([])
-  const [viewTitle, setViewTitle] = useState([])
   const [data, setData] = useState([])
   const [currentPage, setCurrentPage] = useState(1)
   const [perPage, setPerPage] = useState(10)
@@ -14,7 +13,6 @@ const Customers = () => {
   const [editModalVisible, setEditModalVisible] = useState(false)
   const [viewModalVisible, setViewModalVisible] = useState(false)
   const [editFormData, setEditFormData] = useState({});
-  const [viewData, setViewData] = useState([]);
   
   useEffect(() => {
     fetchData()
@@ -22,8 +20,6 @@ const Customers = () => {
     }, [ searchValue ])
   const fetchData = async () => {
     try {
-      // let count = await AxiosInstance.get('/api/user')
-      //   count = count.data.total;
         let response = await AxiosInstance.get(`/api/user?limit=0`)
         response = response.data.users;
         let customer =   response.filter(obj => {
@@ -42,16 +38,7 @@ const Customers = () => {
         "tehsil",
         "action"
     ])
-    setViewTitle([
-      'gender',
-      'dob',
-      'verifiedAt',
-      'country',
-      'phoneVerifiedAt',
-      'education',
-      'createdAt',
-      'updatedAt',
-    ])
+
       customer = customer.map(obj => {
         const updatedObj = {};
         for (const [key, value] of Object.entries(obj)) {
@@ -130,7 +117,7 @@ const Customers = () => {
     setEditModalVisible(true);
   }
   const ViewModal = (data)=>{
-    setViewData([data])
+    setEditFormData(data)
     setViewModalVisible(true);
   }
   const handleDelete = (id)=>{
@@ -184,20 +171,6 @@ const Customers = () => {
           </button>
           </div>
         </td>
-      </tr>
-    ))
-  }
-  const renderViewData = () => {
-    return viewData.map((item, index) => (
-      <tr key={index}>
-        <td>{item.gender}</td>
-        <td>{item.dob}</td>
-        <td>{item.verifiedAt}</td>
-        <td>{item.country}</td>
-        <td>{item.phoneVerifiedAt}</td>
-        <td>{item.education}</td>
-        <td>{item.createdAt}</td>
-        <td>{item.updatedAt}</td>
       </tr>
     ))
   }
@@ -290,27 +263,77 @@ const Customers = () => {
         {editFormData.action === 'edit' ? <CButton color="primary" onClick={handleSaveChanges}>Save changes</CButton> : ""}
       </CModalFooter>
     </CModal>
-    <CModal alignment="center" visible={viewModalVisible} size='xl' onClose={() => setViewModalVisible(false)}>
+    <CModal alignment="center" visible={viewModalVisible} size='sm' onClose={() => setViewModalVisible(false)}>
       <CModalHeader>
         <CModalTitle>View Customer Details</CModalTitle>
       </CModalHeader>
       <CModalBody>
-      <div className="table-responsive">
-            <table className="table table-striped table-bordered">
-              <thead>
-                <tr>
-                  {viewTitle.map((item, index) => {
-                    return (
-                      <th scope="col" className="text-uppercase" key={index}>
-                        {item}
-                      </th>
-                    )
-                  })}
-                </tr>
-              </thead>
-              <tbody>{renderViewData()}</tbody>
-            </table>
-          </div>
+      <CForm>
+        <CFormInput
+              type="text"
+              id="name"
+              label="Name"
+              aria-describedby="name"
+              value={`${editFormData.firstName} ${editFormData.lastName}` || ''}
+              disabled
+        />
+        <CFormInput
+              type="text"
+              id="mobile"
+              label="Cell"
+              aria-describedby="name"
+              value={editFormData.mobile || ''}
+              disabled
+        />
+        <CFormInput
+              type="text"
+              id="cnic"
+              label="CNIC"
+              aria-describedby="name"
+              value={editFormData.cnic || ''}
+              disabled
+        />
+        <CFormInput
+              type="text"
+              id="tehsil"
+              label="Tehsil"
+              aria-describedby="name"
+              value={editFormData.tehsil || ''}
+              disabled
+        />
+        <CFormInput
+              type="text"
+              id="district"
+              label="District"
+              aria-describedby="name"
+              value={editFormData.district || ''}
+              disabled
+        />
+        <CFormInput
+              type="text"
+              id="division"
+              label="Division"
+              aria-describedby="name"
+              value={(editFormData.division? editFormData.division: 'Not defined') || ""}
+              disabled
+        />
+        <CFormInput
+              type="text"
+              id="province"
+              label="Province"
+              aria-describedby="name"
+              value={editFormData.province || ''}
+              disabled
+        />
+        <CFormInput
+              type="text"
+              id="createdAt"
+              label="Created At"
+              aria-describedby="name"
+              value={editFormData?.createdAt?.slice(0, 10) || ''}
+              disabled
+        />
+        </CForm>
       </CModalBody>
     </CModal>
     
