@@ -1,6 +1,6 @@
 import { cilPenAlt, cilShortText, cilViewColumn } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
-import { CButton, CForm, CFormCheck, CFormInput, CFormSelect, CFormSwitch, CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle } from '@coreui/react';
+import { CButton, CForm, CFormInput, CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle } from '@coreui/react';
 import React, { useEffect, useState } from 'react'
 import AxiosInstance from 'src/utils/axiosInstance'
 import Swal from 'sweetalert2'
@@ -13,7 +13,6 @@ const SehrCodeRequests = () => {
   const [editModalVisible, setEditModalVisible] = useState(false)
   const [editFormData, setEditFormData] = useState({});
   const [viewModalVisible, setViewModalVisible] = useState(false)
-  const [dummyData,setDummyData] = useState([])
 
 const [code,setCode] = useState("");
   useEffect(() => {
@@ -155,11 +154,8 @@ const [code,setCode] = useState("");
       setCurrentPage(currentPage + 1)
     }
   }
-  const EditModal = (index)=>{
-    setEditFormData({
-      ...dummyData[index],
-      index,
-    });
+  const EditModal = (data)=>{
+    setEditFormData(data);
     setEditModalVisible(true);
   }
   const ViewModal = (data)=>{
@@ -204,29 +200,10 @@ const [code,setCode] = useState("");
   }
   // Handle Save Changes button onclicking
   const handleSaveChanges = () => {
-    const updatedData = dummyData.map((item, index) => {
-      if (index === editFormData.index) {
-        // Update the specific row with the new form values
-        return {
-          ...item,
-          name: editFormData.name || item.name,
-          gender: editFormData.gender || item.gender,
-          role: editFormData.role || item.role,
-          mobile: editFormData.mobile || item.mobile,
-          cnic: editFormData.cnic || item.cnic,
-          province: editFormData.province || item.province,
-          division: editFormData.division || item.division,
-          district: editFormData.district || item.district,
-          tehsil: editFormData.tehsil || item.tehsil,
-          active: editFormData.active || item.active,
-        };
-      }
-      return item;
+    Swal.fire({
+      title: 'Data is updated successfully!',
+      icon: 'success',
     });
-  
-    setDummyData(updatedData);
-    setEditModalVisible(false);
-    setEditFormData({});
   };
   
   // Render the current page's records
@@ -249,7 +226,7 @@ const [code,setCode] = useState("");
           <button className="btn btn-info text-light" onClick={()=>ViewModal({...item,action: 'view'})}>
             <CIcon icon={cilViewColumn} size="sm" /> View
           </button>
-          <button className="btn btn-success text-light" onClick={()=>EditModal(index)}>
+          <button className="btn btn-success text-light" onClick={()=>EditModal({...item,action: 'edit'})}>
             <CIcon icon={cilPenAlt} size="sm" /> Update
           </button>
           <button className="btn btn-info ms-2 text-light" onClick={()=> generateCode(index)}>
@@ -273,34 +250,24 @@ const [code,setCode] = useState("");
         <CModalTitle>Edit Shopkeeper Details</CModalTitle>
       </CModalHeader>
       <CModalBody>
-      <CForm>
+      {editFormData.action === 'edit' ? <CForm>
   <CFormInput
     type="text"
-    id="name"
-    label="Name"
-    aria-describedby="name"
-    value={editFormData.name || ''}
-  onChange={(e) => setEditFormData({ ...editFormData, name: e.target.value })}
+    id="ownerName"
+    label="Owner Name"
+    aria-describedby="ownerName"
+    value={editFormData?.ownerName|| '' }
+  onChange={(e) => setEditFormData({ ...editFormData, ownerName: e.target.value })}
   />
-  <div className='my-3'>
-    <p>Gender</p>
-  <CFormCheck type="radio" name="flexRadioDefault" id="mele" label="Male" value="male" checked={editFormData.gender === 'male'}
-  onChange={(e) =>
-    setEditFormData({ ...editFormData, gender: e.target.value })
-  }/>
-<CFormCheck type="radio" name="flexRadioDefault" id="female" label="Female" value="female" checked={editFormData.gender === 'female'}
-  onChange={(e) =>
-    setEditFormData({ ...editFormData, gender: e.target.value })
-  }/>
-  </div>
-  <CFormSelect aria-label="role" value={editFormData.role || ''}
-  onChange={(e) =>
-    setEditFormData({ ...editFormData, role: e.target.value })
-  } >
-  <option id='role' value="admin">Admin</option>
-  <option id='role' value="customer">Customer</option>
-</CFormSelect>
-  <CFormInput
+   <CFormInput
+    type="text"
+    id="businessName"
+    label="Business Name"
+    aria-describedby="businessName"
+    value={editFormData?.businessName || '' }
+  onChange={(e) => setEditFormData({ ...editFormData, businessName: e.target.value })}
+  />
+   <CFormInput
     type="tel"
     id="mobile"
     label="Mobile Number"
@@ -310,11 +277,11 @@ const [code,setCode] = useState("");
   />
   <CFormInput
     type="text"
-    id="cnic"
-    label="CNIC"
-    aria-describedby="name"
-    value={editFormData.cnic || ''}
-  onChange={(e) => setEditFormData({ ...editFormData, cnic: e.target.value })}
+    id="category"
+    label="Category"
+    aria-describedby="category"
+    value={editFormData.category || ''}
+  onChange={(e) => setEditFormData({ ...editFormData, category: e.target.value })}
   />
   <CFormInput
     type="text"
@@ -348,14 +315,8 @@ const [code,setCode] = useState("");
     value={editFormData.tehsil || ''}
   onChange={(e) => setEditFormData({ ...editFormData, tehsil: e.target.value })}
   />
-  <div className='my-2'>
-    <p className='mb-2'>Active</p>
-  <CFormSwitch id="formSwitchCheckChecked" defaultChecked={editFormData.active}
-    onChange={(e) =>
-      setEditFormData({ ...editFormData, active: e.target.checked })
-    }/>
-  </div>
-</CForm>
+  
+</CForm> : ""}
       </CModalBody>
       <CModalFooter>
         <CButton color="secondary" onClick={() => setEditModalVisible(false)}>
