@@ -280,6 +280,7 @@ const Shopkeepers = () => {
         })
         try {
            await AxiosInstance.put(`/api/business/verify/${id}`,putData);
+           fetchData()
         } catch (error) {
           Swal.fire({
             title: `Sehr code is not submitted!`,
