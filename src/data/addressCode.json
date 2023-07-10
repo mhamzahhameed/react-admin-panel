@@ -1,0 +1,219 @@
+{ 
+    "tehsils": [
+                    {
+                        "jhelum": 2111
+                    },
+                    {
+                        "Dina": 2112
+                    },
+                    {
+                        "sohawa": 2113
+                    },
+                    {
+                        "chakwal": 2121
+                    },
+                    {
+                        "kalar kahar": 2122
+                    },
+                    {
+                        "choa saden shah": 2123
+                    },
+                    {
+                        "tala gung":2124
+                    },
+                    {
+                        "Attock"  :             2131
+                    },
+                    {
+                        "Fateh jang"  :     2132
+                    },
+                    {
+                        "Jand"     :              2133
+                    },
+                    {
+                         "Hassan Abdaal":  2134
+                    },
+                    {
+                         "Hazro"   :             2135
+                    },
+                    {
+                         "Pindi ghaib" :    2136
+                    },
+                            
+                    {
+                         "Gujar khan"   :   2141
+                    },
+                    {
+                         "kalar syidan"  :  2142
+                    },
+                    {
+                         "Kahuta"      :         2143
+                    },
+                    {
+                         "Kotli sattian"  :  2144
+                    },
+                    {
+                         "Murree"     :        2145
+                    },
+                    {
+                         "Taxila"      :          2146
+                    },
+                    {
+                         "Rawalpindi"   :   2147
+                    },
+                           
+                    {
+                         "Sargodha":         2411
+                    },
+                    {
+                         "Kotmomin" :     2412
+                    },
+                    {
+                         "Bhalwal":             2413
+                    },
+                    {
+                         "Shahpur" :          2414
+                    },
+                    {
+                         "Sillan wali":       2415
+                    },
+                    {
+                         "Sahi  ":            2416
+                    },
+                    {
+                         "Bhera":                2417
+                    },
+                            
+                    {
+                         "Bhakhar":           2421
+                    },
+                    {
+                         "Darya khan" :    2422
+                    },
+                    {
+                         "Kaloor kot":        2423
+                    },
+                    {
+                         "Mankeera":       2424
+                    },
+                             
+                    {
+                         "Mianwali" :       2431
+                    },
+                    {
+                         "Isa khel" :          2432
+                    },
+                    {
+                         "Piplan" :             2433
+                    },
+                    {
+                         "Khushab":        2441
+                    },
+                    {
+                         "Noorpur thel": 2442
+                    },
+                    {
+                         "Quaidabad":     2443
+                    },
+                    {
+                         "Naushera":        2444
+                    },
+                    {
+                         "Joherabad":     2445
+                    },
+                    {
+                         "Gujrawala city": 2211
+                    },
+                    {
+                         "Gujra…. saddar": 2212
+                    },
+                    {
+                         "Kamoke":            2213
+                    },
+                    {
+                         "Nou shera":        2214
+                    },
+                    {
+                         "Wazir abad":      2215
+                    },
+                    {
+                        "Column4": "Daska              2221"
+                       },
+                       {
+                        "Column4": "Pasrur              2222"
+                       },
+                       {
+                        "Column4": "Sambrial         2223"
+                       },
+                       {
+                        "Column4": "Sialkot              2224"
+                       },
+                       {
+                        "Column4": "Malikwal         2231"
+                       },
+                       {
+                        "Column4": "M.B.Din           2232"
+                       },
+                       {
+                        "Column4": "Phalia               2233"
+                       },
+                       {
+                        "Column4": "Gujrat               2241"
+                       },
+                       {
+                        "Column4": "Kharian            2242"
+                       },
+                       {
+                        "Column4": "Sari almghir    2243"
+                       },
+                       {
+                        "Column4": "Jalalpur jattan 2244"
+                       },
+                       {
+                        "Column4": "Narowal          2251"
+                       },
+                       {
+                        "Column4": "Shakergerh    2252"
+                       },
+                       {
+                        "Column4": "Zafarwal         2253"
+                       },
+                       {
+                        "Column4": "Hafizabad       2261"
+                       },
+                       {
+                        "Column4": "Pindi Bhattian 2262"
+                       },
+                       {
+                        "Column4": "Lahore cantt 2311"
+                       },
+                       {
+                        "Column4": "Lahore city    2312"
+                       },
+                       {
+                        "Column4": "Model Town 2313"
+                       },
+                       {
+                        "Column4": "Raiwind          2314"
+                       },
+                       {
+                        "Column4": "Shalimar        2315"
+                       },
+                       {
+                        "Column4": "Ferozwala    2321"
+                       },
+                       {
+                        "Column4": "Maridke        2322"
+                       },
+                       {
+                        "Column4": "Safdarabad  2323"
+                       },
+                       {
+                        "Column4": "Sheikhupura2324"
+                       },
+                       {
+                        "Column4": "Sherakpur     2325"
+                       }
+
+                ]
+}

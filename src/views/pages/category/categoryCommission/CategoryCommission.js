@@ -135,10 +135,12 @@ const CategoryCommission = () => {
   const handleSaveCommission = async () => {
     try {
     
-     const commission = { "gradeId": 1,
-     "categoryId": editFormData.id,
-     "comission": Number(editFormData.comission),
-     "description": "string" }
+     const commission = {
+      "gradeId": 1,
+      "categoryId": Number(editFormData.id),
+      "comission": Number(editFormData.commission),
+      "description": "string"
+    }
      await AxiosInstance.post('/api/comission', commission)
 
     await fetchData()
@@ -162,11 +164,11 @@ const CategoryCommission = () => {
   // Handle Save Changes button onclicking
   const handleSaveChanges = async() => {
     try{
-      console.log("id", editFormData.id);
-      const category = { "title": editFormData.title }
-      await AxiosInstance.patch(`/api/category/${editFormData.id}`, category)
-      // const commission = { "comission": editFormData.comission }
-      // await AxiosInstance.patch(`/api/comission/${editFormData.id}`, commission)
+      const commission = { "gradeId": 1,
+      "categoryId": Number(editFormData.id),
+      "comission": Number(editFormData.commission),
+      "description": "string" }
+      await AxiosInstance.patch('/api/comission', commission)
       await fetchData()
       setEditModalVisible(false);
       setEditFormData({});
@@ -186,7 +188,7 @@ const CategoryCommission = () => {
         <td>{item.commission}%</td>
         <td>
           <button className="btn btn-success text-light" onClick={() => editModal(item)}>
-            <CIcon icon={cilPenAlt} size="sm" /> Edit
+            <CIcon icon={cilPenAlt} size="sm" /> Update
           </button>
           <button className="btn btn-danger ms-2 text-light" onClick={() => handleDelete(item.id)}>
             <CIcon icon={cilTrash} size="sm" />
@@ -234,11 +236,11 @@ const CategoryCommission = () => {
             />
             <CFormInput
               type="text"
-              id="comission"
+              id="commission"
               label="Commission"
               aria-describedby="commission"
-              value={editFormData.comission || number}
-              onChange={(e) => setEditFormData({ ...editFormData, comission: e.target.value })}
+              value={editFormData.commission || number}
+              onChange={(e) => setEditFormData({ ...editFormData, commission: e.target.value })}
             />
           </CForm>
         </CModalBody>
@@ -273,7 +275,7 @@ const CategoryCommission = () => {
             />
             <CFormInput
               type="text"
-              id="comission"
+              id="commission"
               label="Comsission"
               aria-describedby="comsission"
               value={editFormData.commission || ''}
