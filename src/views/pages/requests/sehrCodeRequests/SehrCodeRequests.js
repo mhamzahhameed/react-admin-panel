@@ -168,7 +168,7 @@ const SehrCodeRequests = () => {
   const generateCode = async(province,division,district,tehsil,id)=>{
     let startingCode = ''
     let newCode = '';
-    // tehsil = 'Islamabad';
+    // tehsil = 'rawalpindi';
     // eslint-disable-next-line 
    addressCode.map((item)=>{
     
@@ -206,10 +206,15 @@ const SehrCodeRequests = () => {
           }
       
             let filterSehrCode = shopKeeper.filter(obj => obj.sehrCode !== 'string' && obj.sehrCode !== null && obj.sehrCode.includes(startingCode));
-            // let filterSehrCode = [{businessId:1, sehrCode: '11110002'}]
+            // let filterSehrCode = [{businessId:1, sehrCode: '11110999'}]
            if(filterSehrCode.length !== 0)
            {
-             filterSehrCode.sort((a, b) => a.businessId - b.businessId);
+             filterSehrCode.sort((a, b) => {
+              const lastFourDigitsA = a.sehrCode.slice(-4);
+              const lastFourDigitsB = b.sehrCode.slice(-4);
+            
+              return lastFourDigitsA.localeCompare(lastFourDigitsB);
+            });
             let getLastCode = filterSehrCode[filterSehrCode.length-1].sehrCode;
             let lastdigits = getLastCode.substring(getLastCode.length - 4);
             
