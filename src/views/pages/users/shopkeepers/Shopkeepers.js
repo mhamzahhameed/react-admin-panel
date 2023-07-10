@@ -13,7 +13,6 @@ const Shopkeepers = () => {
   const [editModalVisible, setEditModalVisible] = useState(false)
   const [editFormData, setEditFormData] = useState({});
   const [viewModalVisible, setViewModalVisible] = useState(false)
-const [code,setCode] = useState("");
   useEffect(() => {
     fetchData()
     // eslint-disable-next-line
@@ -42,28 +41,10 @@ const [code,setCode] = useState("");
           obj1.businessName = obj2.businessName;
           obj1.ownerName = obj2.ownerName;
           obj1.sehrCode = obj2.sehrCode;
+          obj1.businessId = obj2.id;
         }
       }
-      let filterSehrCode = shopKeeper.filter(obj => obj.sehrCode !== 'string' && obj.sehrCode !== null);
-      filterSehrCode.sort((a, b) => a.sehrCode.localeCompare(b.sehrCode));
-      let lastSehrCode = filterSehrCode[filterSehrCode.length-1].sehrCode;
-      let newCode
-        let getCodeNumber = 1;
-      if(lastSehrCode)
-      {  
-        if(lastSehrCode.includes('PDDT'))
-        {
-           getCodeNumber =  parseInt(lastSehrCode.split('PDDT')[1]) + 1;
-           newCode = `PDDT${getCodeNumber.toString().padStart(3, '0')}`;
-        }
-        else{
-          newCode = `PDDT${getCodeNumber.toString().padStart(3, '0')}`;
-        }
-      }else
-      {
-        newCode = `PDDT${getCodeNumber.toString().padStart(3, '0')}`;
-      }
-      setCode(newCode);
+   
       shopKeeper = shopKeeper.filter(obj => obj.sehrCode === 'string' || obj.sehrCode === null);
       
       shopKeeper = shopKeeper.map(obj => {
@@ -180,24 +161,139 @@ const [code,setCode] = useState("");
   //     }
   //   });
   // }
-  const generateCode = (id)=>{
+  const generateCode = async(province,division,district,tehsil,id)=>{
+    ///dummy Data for testing/////
+  //  province = 'Punjab';
+  //   division = 'gujrawala';
+  //   district = 'Sialkot';
+  //   tehsil = 'Daska';
+   ///dummy Data for testing/////
+    let provinces = await AxiosInstance.get(`/api/proviences?limit=0`)
+    provinces = provinces.data.province;
+    let message = '';
+    let newCode = '';
+    let checkProvince = provinces.filter((item)=>{
+      return item.title.toLowerCase() === province.toLowerCase();
+    })
+    if(checkProvince.length !== 0)
+    {
+      let divisions = await AxiosInstance.get(`/api/divisions?provinceId=${checkProvince[0].id}&limit=0`);
+      divisions = divisions.data.divisions;
+      let checkDivision = divisions.filter((item)=>{
+        return item.title.toLowerCase() === division.toLowerCase();
+      })
+      if(checkDivision.length !== 0)
+      {
+         let districts = await AxiosInstance.get(`/api/divisions/${checkDivision[0].id}/district?limit=0`);
+      districts = districts.data.districts
+      let checkDistrict = districts.filter((item)=>{
+        return item.title.toLowerCase() === district.toLowerCase();
+      })
+      if(checkDistrict.length !== 0){
+ let tehsils = await AxiosInstance.get(`/api/divisions/${checkDivision[0].id}/district/${checkDistrict[0].id}/tehsils?limit=0`);
+      tehsils = tehsils.data.tehsils; 
+      let checkTehsil = tehsils.filter((item)=>{
+        return item.title.toLowerCase() === tehsil.toLowerCase();
+      })
+      if(checkTehsil.length !== 0)
+      {
+        
+        let count = await AxiosInstance.get(`/api/user`)
+      let businessCount = await AxiosInstance.get(`/api/business/all`)
+      count = count.data.total;
+      businessCount = businessCount.data.total;
+        let response = await AxiosInstance.get(`/api/user?limit=${count}`)
+        response = response.data.users;
+        let business = await AxiosInstance.get(`/api/business/all?limit=${businessCount}`)
+        business = business.data.businesses;
+        let shopKeepers =  response.filter(item => {
+          return item.roles.some(role => role.role === 'shopKeeper');
+        });
+      let shopKeeper = shopKeepers;
+      for (const element of shopKeeper) {
+        const obj1 = element;
+
+        const obj2 = business.find((item) => item.userId === obj1.id);
+        if (obj2) {
+          obj1.category = obj2.district;
+          obj1.businessName = obj2.businessName;
+          obj1.ownerName = obj2.ownerName;
+          obj1.sehrCode = obj2.sehrCode;
+          obj1.businessId = obj2.id;
+        }
+      }
+    
+      let startingCode = `${checkProvince[0].id.toString()+checkDivision[0].id.toString()+checkDistrict[0].id.toString()+checkTehsil[0].id.toString()}`
+        let filterSehrCode = shopKeeper.filter(obj => obj.sehrCode !== 'string' && obj.sehrCode !== null && obj.sehrCode.includes(startingCode));
+        // let filterSehrCode = [{businessId:1, sehrCode: '5313114002'}]
+       if(filterSehrCode.length !== 0)
+       {
+         filterSehrCode.sort((a, b) => a.businessId - b.businessId);
+        let getLastCode = filterSehrCode[filterSehrCode.length-1].sehrCode;
+        let lastdigits = getLastCode.substring(getLastCode.length - 3);
+        
+        let num = parseInt(lastdigits, 10);
+        num++;
+        num = String(num).padStart(lastdigits.length, '0');
+          newCode = startingCode+num;
+        
+       }else
+       {
+        newCode = startingCode+"001";
+       }
+      }else{
+        message = 'Data is incorrect!'
+      }
+      }else{
+        message = 'Data is incorrect!'
+      }
+      }
+      else{
+        message = 'Data is incorrect!'
+      }
+    }else{
+      message = 'Data is incorrect!'
+    }
+    if(message === 'Data is incorrect!')
+    {
+      Swal.fire({
+        title: `Your Data is incorrect!`,
+        text: 'Please improve your data to generate sehr codes',
+        icon: 'error'
+      });
+      
+    }else
+    {
     Swal.fire({
-      title: `Confirm to assign ${code} to this user!`,
+      title: `Confirm to assign ${newCode} to this user!`,
       text: 'You won\'t be able to revert this!',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonText: 'Confirm',
       cancelButtonText: 'Cancel',
       reverseButtons: true,
-    }).then((result) => {
+    }).then(async(result) => {
       if (result.isConfirmed) {
-        // Perform the delete operation
-        console.log(id)
-      
+        let putData = JSON.stringify({
+          "sehrCode": newCode,
+          "grade": 1
+        })
+        try {
+           await AxiosInstance.put(`/api/business/verify/${id}`,putData);
+           fetchData()
+        } catch (error) {
+          Swal.fire({
+            title: `Sehr code is not submitted!`,
+            icon: 'error'
+          });
+        }
+
       }
     });
+    }
+
   }
-  // Handle Save Changes button onclicking
+  // // Handle Save Changes button onclicking
   const handleSaveChanges = () => {
        Swal.fire({
       title: 'Data is updated successfully!',
@@ -231,7 +327,7 @@ const [code,setCode] = useState("");
           <button className="btn btn-success text-light" onClick={()=>EditModal({...item,action: 'edit'})}>
             <CIcon icon={cilPenAlt} size="sm" /> Update
           </button>
-          <button className="btn btn-info ms-2 text-light" onClick={()=> generateCode(index)}>
+          <button className="btn btn-info ms-2 text-light" onClick={()=> generateCode(item.province,item.division,item.district,item.tehsil,item.businessId)}>
             <CIcon icon={cilShortText} size="sm" /> Generate sehr code
           </button>
           </div>
