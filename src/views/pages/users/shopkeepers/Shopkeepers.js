@@ -200,12 +200,16 @@ const Shopkeepers = () => {
               obj1.category = obj2.district;
               obj1.businessName = obj2.businessName;
               obj1.ownerName = obj2.ownerName;
-              obj1.sehrCode = obj2.sehrCode;
+              obj1.sehrCode = obj2.sehrCode ? obj2.sehrCode : null;
               obj1.businessId = obj2.id;
             }
           }
-      
-            let filterSehrCode = shopKeeper.filter(obj => obj.sehrCode !== 'string' && obj.sehrCode !== null && obj.sehrCode.includes(startingCode));
+          shopKeeper = shopKeeper.filter(obj => obj.hasOwnProperty("sehrCode"));
+            let filterSehrCode = shopKeeper.filter(obj => obj.sehrCode !== 'string' && obj.sehrCode !== null && obj.sehrCode.substring(0, 4) === startingCode );
+            // if(filterSehrCode.length !== 0)
+            // {
+            //   filterSehrCode = filterSehrCode.filter(obj => obj.sehrCode.substring(0, 4) === startingCode)
+            // }
             // let filterSehrCode = [{businessId:1, sehrCode: '11110999'}]
            if(filterSehrCode.length !== 0)
            {
