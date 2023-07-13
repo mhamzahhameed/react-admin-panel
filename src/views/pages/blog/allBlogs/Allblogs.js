@@ -1,6 +1,6 @@
-import { cilLockLocked, cilPenAlt, cilViewColumn } from '@coreui/icons'
+import { cilDelete, cilPenAlt, cilViewColumn } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
-import { CButton, CForm,  CFormInput,  CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle } from '@coreui/react'
+import { CButton, CForm,  CFormInput,  CFormTextarea,  CImage,  CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle } from '@coreui/react'
 import React, { useEffect, useState } from 'react'
 import AxiosInstance from 'src/utils/axiosInstance'
 // import Swal from 'sweetalert2'
@@ -28,13 +28,9 @@ const AllBlogs = () => {
       setTitle([
         "#",
         "Title",
-        "mobile number",
-        // "sehr package",
-        "cnic",
-        "province", 
-        "division",
-        "district",
-        "tehsil",
+        "content",
+        "images",
+        "video", 
         "action"
     ])
 
@@ -147,18 +143,14 @@ const AllBlogs = () => {
     const currentPageData = getCurrentPageData()
 
     return currentPageData.map((item, index) => (
-      <tr key={index}>
+      <tr key={item.id}>
         <td>{index+1}</td>
         <td>{item.title}</td>
-        <td>{item.mobile}</td>
-        {/* <td>{item.lastRewardPaidAt}</td> */}
-        <td>{item.cnic}</td>
-        <td>{item.province}</td>
-        <td>{item.division}</td>
-        <td>{item.district}</td>
-        <td>{item.tehsil}</td>
+        <td>{"click on view"}</td>
+        <td>{(item?.image !== "null" && item.image !== "" && item?.image !== "not defined")? " Click on view": " no image"}</td>
+        <td>{(item?.video !== "null" && item.video !== "" && item?.video !== "not defined")? " Click on view": " no video"}</td>
         <td>
-          <div className='d-flex justify-content-between flex-wrap' style={{ width:"270px" }}>
+          <div className='d-flex justify-content-between flex-wrap' style={{ width:"275px" }}>
           <button className="btn btn-info text-light" onClick={()=>ViewModal(item)}>
             <CIcon icon={cilViewColumn} size="sm" /> View
           </button>
@@ -166,7 +158,7 @@ const AllBlogs = () => {
             <CIcon icon={cilPenAlt} size="sm" /> Update
           </button>
           <button className="btn btn-warning ms-2 text-light" onClick={()=> handleDelete(index)}>
-            <CIcon icon={cilLockLocked} size="sm"/> Limit
+            <CIcon icon={cilDelete} size="sm"/> Delete
           </button>
           </div>
         </td>
@@ -183,7 +175,7 @@ const AllBlogs = () => {
     <div className="container">
     <CModal alignment="center" visible={editModalVisible} onClose={() => setEditModalVisible(false)}>
       <CModalHeader>
-        <CModalTitle>Edit Customer Details</CModalTitle>
+        <CModalTitle>Edit Blog Details</CModalTitle>
       </CModalHeader>
       <CModalBody>
       {editFormData.action === 'edit' ? <CForm>
@@ -262,77 +254,23 @@ const AllBlogs = () => {
         {editFormData.action === 'edit' ? <CButton color="primary" onClick={handleSaveChanges}>Save changes</CButton> : ""}
       </CModalFooter>
     </CModal>
-    <CModal alignment="center" visible={viewModalVisible} size='sm' onClose={() => setViewModalVisible(false)}>
+    <CModal alignment="center" visible={viewModalVisible} size='lg' onClose={() => setViewModalVisible(false)}>
       <CModalHeader>
-        <CModalTitle>View Customer Details</CModalTitle>
+        <CModalTitle>View Blog Details</CModalTitle>
       </CModalHeader>
       <CModalBody>
       <CForm>
-        <CFormInput
-              type="text"
-              id="name"
-              label="Name"
+        <CFormTextarea
+              type="textArea"
+              id="content"
+              label="Content"
+              rows={5}
               aria-describedby="name"
-              value={`${editFormData.firstName} ${editFormData.lastName}` || ''}
-              disabled
-        />
-        <CFormInput
-              type="text"
-              id="mobile"
-              label="Cell"
-              aria-describedby="name"
-              value={editFormData.mobile || ''}
-              disabled
-        />
-        <CFormInput
-              type="text"
-              id="cnic"
-              label="CNIC"
-              aria-describedby="name"
-              value={editFormData.cnic || ''}
-              disabled
-        />
-        <CFormInput
-              type="text"
-              id="tehsil"
-              label="Tehsil"
-              aria-describedby="name"
-              value={editFormData.tehsil || ''}
-              disabled
-        />
-        <CFormInput
-              type="text"
-              id="district"
-              label="District"
-              aria-describedby="name"
-              value={editFormData.district || ''}
-              disabled
-        />
-        <CFormInput
-              type="text"
-              id="division"
-              label="Division"
-              aria-describedby="name"
-              value={(editFormData.division? editFormData.division: 'Not defined') || ""}
-              disabled
-        />
-        <CFormInput
-              type="text"
-              id="province"
-              label="Province"
-              aria-describedby="name"
-              value={editFormData.province || ''}
-              disabled
-        />
-        <CFormInput
-              type="text"
-              id="createdAt"
-              label="Created At"
-              aria-describedby="name"
-              value={editFormData?.createdAt?.slice(0, 10) || ''}
+              value={ editFormData?.content || ''}
               disabled
         />
         </CForm>
+      {(editFormData?.image !== null && editFormData?.imagee !== "" && editFormData?.image !== "not defined") && <CImage fluid src={editFormData?.image} />}
       </CModalBody>
     </CModal>
     
