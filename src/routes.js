@@ -17,7 +17,7 @@ import UserListByPackage from './views/pages/sehrPackages/userListbyPackage/User
 import ShopListByPackage from './views/pages/sehrPackages/shopListByPackage/ShopListByPackage'
 import Province from './views/pages/address/province/Province'
 import PostBlog from './views/pages/blog/postBlog/PostBlog'
-import AllBlogs from './views/pages/blog/allBlogs/AllBlogs'
+import VerifyOPT from './views/otp/VerifyOTP'
 // import AllBlogs from './views/pages/blog/allBlogs/AllBlogs'
 
 
@@ -92,8 +92,9 @@ const routes = [
   { path: '/packages/user-list', name: 'User List by Packeges', element: UserListByPackage, exact: true },
   { path: '/packages/shop-list', name: 'Shop List by Packeges', element: ShopListByPackage, exact: true },
   { path: '/address/province', name: 'Province', element: Province, exact: true },
-  { path: '/blog/all-blogs', name: 'All Blogs', element: AllBlogs, exact: true },
+  // { path: '/blog/all-blogs', name: 'All Blogs', element: AllBlogs, exact: true },
   { path: '/blog/post-blog', name: 'Post Blog', element: PostBlog, exact: true },
+  { path: '/otp/verify-otp', name: 'Verify OTP', element: VerifyOPT, exact: true },
 
   { path: '/theme/colors', name: 'Colors', element: Colors },
   { path: '/theme/typography', name: 'Typography', element: Typography },

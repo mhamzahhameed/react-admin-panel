@@ -5,6 +5,7 @@ import {
   cilAlignLeft,
   cilBold,
   cilCart,
+  cilCheckCircle,
   cilDescription,
   cilEducation,
   cilSpeedometer,
@@ -186,6 +187,16 @@ const _nav = [
     name: 'Post Blog',
     to: '/blog/post-blog',
     icon: <CIcon icon={cilBold} customClassName="nav-icon" />,
+  },
+  {
+    component: CNavTitle,
+    name: 'OTP',
+  },
+  {
+    component: CNavItem,
+    name: 'Verify OTP',
+    to: '/otp/verify-otp',
+    icon: <CIcon icon={cilCheckCircle} customClassName="nav-icon" />,
   },
   // {
   //   component: CNavGroup,
