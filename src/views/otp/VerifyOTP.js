@@ -145,7 +145,8 @@ const VerifyOPT = () => {
     setEditModalVisible(false);
     setEditFormData({});
   };
-  const Verify = async()=> {
+    //   Function on verify click button
+  const OnVerify = async()=> {
     let response = await AxiosInstance.get(`/api/user/send-otp/${editFormData.number}`);
     response = response.data
     console.log(response.data);
@@ -153,9 +154,14 @@ const VerifyOPT = () => {
     setVisible(true)
     setEditFormData({})
     setVerifyModalVisible(false)
-
-
   }
+
+    //   Function on close alert
+    const OnCloseAlert = ()=>{
+        setVisible(false);
+        setOtpData({})
+    }
+
   // Render the current page's records
   const renderData = () => {
     const currentPageData = getCurrentPageData()
@@ -366,12 +372,12 @@ const VerifyOPT = () => {
         </CForm>
       </CModalBody>
       <CModalFooter>
-        <CButton color="secondary" onClick={() => Verify()}>
+        <CButton color="secondary" onClick={() => OnVerify()}>
           Verify
         </CButton>
       </CModalFooter>
     </CModal>
-    <CAlert color="success" dismissible visible={visible} onClose={() => setVisible(false)}>
+    <CAlert color="success" dismissible visible={visible} onClose={() => OnCloseAlert()}>
         {otpData.message}
     </CAlert>
     <button className="btn btn-warning ms-2 text-light my-3" onClick={()=> VerifyModal()}>
