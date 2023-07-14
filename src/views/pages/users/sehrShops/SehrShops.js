@@ -42,6 +42,7 @@ const SehrShops = () => {
           obj1.sehrCode = obj2.sehrCode;
         }
       }
+      sehrShops = sehrShops.filter(obj => obj.hasOwnProperty("sehrCode"));
       sehrShops = sehrShops.filter(obj => obj.sehrCode !== 'string' && obj.sehrCode !== null);
       sehrShops = sehrShops.map(obj => {
         const updatedObj = {};
