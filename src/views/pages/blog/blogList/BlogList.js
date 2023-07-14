@@ -4,7 +4,7 @@ import { CButton, CForm,  CFormInput,  CFormTextarea,  CImage,  CModal, CModalBo
 import React, { useEffect, useState } from 'react'
 import AxiosInstance from 'src/utils/axiosInstance'
 // import Swal from 'sweetalert2'
-const AllBlogs = () => {
+const BlogList = () => {
   const [title, setTitle] = useState([])
   const [data, setData] = useState([])
   const [currentPage, setCurrentPage] = useState(1)
@@ -363,4 +363,4 @@ const AllBlogs = () => {
     </div>
   )
 }
-export default AllBlogs
+export default BlogList

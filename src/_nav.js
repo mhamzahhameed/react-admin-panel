@@ -178,8 +178,8 @@ const _nav = [
   },
   {
     component: CNavItem,
-    name: 'All Blogs',
-    to: '/blog/all-blogs',
+    name: 'Blog List',
+    to: '/blog/blog-list',
     icon: <CIcon icon={cilBold} customClassName="nav-icon" />,
   },
   {
