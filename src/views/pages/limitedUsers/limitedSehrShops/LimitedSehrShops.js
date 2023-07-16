@@ -203,7 +203,7 @@ const LimitedSehrShops = () => {
         <td>{item.district}</td>
         <td>{item.tehsil}</td>
         <td>
-          <div className='d-flex justify-content-between flex-wrap' style={{ width:"270px" }}>
+          <div className='d-flex justify-content-between flex-wrap' style={{ width:"100px" }}>
           {/* <button className="btn btn-info text-light" onClick={()=>ViewModal({...item,action: 'view'})}>
             <CIcon icon={cilViewColumn} size="sm" /> View
           </button>

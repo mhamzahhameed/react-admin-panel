@@ -444,7 +444,7 @@ num = String(num).padStart(lastdigits.length, '0');
         
       
         <td>
-          <div className='d-flex justify-content-between flex-wrap' style={{ width:"380px" }}>
+          <div className='d-flex justify-content-between flex-wrap' style={{ width:"480px" }}>
           <button className="btn btn-info text-light" onClick={()=>ViewModal({...item,action: 'view'})}>
             <CIcon icon={cilViewColumn} size="sm" /> View
           </button>

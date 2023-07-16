@@ -181,7 +181,7 @@ const Customers = () => {
         <td>{item.district}</td>
         <td>{item.tehsil}</td>
         <td>
-          <div className='d-flex justify-content-between flex-wrap' style={{ width:"270px" }}>
+          <div className='d-flex justify-content-between flex-wrap' style={{ width:"360px" }}>
           <button className="btn btn-info text-light" onClick={()=>ViewModal(item)}>
             <CIcon icon={cilViewColumn} size="sm" /> View
           </button>
