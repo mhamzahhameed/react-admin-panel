@@ -1,4 +1,4 @@
-import { cilLockLocked, cilPenAlt, cilViewColumn } from '@coreui/icons'
+import { cilLockLocked, cilPenAlt, cilTrash, cilViewColumn } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
 import { CButton, CForm,  CFormInput, CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle } from '@coreui/react'
 import React, { useEffect, useState } from 'react'
@@ -64,6 +64,7 @@ const SehrShops = () => {
         "tehsil",
         "action"
     ])
+      // sehrShops = sehrShops.filter((customer)=> customer.isLocked === false)
       const fetchedData = sehrShops
       const filteredData = searchValue
         ? fetchedData.filter((item) => {
@@ -142,24 +143,41 @@ const SehrShops = () => {
     setEditFormData(data)
     setViewModalVisible(true);
   }
-  const handleDelete = (id)=>{
-    // Swal.fire({
-    //   title: 'Are you sure you want to limit this shop?',
-    //   text: 'You won\'t be able to revert this!',
-    //   icon: 'warning',
-    //   showCancelButton: true,
-    //   confirmButtonText: 'Confirm',
-    //   cancelButtonText: 'Cancel',
-    //   reverseButtons: true,
-    // }).then((result) => {
-    //   if (result.isConfirmed) {
-    //     // Perform the delete operation
-    //     console.log(id)
-    //     const newData = [...dummyData];
-    //     newData.splice(id, 1);
-    //     setDummyData(newData)
-    //   }
-    // });
+  const handleDelete = (item)=>{
+    Swal.fire({
+      title: 'Are you sure you want to delete this user?',
+      text: 'You won\'t be able to revert this!',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Confirm',
+      cancelButtonText: 'Cancel',
+      reverseButtons: true,
+      
+    }).then(async(result) => {
+      if (result.isConfirmed) {
+        await AxiosInstance.delete(`/api/user/${item?.id}/delete`)
+        await AxiosInstance.delete(`/api/business/${item?.id}`)
+        await fetchData()
+      }
+    });
+  }
+
+  // Function to set the user as limited or locked
+  const handleLimit = (item)=>{
+    Swal.fire({
+      title: 'Are you sure you want to limit this user?',
+      text: 'You would be able to revert this!',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Confirm',
+      cancelButtonText: 'Cancel',
+      reverseButtons: true,
+    }).then(async(result) => {
+      if (result.isConfirmed) {
+        await AxiosInstance.post(`/api/user/${item?.id}/lock`)
+        await fetchData()
+      }
+    });
   }
   // Handle Save Changes button onclicking
   const handleSaveChanges = () => {
@@ -193,8 +211,11 @@ const SehrShops = () => {
           <button className="btn btn-success text-light" onClick={()=>EditModal({...item,action: 'edit'})}>
             <CIcon icon={cilPenAlt} size="sm" /> Update
           </button>
-          <button className="btn btn-warning ms-2 text-light" onClick={()=> handleDelete(index)}>
-            <CIcon icon={cilLockLocked} size="sm" /> Limit
+          <button className="btn btn-warning ms-2 text-light" onClick={()=> handleLimit(item)}>
+            <CIcon icon={cilLockLocked} size="sm"/> Limit
+          </button>
+          <button className="btn btn-warning ms-2 text-light" onClick={()=> handleDelete(item)}>
+            <CIcon icon={cilTrash} size="sm" /> delete
           </button>
           </div>
         </td>

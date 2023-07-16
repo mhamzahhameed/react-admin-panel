@@ -1,8 +1,9 @@
-import { cilLockLocked, cilPenAlt, cilViewColumn } from '@coreui/icons'
+import { cilLockLocked, cilPenAlt, cilTrash, cilViewColumn } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
 import { CButton, CForm,  CFormInput,  CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle } from '@coreui/react'
 import React, { useEffect, useState } from 'react'
 import AxiosInstance from 'src/utils/axiosInstance'
+import Swal from 'sweetalert2'
 // import Swal from 'sweetalert2'
 const Customers = () => {
   const [title, setTitle] = useState([])
@@ -21,7 +22,7 @@ const Customers = () => {
   const fetchData = async () => {
     try {
         let response = await AxiosInstance.get(`/api/user?limit=0`)
-        response = response.data.users;
+        response = await response.data.users;
         let customer =   response.filter(obj => {
           const userRole = obj.roles.find(roleObj => roleObj.role === 'user');
           return userRole && obj.roles.length === 1;
@@ -46,6 +47,7 @@ const Customers = () => {
         }
         return updatedObj;
       });
+      // customer = customer?.filter(item => JSON.parse(item?.isLocked) === false)
       const fetchedData = customer
       const filteredData = searchValue
         ? fetchedData.filter((item) => {
@@ -61,6 +63,7 @@ const Customers = () => {
         : fetchedData
 
       setData(filteredData)
+      console.log('data :', data)
     } catch (error) {
       console.error(error)
     }
@@ -120,28 +123,47 @@ const Customers = () => {
     setEditFormData(data)
     setViewModalVisible(true);
   }
-  const handleDelete = (id)=>{
-    // Swal.fire({
-    //   title: 'Are you sure you want to limit this user?',
-    //   text: 'You won\'t be able to revert this!',
-    //   icon: 'warning',
-    //   showCancelButton: true,
-    //   confirmButtonText: 'Confirm',
-    //   cancelButtonText: 'Cancel',
-    //   reverseButtons: true,
-    // }).then((result) => {
-    //   if (result.isConfirmed) {
-    //     // Perform the delete operation
-    //     console.log(id)
-    //   }
-    // });
+  const handleDelete = (item)=>{
+    Swal.fire({
+      title: 'Are you sure you want to delete this user?',
+      text: 'You won\'t be able to revert this!',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Confirm',
+      cancelButtonText: 'Cancel',
+      reverseButtons: true,
+    }).then(async(result) => {
+      if (result.isConfirmed) {
+        await AxiosInstance.delete(`/api/user/${item?.id}/delete`)
+        await fetchData()
+      }
+    });
   }
+
+  // Function to set the user as limited
+  const handleLimit = (item)=>{
+    Swal.fire({
+      title: 'Are you sure you want to limit this user?',
+      text: 'You would be able to revert this!',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Confirm',
+      cancelButtonText: 'Cancel',
+      reverseButtons: true,
+    }).then(async(result) => {
+      if (result.isConfirmed) {
+        await AxiosInstance.post(`/api/user/${item?.id}/lock`)
+        await fetchData()
+      }
+    });
+  }
+  
   // Handle Save Changes button onclicking
   const handleSaveChanges = async() => {
-    let response = await AxiosInstance.put('/api/user/update-profile',JSON.stringify(editFormData));
-    console.log(response);
-    setEditModalVisible(false);
-    setEditFormData({});
+    // let response = await AxiosInstance.put('/api/user/update-profile',JSON.stringify(editFormData));
+    // console.log(response);
+    // setEditModalVisible(false);
+    // setEditFormData({});
   };
   // Render the current page's records
   const renderData = () => {
@@ -166,8 +188,11 @@ const Customers = () => {
           <button className="btn btn-success text-light" onClick={()=>EditModal({...item,action: 'edit'})}>
             <CIcon icon={cilPenAlt} size="sm" /> Update
           </button>
-          <button className="btn btn-warning ms-2 text-light" onClick={()=> handleDelete(index)}>
+          <button className="btn btn-warning ms-2 text-light" onClick={()=> handleLimit(item)}>
             <CIcon icon={cilLockLocked} size="sm"/> Limit
+          </button>
+          <button className="btn btn-warning ms-2 text-light" onClick={()=> handleDelete(item)}>
+            <CIcon icon={cilTrash} size="sm"/> delete
           </button>
           </div>
         </td>

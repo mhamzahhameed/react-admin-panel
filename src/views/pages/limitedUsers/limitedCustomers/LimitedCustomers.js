@@ -1,8 +1,10 @@
-import { cilCheck, cilPen } from '@coreui/icons'
+import { cilLockLocked } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
-import { CButton, CForm, CFormCheck, CFormInput, CFormSelect, CFormSwitch, CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle } from '@coreui/react'
+import { CButton, CForm,  CFormInput,  CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle } from '@coreui/react'
 import React, { useEffect, useState } from 'react'
+import AxiosInstance from 'src/utils/axiosInstance'
 import Swal from 'sweetalert2'
+// import Swal from 'sweetalert2'
 const LimitedCustomers = () => {
   const [title, setTitle] = useState([])
   const [data, setData] = useState([])
@@ -10,131 +12,53 @@ const LimitedCustomers = () => {
   const [perPage, setPerPage] = useState(10)
   const [searchValue, setSearchValue] = useState('')
   const [editModalVisible, setEditModalVisible] = useState(false)
+  const [viewModalVisible, setViewModalVisible] = useState(false)
   const [editFormData, setEditFormData] = useState({});
-  const [dummyData,setDummyData] = useState([
-    {
-      id: 1,
-      name: 'Shahab Imtiaz',
-      gender: 'male',
-      created_at: '25 Jan 2023',
-      role: 'admin',
-      mobile: '03009876543',
-      cnic: '303109870122',
-      province: 'punjab',
-      division: 'lahore',
-      district: '',
-      tehsil: 'abcdef',
-      active: true,
-    },
-    {
-      id: 2,
-      name: 'Shahab Imtiaz',
-      gender: 'male',
-      created_at: '25 Jan 2023',
-      role: 'admin',
-      mobile: '03009876543',
-      cnic: '303109870122',
-      province: 'punjab',
-      division: 'lahore',
-      district: 'ghjkl',
-      tehsil: 'abcdef',
-      active: false,
-    },
-    {
-      id: 3,
-      name: 'Shahab Imtiaz',
-      gender: 'male',
-      created_at: '25 Jan 2023',
-      role: 'admin',
-      mobile: '03009876543',
-      cnic: '303109870122',
-      province: 'punjab',
-      division: 'lahore',
-      district: '',
-      tehsil: 'abcdef',
-      active: true,
-    },
-    {
-      id: 4,
-      name: 'Adnan Abid',
-      gender: 'male',
-      created_at: '25 Jan 2023',
-      role: 'customer',
-      mobile: '03009876543',
-      cnic: '303109870122',
-      province: 'punjab',
-      division: 'karachi',
-      district: 'lllll',
-      tehsil: 'bbcc',
-      active: true,
-    },
-    {
-      id: 5,
-      name: 'Adnan Abid',
-      gender: 'male',
-      created_at: '25 Jan 2023',
-      role: 'admin',
-      mobile: '03009876543',
-      cnic: '303109870122',
-      province: 'punjab',
-      division: 'lahore',
-      district: '',
-      tehsil: 'abcdef',
-      active: true,
-    },
-    {
-      id: 6,
-      name: 'Adnan Abid',
-      gender: 'male',
-      created_at: '25 Jan 2023',
-      role: 'admin',
-      mobile: '03009876543',
-      cnic: '303109870122',
-      province: 'punjab',
-      division: 'lahore',
-      district: '',
-      tehsil: 'abcdef',
-      active: true,
-    },
-    {
-      id: 7,
-      name: 'Adnan Abid',
-      gender: 'male',
-      created_at: '25 Jan 2023',
-      role: 'admin',
-      mobile: '032209876543',
-      cnic: '3130310987012',
-      province: 'punjab',
-      division: 'lahore',
-      district: '',
-      tehsil: 'abcdef',
-      active: true,
-    },
-  ])
+  
   useEffect(() => {
     fetchData()
     // eslint-disable-next-line
-    }, [ searchValue, dummyData ])
+    }, [ searchValue ])
   const fetchData = async () => {
     try {
-      //   const response = await axios.get(`https://dummyjson.com/products`)
-      //   response.data.products[0] = { ...response.data.products[0], Action: '' }
-      dummyData[0] = { ...dummyData[0], action: '' }
-      setTitle(Object.keys(dummyData[0]))
-      const fetchedData = dummyData
+        let response = await AxiosInstance.get(`/api/user?limit=0`)
+        response = response.data.users;
+        let customer =   response.filter(obj => {
+          const userRole = obj.roles.find(roleObj => roleObj.role === 'user');
+          return userRole && obj.roles.length === 1;
+        });
+      setTitle([
+        "#",
+        "name",
+        "mobile number",
+        // "sehr package",
+        "cnic",
+        "province", 
+        "division",
+        "district",
+        "tehsil",
+        "action"
+    ])
+
+      customer = customer.map(obj => {
+        const updatedObj = {};
+        for (const [key, value] of Object.entries(obj)) {
+          updatedObj[key] = value ? value : 'not defined';
+        }
+        return updatedObj;
+      });
+      // customer = customer.filter((customer)=> customer.isLocked === "true")
+      const fetchedData = customer
       const filteredData = searchValue
         ? fetchedData.filter((item) => {
-          
-         return item.name.toLowerCase().includes(searchValue) ||
+          const name = item.firstName+" "+item.lastName;
+         return name.toLowerCase().includes(searchValue) ||
           item.mobile.toLowerCase().includes(searchValue) ||
           item.cnic.toLowerCase().includes(searchValue) ||
-          item.created_at.toLowerCase().includes(searchValue) ||
           item.tehsil.toLowerCase().includes(searchValue) ||
           item.district.toLowerCase().includes(searchValue) ||
-          item.division.toLowerCase().includes(searchValue) ||
-          item.province.toLowerCase().includes(searchValue) ||
-          item.role.toLowerCase().includes(searchValue) ||
-          item.gender.toLowerCase().includes(searchValue)
+          item.lastRewardPaidAt.toLowerCase().includes(searchValue) ||
+          item.division.toLowerCase().includes(searchValue)
         })
         : fetchedData
 
@@ -143,16 +67,37 @@ const LimitedCustomers = () => {
       console.error(error)
     }
   }
+  const getPageNumbers = (currentPage, totalPages, displayRange = 3) => {
+    let startPage = currentPage - Math.floor(displayRange / 2);
+    let endPage = currentPage + Math.floor(displayRange / 2);
+  
+    if (startPage < 1) {
+      startPage = 1;
+      endPage = Math.min(displayRange, totalPages);
+    }
+  
+    if (endPage > totalPages) {
+      endPage = totalPages;
+      startPage = Math.max(totalPages - displayRange + 1, 1);
+    }
+  
+    return Array.from({ length: endPage - startPage + 1 }, (_, index) => startPage + index);
+  };
+   let endIndex = currentPage * perPage
+    const startIndex = endIndex - perPage
+    const diff = data.length - startIndex
+    if(diff < perPage) {
+      endIndex = startIndex + diff
+    }
   // Function to calculate the current page's records
-  const getCurrentPageData = () => {
-    const startIndex = (currentPage - 1) * perPage
-    const endIndex = startIndex + perPage
-    return data.slice(startIndex, endIndex)
-  }
-
+  const getCurrentPageData = () => data.slice(startIndex, endIndex)
+  
   // Function to handle page changes
-  const handlePageChange = (pageNumber) => {
-    setCurrentPage(pageNumber)
+  const handlePageChange = (pageNumber) => setCurrentPage(pageNumber)
+  
+  const clickPageData = (value)=>{
+    setPerPage(value);
+    setCurrentPage(1);
   }
 
   // Function to handle previous page
@@ -169,96 +114,85 @@ const LimitedCustomers = () => {
       setCurrentPage(currentPage + 1)
     }
   }
-  const EditModal = (index)=>{
-    setEditFormData({
-      ...dummyData[index],
-      index,
-    });
-    setEditModalVisible(true);
-  }
-  const handleDelete = (id)=>{
+  // const EditModal = (data)=>{
+  //   setEditFormData(data);
+  //   setEditModalVisible(true);
+  // }
+  // const ViewModal = (data)=>{
+  //   setEditFormData(data)
+  //   setViewModalVisible(true);
+  // }
+  // const handleDelete = (item)=>{
+  //   Swal.fire({
+  //     title: 'Are you sure you want to delete this user?',
+  //     text: 'You won\'t be able to revert this!',
+  //     icon: 'warning',
+  //     showCancelButton: true,
+  //     confirmButtonText: 'Confirm',
+  //     cancelButtonText: 'Cancel',
+  //     reverseButtons: true,
+  //   }).then(async(result) => {
+  //     if (result.isConfirmed) {
+  //       await AxiosInstance.delete(`/api/user/${item?.id}/delete`)
+  //       await fetchData()
+  //     }
+  //   });
+  // }
+
+  // Function to set the user as limited
+  const handleLimit = (item)=>{
     Swal.fire({
-      title: 'Are you sure?',
-      text: 'You won\'t be able to revert this!',
+      title: 'Are you sure you want to limit this user?',
+      text: 'You would be able to revert this!',
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonText: 'Yes, delete it!',
+      confirmButtonText: 'Confirm',
       cancelButtonText: 'Cancel',
       reverseButtons: true,
-    }).then((result) => {
+    }).then(async(result) => {
       if (result.isConfirmed) {
-        // Perform the delete operation
-        console.log(id)
-        const newData = [...dummyData];
-        newData.splice(id, 1);
-        setDummyData(newData)
+        await AxiosInstance.post(`/api/user/${item?.id}/unlock`)
+        await fetchData()
       }
     });
   }
+  
   // Handle Save Changes button onclicking
-  const handleSaveChanges = () => {
-    const updatedData = dummyData.map((item, index) => {
-      if (index === editFormData.index) {
-        // Update the specific row with the new form values
-        return {
-          ...item,
-          name: editFormData.name || item.name,
-          gender: editFormData.gender || item.gender,
-          role: editFormData.role || item.role,
-          mobile: editFormData.mobile || item.mobile,
-          cnic: editFormData.cnic || item.cnic,
-          province: editFormData.province || item.province,
-          division: editFormData.division || item.division,
-          district: editFormData.district || item.district,
-          tehsil: editFormData.tehsil || item.tehsil,
-          active: editFormData.active || item.active,
-        };
-      }
-      return item;
-    });
-  
-    setDummyData(updatedData);
-    setEditModalVisible(false);
-    setEditFormData({});
+  const handleSaveChanges = async() => {
+    // let response = await AxiosInstance.put('/api/user/update-profile',JSON.stringify(editFormData));
+    // console.log(response);
+    // setEditModalVisible(false);
+    // setEditFormData({});
   };
-  
   // Render the current page's records
   const renderData = () => {
     const currentPageData = getCurrentPageData()
 
     return currentPageData.map((item, index) => (
       <tr key={index}>
-        <th scope="row">{item.id}</th>
-        <td>{item.name}</td>
-        <td>{item.gender}</td>
-        <td>{item.created_at}</td>
-        <td>
-          <span className="badge bg-success">{item.role}</span>
-        </td>
+        <td>{index+1}</td>
+        <td>{item.firstName+" "+item.lastName}</td>
         <td>{item.mobile}</td>
+        {/* <td>{item.lastRewardPaidAt}</td> */}
         <td>{item.cnic}</td>
         <td>{item.province}</td>
         <td>{item.division}</td>
         <td>{item.district}</td>
         <td>{item.tehsil}</td>
         <td>
-          <div className="form-check form-switch">
-            <input
-              className="form-check-input"
-              type="checkbox"
-              id="flexSwitchCheckDefault"
-              defaultChecked={item.active === true}
-            />
-          </div>
-        </td>
-        <td>
-          <div className='d-flex justify-content-between flex-wrap' style={{ width:"200px" }}>
-          <button className="btn btn-success text-light" onClick={()=>EditModal(index)}>
-            <CIcon icon={cilPen} size="sm" />Notify
+          <div className='d-flex justify-content-between flex-wrap' style={{ width:"70px" }}>
+          {/* <button className="btn btn-info text-light" onClick={()=>ViewModal(item)}>
+            <CIcon icon={cilViewColumn} size="sm" /> View
           </button>
-          <button className="btn btn-danger ms-2 text-light" onClick={()=> handleDelete(index)}>
-            <CIcon icon={cilCheck} size="sm" />Allow
+          <button className="btn btn-success text-light" onClick={()=>EditModal({...item,action: 'edit'})}>
+            <CIcon icon={cilPenAlt} size="sm" /> Update
+          </button> */}
+          <button className="btn btn-warning ms-2 text-light" onClick={()=> handleLimit(item)}>
+            <CIcon icon={cilLockLocked} size="sm"/> UnLimit
           </button>
+          {/* <button className="btn btn-warning ms-2 text-light" onClick={()=> handleDelete(item)}>
+            <CIcon icon={cilTrash} size="sm"/> delete
+          </button> */}
           </div>
         </td>
       </tr>
@@ -268,7 +202,7 @@ const LimitedCustomers = () => {
   // Calculate total number of pages
   const totalPages = Math.ceil(data.length / perPage)
   // Generate an array of page numbers
-  const pageNumbers = Array.from({ length: totalPages }, (_, index) => index + 1)
+  const pageNumbers = getPageNumbers(currentPage,totalPages);
   
   return (
     <div className="container">
@@ -277,34 +211,24 @@ const LimitedCustomers = () => {
         <CModalTitle>Edit Customer Details</CModalTitle>
       </CModalHeader>
       <CModalBody>
-      <CForm>
+      {editFormData.action === 'edit' ? <CForm>
   <CFormInput
     type="text"
     id="name"
-    label="Name"
+    label="Firstname"
     aria-describedby="name"
-    value={editFormData.name || ''}
-  onChange={(e) => setEditFormData({ ...editFormData, name: e.target.value })}
+    value={editFormData?.firstName|| '' }
+  onChange={(e) => setEditFormData({ ...editFormData, firstName: e.target.value })}
   />
-  <div className='my-3'>
-    <p>Gender</p>
-  <CFormCheck type="radio" name="flexRadioDefault" id="mele" label="Male" value="male" checked={editFormData.gender === 'male'}
-  onChange={(e) =>
-    setEditFormData({ ...editFormData, gender: e.target.value })
-  }/>
-<CFormCheck type="radio" name="flexRadioDefault" id="female" label="Female" value="female" checked={editFormData.gender === 'female'}
-  onChange={(e) =>
-    setEditFormData({ ...editFormData, gender: e.target.value })
-  }/>
-  </div>
-  <CFormSelect aria-label="role" value={editFormData.role || ''}
-  onChange={(e) =>
-    setEditFormData({ ...editFormData, role: e.target.value })
-  } >
-  <option id='role' value="admin">Admin</option>
-  <option id='role' value="customer">Customer</option>
-</CFormSelect>
-  <CFormInput
+   <CFormInput
+    type="text"
+    id="name"
+    label="Lastname"
+    aria-describedby="name"
+    value={editFormData?.lastName || '' }
+  onChange={(e) => setEditFormData({ ...editFormData, lastName: e.target.value })}
+  />
+   <CFormInput
     type="tel"
     id="mobile"
     label="Mobile Number"
@@ -352,24 +276,93 @@ const LimitedCustomers = () => {
     value={editFormData.tehsil || ''}
   onChange={(e) => setEditFormData({ ...editFormData, tehsil: e.target.value })}
   />
-  <div className='my-2'>
-    <p className='mb-2'>Active</p>
-  <CFormSwitch id="formSwitchCheckChecked" defaultChecked={editFormData.active}
-    onChange={(e) =>
-      setEditFormData({ ...editFormData, active: e.target.checked })
-    }/>
-  </div>
-</CForm>
+  
+</CForm> : ""
+}
       </CModalBody>
       <CModalFooter>
         <CButton color="secondary" onClick={() => setEditModalVisible(false)}>
           Close
         </CButton>
-        <CButton color="primary" onClick={handleSaveChanges}>Save changes</CButton>
+        {editFormData.action === 'edit' ? <CButton color="primary" onClick={handleSaveChanges}>Save changes</CButton> : ""}
       </CModalFooter>
     </CModal>
+    <CModal alignment="center" visible={viewModalVisible} size='sm' onClose={() => setViewModalVisible(false)}>
+      <CModalHeader>
+        <CModalTitle>View Customer Details</CModalTitle>
+      </CModalHeader>
+      <CModalBody>
+      <CForm>
+        <CFormInput
+              type="text"
+              id="name"
+              label="Name"
+              aria-describedby="name"
+              value={`${editFormData.firstName} ${editFormData.lastName}` || ''}
+              disabled
+        />
+        <CFormInput
+              type="text"
+              id="mobile"
+              label="Cell"
+              aria-describedby="name"
+              value={editFormData.mobile || ''}
+              disabled
+        />
+        <CFormInput
+              type="text"
+              id="cnic"
+              label="CNIC"
+              aria-describedby="name"
+              value={editFormData.cnic || ''}
+              disabled
+        />
+        <CFormInput
+              type="text"
+              id="tehsil"
+              label="Tehsil"
+              aria-describedby="name"
+              value={editFormData.tehsil || ''}
+              disabled
+        />
+        <CFormInput
+              type="text"
+              id="district"
+              label="District"
+              aria-describedby="name"
+              value={editFormData.district || ''}
+              disabled
+        />
+        <CFormInput
+              type="text"
+              id="division"
+              label="Division"
+              aria-describedby="name"
+              value={(editFormData.division? editFormData.division: 'Not defined') || ""}
+              disabled
+        />
+        <CFormInput
+              type="text"
+              id="province"
+              label="Province"
+              aria-describedby="name"
+              value={editFormData.province || ''}
+              disabled
+        />
+        <CFormInput
+              type="text"
+              id="createdAt"
+              label="Created At"
+              aria-describedby="name"
+              value={editFormData?.createdAt?.slice(0, 10) || ''}
+              disabled
+        />
+        </CForm>
+      </CModalBody>
+    </CModal>
+    
       <div className="card">
-        <div className="card-header">Limited Customers</div>
+        <div className="card-header">LimitedCustomers</div>
         <div className="card-body">
           <div>
             <div className="d-flex my-2 justify-content-end">
@@ -410,7 +403,7 @@ const LimitedCustomers = () => {
           <div className="col-4">
             <select
               className="form-select form-select"
-              onChange={(e) => setPerPage(e.target.value)}
+              onChange={(e) => clickPageData(e.target.value)}
             >
               <option value="10" defaultValue>
                 10

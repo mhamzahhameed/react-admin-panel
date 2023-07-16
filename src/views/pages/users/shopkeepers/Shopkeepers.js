@@ -1,4 +1,4 @@
-import { cilPenAlt, cilShortText, cilViewColumn } from '@coreui/icons'
+import { cilPenAlt, cilShortText, cilTrash, cilViewColumn } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
 import { CButton, CForm, CFormInput,  CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle } from '@coreui/react';
 import React, { useEffect, useState } from 'react'
@@ -407,6 +407,23 @@ num = String(num).padStart(lastdigits.length, '0');
       icon: 'success',
     });
   };
+  const handleDelete = (item)=>{
+    Swal.fire({
+      title: 'Are you sure you want to delete this user?',
+      text: 'You won\'t be able to revert this!',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Confirm',
+      cancelButtonText: 'Cancel',
+      reverseButtons: true,
+    }).then(async(result) => {
+      if (result.isConfirmed) {
+        await AxiosInstance.delete(`/api/user/${item?.id}/delete`)
+        await AxiosInstance.delete(`/api/business/${item?.id}`)
+        await fetchData()
+      }
+    });
+  }
   
   // Render the current page's records
   const renderData = () => {
@@ -436,6 +453,9 @@ num = String(num).padStart(lastdigits.length, '0');
           </button>
           <button className="btn btn-info ms-2 text-light" onClick={()=> generateCode(item.province,item.division,item.district,item.tehsil,item.businessId)}>
             <CIcon icon={cilShortText} size="sm" /> Generate sehr code
+          </button>
+          <button className="btn btn-warning ms-2 text-light" onClick={()=> handleDelete(item)}>
+            <CIcon icon={cilTrash} size="sm" /> delete
           </button>
           </div>
         </td>
