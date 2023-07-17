@@ -4,6 +4,7 @@ import { CButton, CForm,  CFormInput, CModal, CModalBody, CModalFooter, CModalHe
 import React, { useEffect, useState } from 'react'
 import Swal from 'sweetalert2'
 import AxiosInstance from 'src/utils/axiosInstance'
+import Loader from '../../../../components/Loader'
 // import Swal from 'sweetalert2'
 const SehrShops = () => {
   const [title, setTitle] = useState([])
@@ -14,6 +15,7 @@ const SehrShops = () => {
   const [editModalVisible, setEditModalVisible] = useState(false)
   const [viewModalVisible, setViewModalVisible] = useState(false)
   const [editFormData, setEditFormData] = useState({});
+  const [loader,setLoader] = useState(true);
 
   useEffect(() => {
     fetchData()
@@ -83,7 +85,7 @@ const SehrShops = () => {
         
         })
         : fetchedData
-
+        setLoader(false)
       setData(filteredData)
     } catch (error) {
       console.error(error)
@@ -232,7 +234,7 @@ const SehrShops = () => {
   const pageNumbers = getPageNumbers(currentPage,totalPages);
   
   return (
-    <div className="container">
+    loader ? <Loader/> :<div className="container">
     <CModal alignment="center" visible={editModalVisible} onClose={() => setEditModalVisible(false)}>
       <CModalHeader>
         <CModalTitle>Edit Customer Details</CModalTitle>

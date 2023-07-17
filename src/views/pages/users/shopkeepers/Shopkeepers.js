@@ -5,6 +5,7 @@ import React, { useEffect, useState } from 'react'
 import addressCodes from '../../../../data/addressCode';
 import AxiosInstance from 'src/utils/axiosInstance';
 import Swal from 'sweetalert2'
+import Loader from '../../../../components/Loader'
 const Shopkeepers = () => {
   const [title, setTitle] = useState([])
   const [data, setData] = useState([])
@@ -15,6 +16,7 @@ const Shopkeepers = () => {
   const [editFormData, setEditFormData] = useState({});
   const [viewModalVisible, setViewModalVisible] = useState(false)
   const [addressCode,setAddressCode] = useState([]);
+  const [loader,setLoader] = useState(true);
   useEffect(() => {
     setAddressCode(addressCodes.tehsils);
     fetchData()
@@ -83,7 +85,7 @@ const Shopkeepers = () => {
         
         })
         : fetchedData
-
+        setLoader(false)
       setData(filteredData)
     } catch (error) {
       console.error(error)
@@ -164,8 +166,14 @@ const Shopkeepers = () => {
   //   });
   // }
   const generateCode = async(province,division,district,tehsil,id)=>{
+    setLoader(true)
+    let checkKYC = await AxiosInstance.get(`/api/business/kyc/${id}`)
+    checkKYC = checkKYC.data;
     let startingCode = ''
     let newCode = '';
+    if(checkKYC.length > 0)
+    {
+      
     // tehsil = 'rawalpindi';
     // eslint-disable-next-line 
    addressCode.map((item)=>{
@@ -217,6 +225,7 @@ const Shopkeepers = () => {
             
               return lastFourDigitsA.localeCompare(lastFourDigitsB);
             });
+            console.log(filterSehrCode);
             let getLastCode = filterSehrCode[filterSehrCode.length-1].sehrCode;
             let lastdigits = getLastCode.substring(getLastCode.length - 4);
             
@@ -229,44 +238,96 @@ num = String(num).padStart(lastdigits.length, '0');
           {
            newCode = startingCode+"0001";
           }
-              Swal.fire({
-      title: `Confirm to assign ${newCode} to this user!`,
-      text: 'You won\'t be able to revert this!',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Confirm',
-      cancelButtonText: 'Cancel',
-      reverseButtons: true,
-    }).then(async(result) => {
-      if (result.isConfirmed) {
-        let putData = JSON.stringify({
-          "sehrCode": newCode,
-          "grade": 1
-        })
-        
-          AxiosInstance.put(`/api/business/verify/${id}`,putData).then((res)=>{
-            Swal.fire({
-              title: `Sehr Code has been created!`,
-              icon: 'success'
-            });
-          }).catch((error)=>{
-            Swal.fire({
-              title: `Sehr code is not submitted!`,
-              icon: 'error'
-            });
-          });
-           fetchData()
-      }
-    });
-  }else
-  {
+          // console.log(id);
           Swal.fire({
-        title: `Your Data is incorrect!`,
-        text: 'Please improve your data to generate sehr codes',
+            title: 'KYC Details',
+            icon: 'info',
+            html:
+              `<p>Document Type: <b style="text-transform: uppercase">${checkKYC[0].documentType}</b><p> ` +
+              `<div style="object-fit: fill"><img src="${checkKYC[0].filePath}" style="width:100%;height:100%;object-fit: fill;"/></div>` +
+              `<p>Status: <b style="text-transform: uppercase;color:red">${checkKYC[0].status}</b><p> `+
+              `<p>Sehr Code to be assigned: <b style="text-transform: uppercase">${newCode}</b><p> `
+              ,
+            showCancelButton: true,
+            focusConfirm: false,
+            reverseButtons: true,
+            cancelButtonText:
+            'Reject!',
+            confirmButtonText:
+              'Confirm!'
+          }).then(async(result) => {
+                if (result.isConfirmed) {
+                  let putData = JSON.stringify({
+                    "sehrCode": newCode,
+                    "grade": 1
+                  })
+                
+                    AxiosInstance.put(`/api/business/verify/${id}`,putData).then((res)=>{
+                      Swal.fire({
+                        title: `Sehr Code has been created!`,
+                        icon: 'success'
+                      });
+                    }).catch((error)=>{
+                      Swal.fire({
+                        title: `Sehr code is not submitted!`,
+                        icon: 'error'
+                      });
+                    });
+                     fetchData()
+                }
+              });
+    }else{
+      Swal.fire({
+        title: `Not a single code is matched to this Tehsil`,
         icon: 'error'
       });
+    }
+  }else
+  {
+            Swal.fire({
+              title: `No KYC data is submitted by this User!`,
+              icon: 'error'
+            });
   }
+   
+  //             Swal.fire({
+  //     title: `Confirm to assign ${newCode} to this user!`,
+  //     text: 'You won\'t be able to revert this!',
+  //     icon: 'warning',
+  //     showCancelButton: true,
+  //     confirmButtonText: 'Confirm',
+  //     cancelButtonText: 'Cancel',
+  //     reverseButtons: true,
+  //   }).then(async(result) => {
+  //     if (result.isConfirmed) {
+  //       let putData = JSON.stringify({
+  //         "sehrCode": newCode,
+  //         "grade": 1
+  //       })
+        
+  //         AxiosInstance.put(`/api/business/verify/${id}`,putData).then((res)=>{
+  //           Swal.fire({
+  //             title: `Sehr Code has been created!`,
+  //             icon: 'success'
+  //           });
+  //         }).catch((error)=>{
+  //           Swal.fire({
+  //             title: `Sehr code is not submitted!`,
+  //             icon: 'error'
+  //           });
+  //         });
+  //          fetchData()
+  //     }
+  //   });
+  // }else
+  // {
+  //         Swal.fire({
+  //       title: `Your Data is incorrect!`,
+  //       text: 'Please improve your data to generate sehr codes',
+  //       icon: 'error'
+  //     });
   
+  ///new code
     ///dummy Data for testing/////
   //  province = 'Punjab';
   //   division = 'gujrawala';
@@ -396,7 +457,7 @@ num = String(num).padStart(lastdigits.length, '0');
 //       }
 //     });
 //     }
-
+setLoader(false)
   }
   // // Handle Save Changes button onclicking
   const handleSaveChanges = () => {
@@ -450,7 +511,7 @@ num = String(num).padStart(lastdigits.length, '0');
           <button className="btn btn-success text-light" onClick={()=>EditModal({...item,action: 'edit'})}>
             <CIcon icon={cilPenAlt} size="sm" /> Update
           </button>
-          <button className="btn btn-info ms-2 text-light" onClick={()=> generateCode(item.province,item.division,item.district,item.tehsil,item.businessId)}>
+          <button className="btn btn-info ms-2 text-light" onClick={()=> generateCode(item.province,item.division,item.district,item.tehsil,item.id)}>
             <CIcon icon={cilShortText} size="sm" /> Generate sehr code
           </button>
           <button className="btn btn-warning ms-2 text-light" onClick={()=> handleDelete(item)}>
@@ -468,6 +529,7 @@ num = String(num).padStart(lastdigits.length, '0');
   const pageNumbers = getPageNumbers(currentPage,totalPages);
   
   return (
+    loader ?  <Loader/>:
     <div className="container">
     <CModal alignment="center" visible={editModalVisible} onClose={() => setEditModalVisible(false)}>
       <CModalHeader>
