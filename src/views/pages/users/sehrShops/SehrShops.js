@@ -23,25 +23,14 @@ const SehrShops = () => {
     try {
         let businessCount = await AxiosInstance.get('/api/business/all')
         businessCount = businessCount.data.total;
-        let response = await AxiosInstance.get("/api/user?limit=0")
-        response = response.data.users;
+        // let response = await AxiosInstance.get("/api/user?limit=0")
+        // response = response.data.users;
         let business = await AxiosInstance.get(`/api/business/all?limit=${businessCount}`)
         business = business.data.businesses;
-        let shopKeepers =  response.filter(item => {
-          return item.roles.some(role => role.role === 'shopKeeper');
+        let sehrShops =  business.filter(item => {
+          return (item.sehrCode !== "not defined" || item.sehrCode !== 'null' || item.sehrCode !== "" || item.sehrCode !== null);
         });
-      let sehrShops = shopKeepers;
-      for (const element of sehrShops) {
-        const obj1 = element;
-
-        const obj2 = business.find((item) => item.userId === obj1.id);
-        if (obj2) {
-          obj1.category = obj2.district;
-          obj1.businessName = obj2.businessName;
-          obj1.ownerName = obj2.ownerName;
-          obj1.sehrCode = obj2.sehrCode;
-        }
-      }
+      
       sehrShops = sehrShops.filter(obj => obj.hasOwnProperty("sehrCode"));
       sehrShops = sehrShops.filter(obj => obj.sehrCode !== 'string' && obj.sehrCode !== null);
       sehrShops = sehrShops.map(obj => {
@@ -155,7 +144,7 @@ const SehrShops = () => {
       
     }).then(async(result) => {
       if (result.isConfirmed) {
-        await AxiosInstance.delete(`/api/user/${item?.id}/delete`)
+        // await AxiosInstance.delete(`/api/user/${item?.id}/delete`)
         await AxiosInstance.delete(`/api/business/${item?.id}`)
         await fetchData()
       }
