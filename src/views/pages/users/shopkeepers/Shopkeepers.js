@@ -50,6 +50,8 @@ const Shopkeepers = () => {
       // }
    
       shopKeeper = shopKeeper.filter(obj => obj.sehrCode === 'string' || obj.sehrCode === null);
+      shopKeeper.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+
       
       shopKeeper = shopKeeper.map(obj => {
         const updatedObj = {};

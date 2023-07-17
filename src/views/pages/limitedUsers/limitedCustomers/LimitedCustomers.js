@@ -21,24 +21,28 @@ const LimitedCustomers = () => {
     }, [ searchValue ])
   const fetchData = async () => {
     try {
-        let response = await AxiosInstance.get(`/api/user?limit=0`)
+        let response = await AxiosInstance.get(`/api/user?limit=0&isLokced=1`)
         response = response.data.users;
         let customer =   response.filter(obj => {
           const userRole = obj.roles.find(roleObj => roleObj.role === 'user');
           return userRole && obj.roles.length === 1;
         });
+        console.log('customer :', customer);
       setTitle([
         "#",
         "name",
         "mobile number",
-        // "sehr package",
         "cnic",
+        "sehr package",
         "province", 
         "division",
         "district",
         "tehsil",
         "action"
     ])
+
+      // customer = customer.filter((customer)=> customer.isLocked === true)
+      customer.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
 
       customer = customer.map(obj => {
         const updatedObj = {};
@@ -47,7 +51,6 @@ const LimitedCustomers = () => {
         }
         return updatedObj;
       });
-      // customer = customer.filter((customer)=> customer.isLocked === "true")
       const fetchedData = customer
       const filteredData = searchValue
         ? fetchedData.filter((item) => {
@@ -173,8 +176,8 @@ const LimitedCustomers = () => {
         <td>{index+1}</td>
         <td>{item.firstName+" "+item.lastName}</td>
         <td>{item.mobile}</td>
-        {/* <td>{item.lastRewardPaidAt}</td> */}
         <td>{item.cnic}</td>
+        <td>{item?.reward?.title}</td>
         <td>{item.province}</td>
         <td>{item.division}</td>
         <td>{item.district}</td>

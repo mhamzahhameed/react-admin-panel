@@ -27,18 +27,24 @@ const Customers = () => {
           const userRole = obj.roles.find(roleObj => roleObj.role === 'user');
           return userRole && obj.roles.length === 1;
         });
+      console.log('customers :', customer);
+
       setTitle([
         "#",
         "name",
         "mobile number",
-        // "sehr package",
         "cnic",
+        "sehr package",
         "province", 
         "division",
         "district",
         "tehsil",
         "action"
     ])
+      customer = customer?.filter(item => item.isLocked === false)
+      console.log('customers unlocked :', customer);
+      customer.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+
 
       customer = customer.map(obj => {
         const updatedObj = {};
@@ -174,8 +180,8 @@ const Customers = () => {
         <td>{index+1}</td>
         <td>{item.firstName+" "+item.lastName}</td>
         <td>{item.mobile}</td>
-        {/* <td>{item.lastRewardPaidAt}</td> */}
         <td>{item.cnic}</td>
+        <td>{item.reward.title? item.reward.title : 'not subscribed yet' }</td>
         <td>{item.province}</td>
         <td>{item.division}</td>
         <td>{item.district}</td>

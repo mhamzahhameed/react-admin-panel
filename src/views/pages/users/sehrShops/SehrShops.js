@@ -30,9 +30,12 @@ const SehrShops = () => {
         let sehrShops =  business.filter(item => {
           return (item.sehrCode !== "not defined" || item.sehrCode !== 'null' || item.sehrCode !== "" || item.sehrCode !== null);
         });
+        console.log('sehrshops :', sehrShops);
       
       sehrShops = sehrShops.filter(obj => obj.hasOwnProperty("sehrCode"));
       sehrShops = sehrShops.filter(obj => obj.sehrCode !== 'string' && obj.sehrCode !== null);
+      // sehrShops = sehrShops.filter((customer)=> customer.isLocked === false)
+      sehrShops.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
       sehrShops = sehrShops.map(obj => {
         const updatedObj = {};
         for (const [key, value] of Object.entries(obj)) {
@@ -53,7 +56,6 @@ const SehrShops = () => {
         "tehsil",
         "action"
     ])
-      // sehrShops = sehrShops.filter((customer)=> customer.isLocked === false)
       const fetchedData = sehrShops
       const filteredData = searchValue
         ? fetchedData.filter((item) => {
