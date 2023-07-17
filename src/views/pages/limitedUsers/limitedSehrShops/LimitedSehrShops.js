@@ -1,4 +1,4 @@
-import { cilLockLocked } from '@coreui/icons'
+import { cilLockLocked, cilPenAlt, cilTrash, cilViewColumn } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
 import { CButton, CForm,  CFormInput, CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle } from '@coreui/react'
 import React, { useEffect, useState } from 'react'
@@ -21,32 +21,31 @@ const LimitedSehrShops = () => {
     }, [ searchValue ])
   const fetchData = async () => {
     try {
-        let businessCount = await AxiosInstance.get('/api/business/all')
-        businessCount = businessCount.data.total;
-        let response = await AxiosInstance.get("/api/user?limit=0")
+      let count = await AxiosInstance.get(`/api/user`)
+      let businessCount = await AxiosInstance.get(`/api/business/all`)
+      count = count.data.total;
+      businessCount = businessCount.data.total;
+        let response = await AxiosInstance.get(`/api/user?limit=${count}`)
         response = response.data.users;
         let business = await AxiosInstance.get(`/api/business/all?limit=${businessCount}`)
         business = business.data.businesses;
-        let shopKeepers =  response.filter(item => {
-          return item.roles.some(role => role.role === 'shopKeeper');
-        });
-      let sehrShops = shopKeepers;
+        let sehrShops = business.filter(obj => obj.sehrCode !== null);
+        
       for (const element of sehrShops) {
-        const obj1 = element;
+        const obj2 = element;
 
-        const obj2 = business.find((item) => item.userId === obj1.id);
+        const obj1 = response.find((item) => item.id === obj2.userId);
         if (obj2) {
-          obj1.category = obj2.district;
-          obj1.businessName = obj2.businessName;
-          obj1.ownerName = obj2.ownerName;
-          obj1.sehrCode = obj2.sehrCode;
+          obj2["isLocked"] = obj1.isLocked
+          obj2["reward"] = obj1.reward.title
+
         }
       }
-      sehrShops = sehrShops.filter(obj => obj.hasOwnProperty("sehrCode"));
-      sehrShops = sehrShops.filter(obj => obj.sehrCode !== 'string' && obj.sehrCode !== null);
-      // sehrShops = sehrShops.filter((customer)=> customer.isLocked === true)
+        console.log('sehrshops :', sehrShops);
+      
+      // sehrShops = sehrShops.filter(obj => obj.hasOwnProperty("sehrCode"));
+      sehrShops = sehrShops.filter((customer)=> customer.isLocked === true)
       sehrShops.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-
       sehrShops = sehrShops.map(obj => {
         const updatedObj = {};
         for (const [key, value] of Object.entries(obj)) {
@@ -60,6 +59,7 @@ const LimitedSehrShops = () => {
         "shop name",
         "sehr code",
         "mobile number",
+        "sehr package",
         "category",
         "province", 
         "division",
@@ -137,31 +137,32 @@ const LimitedSehrShops = () => {
       setCurrentPage(currentPage + 1)
     }
   }
-  // const EditModal = (data)=>{
-  //   setEditFormData(data);
-  //   setEditModalVisible(true);
-  // }
-  // const ViewModal = (data)=>{
-  //   setEditFormData(data)
-  //   setViewModalVisible(true);
-  // }
-  // const handleDelete = (item)=>{
-  //   Swal.fire({
-  //     title: 'Are you sure you want to delete this user?',
-  //     text: 'You won\'t be able to revert this!',
-  //     icon: 'warning',
-  //     showCancelButton: true,
-  //     confirmButtonText: 'Confirm',
-  //     cancelButtonText: 'Cancel',
-  //     reverseButtons: true,
-  //   }).then(async(result) => {
-  //     if (result.isConfirmed) {
-  //       await AxiosInstance.delete(`/api/user/${item?.id}/delete`)
-  //       await AxiosInstance.delete(`/api/business/${item?.id}`)
-  //       await fetchData()
-  //     }
-  //   });
-  // }
+  const EditModal = (data)=>{
+    setEditFormData(data);
+    setEditModalVisible(true);
+  }
+  const ViewModal = (data)=>{
+    setEditFormData(data)
+    setViewModalVisible(true);
+  }
+  const handleDelete = (item)=>{
+    Swal.fire({
+      title: 'Are you sure you want to delete this user?',
+      text: 'You won\'t be able to revert this!',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Confirm',
+      cancelButtonText: 'Cancel',
+      reverseButtons: true,
+      
+    }).then(async(result) => {
+      if (result.isConfirmed) {
+        // await AxiosInstance.delete(`/api/user/${item?.id}/delete`)
+        await AxiosInstance.delete(`/api/business/${item?.id}`)
+        await fetchData()
+      }
+    });
+  }
 
   // Function to set the user as limited or locked
   const handleLimit = (item)=>{
@@ -175,7 +176,7 @@ const LimitedSehrShops = () => {
       reverseButtons: true,
     }).then(async(result) => {
       if (result.isConfirmed) {
-        await AxiosInstance.post(`/api/user/${item?.id}/unlock`)
+        await AxiosInstance.post(`/api/user/${item?.id}/lock`)
         await fetchData()
       }
     });
@@ -199,25 +200,26 @@ const LimitedSehrShops = () => {
         <td>{item.businessName}</td>
         <td>{item.sehrCode}</td>
         <td>{item.mobile}</td>
+        <td>{item.reward}</td>
         <td>{item.category}</td>
         <td>{item.province}</td>
         <td>{item.division}</td>
         <td>{item.district}</td>
         <td>{item.tehsil}</td>
         <td>
-          <div className='d-flex justify-content-between flex-wrap' style={{ width:"100px" }}>
-          {/* <button className="btn btn-info text-light" onClick={()=>ViewModal({...item,action: 'view'})}>
+          <div className='d-flex justify-content-between flex-wrap' style={{ width:"360px" }}>
+          <button className="btn btn-info text-light" onClick={()=>ViewModal({...item,action: 'view'})}>
             <CIcon icon={cilViewColumn} size="sm" /> View
           </button>
           <button className="btn btn-success text-light" onClick={()=>EditModal({...item,action: 'edit'})}>
             <CIcon icon={cilPenAlt} size="sm" /> Update
-          </button> */}
-          <button className="btn btn-warning ms-2 text-light" onClick={()=> handleLimit(item)}>
-            <CIcon icon={cilLockLocked} size="sm"/> UnLimit
           </button>
-          {/* <button className="btn btn-warning ms-2 text-light" onClick={()=> handleDelete(index)}>
+          <button className="btn btn-warning ms-2 text-light" onClick={()=> handleLimit(item)}>
+            <CIcon icon={cilLockLocked} size="sm"/> Limit
+          </button>
+          <button className="btn btn-warning ms-2 text-light" onClick={()=> handleDelete(item)}>
             <CIcon icon={cilTrash} size="sm" /> delete
-          </button> */}
+          </button>
           </div>
         </td>
       </tr>
@@ -417,7 +419,7 @@ const LimitedSehrShops = () => {
       </CModalBody>
     </CModal>
       <div className="card">
-        <div className="card-header">Limited Sehr Shops</div>
+        <div className="card-header">Sehr Shops</div>
         <div className="card-body">
           <div>
             <div className="d-flex my-2 justify-content-end">

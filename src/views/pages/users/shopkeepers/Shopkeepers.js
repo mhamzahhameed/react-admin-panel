@@ -24,33 +24,28 @@ const Shopkeepers = () => {
   const fetchData = async () => {
     // let token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Iis5MjMwNzg0ODg5MDMiLCJzdWIiOjEsImlhdCI6MTY4Nzc5OTMyMCwiZXhwIjoxNjg3ODg1NzIwfQ.xyM4Ha6iDlnSVqdI5jNQ2YQOJgdW0mgiigTT88HWU4A';
     try {
-      // let count = await AxiosInstance.get(`/api/user`)
+      let count = await AxiosInstance.get(`/api/user`)
       let businessCount = await AxiosInstance.get(`/api/business/all`)
-      // count = count.data.total;
+      count = count.data.total;
       businessCount = businessCount.data.total;
-        // let response = await AxiosInstance.get(`/api/user?limit=${count}`)
-        // response = response.data.users;
+        let response = await AxiosInstance.get(`/api/user?limit=${count}`)
+        response = response.data.users;
         let business = await AxiosInstance.get(`/api/business/all?limit=${businessCount}`)
         business = business.data.businesses;
-        let shopKeepers =  business.filter(item => {
-          return (item.sehrCode === "not defined" || item.sehrCode === 'null' || item.sehrCode === "" || item.sehrCode === null);
-        });
-      let shopKeeper = shopKeepers;
-      // for (const element of shopKeeper) {
-      //   const obj1 = element;
+        console.log('business', business);
+        let shopKeeper = business.filter(obj => obj.sehrCode === 'string' || obj.sehrCode === null);
+        
+      for (const element of shopKeeper) {
+        const obj2 = element;
 
-      //   const obj2 = business.find((item) => item.userId === obj1.id);
-      //   if (obj2) {
-      //     obj1.category = obj2.district;
-      //     obj1.businessName = obj2.businessName;
-      //     obj1.ownerName = obj2.ownerName;
-      //     obj1.sehrCode = obj2.sehrCode;
-      //     obj1.businessId = obj2.id;
-      //   }
-      // }
-   
-      shopKeeper = shopKeeper.filter(obj => obj.sehrCode === 'string' || obj.sehrCode === null);
+        const obj1 = response.find((item) => item.id === obj2.userId);
+        if (obj2) {
+          obj2["reward"] = obj1.reward.title
+        }
+      }
       shopKeeper.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+      // sehrShops = sehrShops.filter((customer)=> customer.isLocked === false)
+
 
       
       shopKeeper = shopKeeper.map(obj => {
@@ -65,6 +60,7 @@ const Shopkeepers = () => {
         "owner name",
         "shop name",
         "mobile number",
+        "sehr package",
         "category",
         "province", 
         "division",
@@ -420,7 +416,7 @@ num = String(num).padStart(lastdigits.length, '0');
       reverseButtons: true,
     }).then(async(result) => {
       if (result.isConfirmed) {
-        // await AxiosInstance.delete(`/api/user/${item?.id}/delete`)
+        await AxiosInstance.delete(`/api/user/${item?.id}/delete`)
         await AxiosInstance.delete(`/api/business/${item?.id}`)
         await fetchData()
       }
@@ -437,6 +433,7 @@ num = String(num).padStart(lastdigits.length, '0');
         <td>{item.ownerName}</td>
         <td>{item.businessName}</td>
         <td>{item.mobile}</td>
+        <td>{item.reward}</td>
         <td>{item.category}</td>
         <td>{item.province}</td>
         <td>{item.division}</td>

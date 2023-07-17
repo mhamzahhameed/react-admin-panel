@@ -21,20 +21,30 @@ const SehrShops = () => {
     }, [ searchValue ])
   const fetchData = async () => {
     try {
-        let businessCount = await AxiosInstance.get('/api/business/all')
-        businessCount = businessCount.data.total;
-        // let response = await AxiosInstance.get("/api/user?limit=0")
-        // response = response.data.users;
+      let count = await AxiosInstance.get(`/api/user`)
+      let businessCount = await AxiosInstance.get(`/api/business/all`)
+      count = count.data.total;
+      businessCount = businessCount.data.total;
+        let response = await AxiosInstance.get(`/api/user?limit=${count}`)
+        response = response.data.users;
         let business = await AxiosInstance.get(`/api/business/all?limit=${businessCount}`)
         business = business.data.businesses;
-        let sehrShops =  business.filter(item => {
-          return (item.sehrCode !== "not defined" || item.sehrCode !== 'null' || item.sehrCode !== "" || item.sehrCode !== null);
-        });
+        let sehrShops = business.filter(obj => obj.sehrCode !== null);
+        
+      for (const element of sehrShops) {
+        const obj2 = element;
+
+        const obj1 = response.find((item) => item.id === obj2.userId);
+        if (obj2) {
+          obj2["isLocked"] = obj1.isLocked
+          obj2["reward"] = obj1.reward.title
+
+        }
+      }
         console.log('sehrshops :', sehrShops);
       
-      sehrShops = sehrShops.filter(obj => obj.hasOwnProperty("sehrCode"));
-      sehrShops = sehrShops.filter(obj => obj.sehrCode !== 'string' && obj.sehrCode !== null);
-      // sehrShops = sehrShops.filter((customer)=> customer.isLocked === false)
+      // sehrShops = sehrShops.filter(obj => obj.hasOwnProperty("sehrCode"));
+      sehrShops = sehrShops.filter((customer)=> customer.isLocked === false)
       sehrShops.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
       sehrShops = sehrShops.map(obj => {
         const updatedObj = {};
@@ -49,6 +59,7 @@ const SehrShops = () => {
         "shop name",
         "sehr code",
         "mobile number",
+        "sehr package",
         "category",
         "province", 
         "division",
@@ -189,6 +200,7 @@ const SehrShops = () => {
         <td>{item.businessName}</td>
         <td>{item.sehrCode}</td>
         <td>{item.mobile}</td>
+        <td>{item.reward}</td>
         <td>{item.category}</td>
         <td>{item.province}</td>
         <td>{item.division}</td>
