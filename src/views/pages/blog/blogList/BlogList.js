@@ -1,4 +1,4 @@
-import { cilDelete, cilPenAlt, cilViewColumn } from '@coreui/icons'
+import { cilViewColumn } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
 import { CButton, CForm,  CFormInput,  CFormTextarea,  CImage,  CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle } from '@coreui/react'
 import React, { useEffect, useState } from 'react'
@@ -107,30 +107,30 @@ const BlogList = () => {
       setCurrentPage(currentPage + 1)
     }
   }
-  const EditModal = (data)=>{
-    setEditFormData(data);
-    setEditModalVisible(true);
-  }
+  // const EditModal = (data)=>{
+  //   setEditFormData(data);
+  //   setEditModalVisible(true);
+  // }
   const ViewModal = (data)=>{
     setEditFormData(data)
     setViewModalVisible(true);
   }
-  const handleDelete = (id)=>{
-    // Swal.fire({
-    //   title: 'Are you sure you want to limit this user?',
-    //   text: 'You won\'t be able to revert this!',
-    //   icon: 'warning',
-    //   showCancelButton: true,
-    //   confirmButtonText: 'Confirm',
-    //   cancelButtonText: 'Cancel',
-    //   reverseButtons: true,
-    // }).then((result) => {
-    //   if (result.isConfirmed) {
-    //     // Perform the delete operation
-    //     console.log(id)
-    //   }
-    // });
-  }
+  // const handleDelete = (id)=>{
+  //   // Swal.fire({
+  //   //   title: 'Are you sure you want to limit this user?',
+  //   //   text: 'You won\'t be able to revert this!',
+  //   //   icon: 'warning',
+  //   //   showCancelButton: true,
+  //   //   confirmButtonText: 'Confirm',
+  //   //   cancelButtonText: 'Cancel',
+  //   //   reverseButtons: true,
+  //   // }).then((result) => {
+  //   //   if (result.isConfirmed) {
+  //   //     // Perform the delete operation
+  //   //     console.log(id)
+  //   //   }
+  //   // });
+  // }
   // Handle Save Changes button onclicking
   const handleSaveChanges = async() => {
     let response = await AxiosInstance.put('/api/user/update-profile',JSON.stringify(editFormData));
@@ -154,12 +154,12 @@ const BlogList = () => {
           <button className="btn btn-info text-light" onClick={()=>ViewModal(item)}>
             <CIcon icon={cilViewColumn} size="sm" /> View
           </button>
-          <button className="btn btn-success text-light" onClick={()=>EditModal({...item,action: 'edit'})}>
+          {/* <button className="btn btn-success text-light" onClick={()=>EditModal({...item,action: 'edit'})}>
             <CIcon icon={cilPenAlt} size="sm" /> Update
-          </button>
-          <button className="btn btn-warning ms-2 text-light" onClick={()=> handleDelete(index)}>
+          </button> */}
+          {/* <button className="btn btn-warning ms-2 text-light" onClick={()=> handleDelete(index)}>
             <CIcon icon={cilDelete} size="sm"/> Delete
-          </button>
+          </button> */}
           </div>
         </td>
       </tr>
