@@ -43,7 +43,6 @@ const SehrCodeRequests = () => {
           obj2["reward"] = obj1.reward.title
         }
       }
-      let filterData = []
       shopKeeper.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
       shopKeeper = shopKeeper.filter((item)=> item?.reward === 'Small Business' || item.reward === 'Large Business'|| item.reward === 'Mega Business' || item.reward === 'SEHR CODED SHOP'  )
       
