@@ -1,4 +1,4 @@
-import { cilPenAlt, cilShortText, cilTrash, cilViewColumn } from '@coreui/icons'
+import { cilShortText, cilTrash, cilViewColumn } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
 import { CButton, CForm, CFormInput,  CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle } from '@coreui/react';
 import React, { useEffect, useState } from 'react'
@@ -138,10 +138,10 @@ const SehrCodeRequests = () => {
       setCurrentPage(currentPage + 1)
     }
   }
-  const EditModal = (data)=>{
-    setEditFormData(data);
-    setEditModalVisible(true);
-  }
+  // const EditModal = (data)=>{
+  //   setEditFormData(data);
+  //   setEditModalVisible(true);
+  // }
   const ViewModal = (data)=>{
     setEditFormData(data)
     setViewModalVisible(true);
@@ -445,13 +445,13 @@ num = String(num).padStart(lastdigits.length, '0');
         
       
         <td>
-          <div className='d-flex justify-content-between flex-wrap' style={{ width:"480px" }}>
+          <div className='d-flex justify-content-between flex-wrap' style={{ width:"370px" }}>
           <button className="btn btn-info text-light" onClick={()=>ViewModal({...item,action: 'view'})}>
             <CIcon icon={cilViewColumn} size="sm" /> View
           </button>
-          <button className="btn btn-success text-light" onClick={()=>EditModal({...item,action: 'edit'})}>
+          {/* <button className="btn btn-success text-light" onClick={()=>EditModal({...item,action: 'edit'})}>
             <CIcon icon={cilPenAlt} size="sm" /> Update
-          </button>
+          </button> */}
           <button className="btn btn-info ms-2 text-light" onClick={()=> generateCode(item.province,item.division,item.district,item.tehsil,item.businessId)}>
             <CIcon icon={cilShortText} size="sm" /> Generate sehr code
           </button>

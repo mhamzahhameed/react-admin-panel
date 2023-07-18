@@ -1,19 +1,25 @@
-import { CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle } from '@coreui/react'
+import { cilPen } from '@coreui/icons'
+import CIcon from '@coreui/icons-react'
+import { CButton, CDropdown, CDropdownItem, CDropdownMenu, CDropdownToggle, CForm, CFormInput, CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle } from '@coreui/react'
 import React, { useEffect, useState } from 'react'
 import AxiosInstance from 'src/utils/axiosInstance'
 
 const UserListByPackage = () => {
   const [title, setTitle] = useState([])
-  const [userTitle] = useState(['#', 'name', 'package', 'cell', 'cnic', "tehsil", 'district', "division", 'province', 'createdat'])
+  const [userTitle] = useState(['#', 'name', 'package', 'cell', "tehsil", 'district', "division", 'province', 'createdat', 'action'])
   const [data, setData] = useState([])
   // const [userByPackage, setUserByPackage] = useState([])
   const [packageList, setPackageList] = useState([])
   const [userListByPackage, setUserListByPackage] = useState([])
   const [detailModal, setDetailModal] = useState(false)
+  const [editModalVisible, setEditModalVisible] = useState(false)
   const [currentPage, setCurrentPage] = useState(1)
   const [userCurrentPage, setUserCurrentPage] = useState(1)
   const [perPage, setPerPage] = useState(10)
   const [userPerPage, setUserPerPage] = useState(10)
+  const [editFormData, setEditFormData] = useState({});
+  const [userData, setUserData] = useState({});
+
   
   useEffect(() => {
       fetchData()
@@ -140,6 +146,34 @@ const UserListByPackage = () => {
     setDetailModal(true)
     setUserListByPackage(data.filter((user) => user.reward.title === item.title))
   }
+
+  const handleDropdownItemClick = (item)=> {
+    console.log('item :',item);
+    setEditFormData(item)
+  }
+  const EditModalHandler = (item)=>{
+    setUserData(item)
+    setEditModalVisible(true)
+  }
+
+  const HandleOnClose = ()=> {
+    setEditFormData({})
+    setUserData({})
+    setEditModalVisible(false)
+  }
+
+  const handleEditPackage = async () => {
+    try {
+      await AxiosInstance.post(`'/api/Reward/${Number(editFormData.id)}/subscribe/${Number(userData.id)}`)
+
+      await fetchData()
+      setEditModalVisible(false);
+      setEditFormData({});
+      setUserData({})
+      } catch (error) {
+        console.error(error)
+      }
+    }
   
   // Render the current page's records
   const renderData = () => {
@@ -166,12 +200,16 @@ const UserListByPackage = () => {
         <td>{item.firstName+" "+item.lastName}</td>
         <td>{item.reward.title}</td>
         <td>{item.mobile}</td>
-        <td>{item.cnic}</td>
         <td>{item.tehsil}</td>
         <td>{item.district}</td>
         <td>{item.division}</td>
         <td>{item.province}</td>
         <td>{item.createdAt?.slice(0, 10)}</td>
+        <td>
+        <CButton className="ms-2 mb-2" onClick={() => EditModalHandler(item)}>
+        <CIcon icon={cilPen} size="lg" className='mt-1' /> <p className=' my-1 d-inline-block'> Edit Package</p>
+        </CButton>
+        </td>
       </tr>
     ))
   }
@@ -187,6 +225,39 @@ const UserListByPackage = () => {
     
   return (
     <div className="container">
+      <CModal alignment="center" visible={editModalVisible} onClose={() => HandleOnClose()}>
+        <CModalHeader>
+          <CModalTitle>Add Commission</CModalTitle>
+        </CModalHeader>
+        <CModalBody>
+        <CDropdown className="custom-dropdown mb-3" size="lg">
+      <CDropdownToggle caret>Dropdown</CDropdownToggle>
+      <CDropdownMenu className="custom-dropdown-menu" style={{ zIndex: '100' }}>
+        {packageList.map((item) => (
+          <CDropdownItem key={item.id} onClick={() => handleDropdownItemClick(item)}>
+            {item.title}
+          </CDropdownItem>
+        ))}
+      </CDropdownMenu>
+    </CDropdown>
+          <CForm>
+            <CFormInput
+              type="text"
+              id="title"
+              label="Title"
+              aria-describedby="name"
+              value={editFormData.title || ''}
+              disabled
+            />
+          </CForm>
+        </CModalBody>
+        <CModalFooter>
+          <CButton color="secondary" onClick={() => HandleOnClose()}>
+            Close
+          </CButton>
+          <CButton color="primary" onClick={() => handleEditPackage()}>Save Package</CButton>
+        </CModalFooter>
+      </CModal>
     <CModal alignment="center" size='xl' visible={detailModal} onClose={() => {
       setDetailModal(false)
       setUserCurrentPage(1)

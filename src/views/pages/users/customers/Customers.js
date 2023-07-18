@@ -1,4 +1,4 @@
-import { cilLockLocked, cilPenAlt, cilTrash, cilViewColumn } from '@coreui/icons'
+import { cilLockLocked, cilTrash, cilViewColumn } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
 import { CButton, CForm,  CFormInput,  CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle } from '@coreui/react'
 import React, { useEffect, useState } from 'react'
@@ -123,10 +123,10 @@ const Customers = () => {
       setCurrentPage(currentPage + 1)
     }
   }
-  const EditModal = (data)=>{
-    setEditFormData(data);
-    setEditModalVisible(true);
-  }
+  // const EditModal = (data)=>{
+  //   setEditFormData(data);
+  //   setEditModalVisible(true);
+  // }
   const ViewModal = (data)=>{
     setEditFormData(data)
     setViewModalVisible(true);
@@ -189,13 +189,13 @@ const Customers = () => {
         <td>{item.district}</td>
         <td>{item.tehsil}</td>
         <td>
-          <div className='d-flex justify-content-between flex-wrap' style={{ width:"360px" }}>
+          <div className='d-flex justify-content-between flex-wrap' style={{ width:"270px" }}>
           <button className="btn btn-info text-light" onClick={()=>ViewModal(item)}>
             <CIcon icon={cilViewColumn} size="sm" /> View
           </button>
-          <button className="btn btn-success text-light" onClick={()=>EditModal({...item,action: 'edit'})}>
+          {/* <button className="btn btn-success text-light" onClick={()=>EditModal({...item,action: 'edit'})}>
             <CIcon icon={cilPenAlt} size="sm" /> Update
-          </button>
+          </button> */}
           <button className="btn btn-warning ms-2 text-light" onClick={()=> handleLimit(item)}>
             <CIcon icon={cilLockLocked} size="sm"/> Limit
           </button>
