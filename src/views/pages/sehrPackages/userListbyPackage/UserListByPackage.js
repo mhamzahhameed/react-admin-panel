@@ -164,7 +164,7 @@ const UserListByPackage = () => {
 
   const handleEditPackage = async () => {
     try {
-      await AxiosInstance.post(`'/api/Reward/${Number(editFormData.id)}/subscribe/${Number(userData.id)}`)
+      await AxiosInstance.post(`/api/Reward/${Number(editFormData.id)}/subscribe/${Number(userData.id)}`)
 
       await fetchData()
       setEditModalVisible(false);
