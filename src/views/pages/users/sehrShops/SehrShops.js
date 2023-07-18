@@ -63,6 +63,7 @@ const SehrShops = () => {
         "mobile number",
         "sehr package",
         "category",
+        'staff code',
         "province", 
         "division",
         "district",
@@ -204,6 +205,7 @@ const SehrShops = () => {
         <td>{item.mobile}</td>
         <td>{item.reward}</td>
         <td>{item.category}</td>
+        <td>{item.city}</td>
         <td>{item.province}</td>
         <td>{item.division}</td>
         <td>{item.district}</td>
