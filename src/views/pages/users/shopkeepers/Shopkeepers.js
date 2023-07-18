@@ -44,6 +44,8 @@ const Shopkeepers = () => {
         }
       }
       shopKeeper.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+      shopKeeper = shopKeeper.filter((item)=> item?.reward === 'Small Business' || item.reward === 'Large Business'|| item.reward === 'Mega Business' || item.reward === 'SEHR CODED SHOP'  )
+
       // sehrShops = sehrShops.filter((customer)=> customer.isLocked === false)
 
 

@@ -1,4 +1,4 @@
-import { cilPenAlt, cilShortText, cilViewColumn } from '@coreui/icons'
+import { cilPenAlt, cilShortText, cilTrash, cilViewColumn } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
 import { CButton, CForm, CFormInput,  CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle } from '@coreui/react';
 import React, { useEffect, useState } from 'react'
@@ -32,24 +32,24 @@ const SehrCodeRequests = () => {
         response = response.data.users;
         let business = await AxiosInstance.get(`/api/business/all?limit=${businessCount}`)
         business = business.data.businesses;
-        let shopKeepers =  response.filter(item => {
-          return item.roles.some(role => role.role === 'shopKeeper');
-        });
-      let shopKeeper = shopKeepers;
+        console.log('business', business);
+        let shopKeeper = business.filter(obj => obj.sehrCode === 'string' || obj.sehrCode === null);
+        
       for (const element of shopKeeper) {
-        const obj1 = element;
+        const obj2 = element;
 
-        const obj2 = business.find((item) => item.userId === obj1.id);
+        const obj1 = response.find((item) => item.id === obj2.userId);
         if (obj2) {
-          obj1.category = obj2.district;
-          obj1.businessName = obj2.businessName;
-          obj1.ownerName = obj2.ownerName;
-          obj1.sehrCode = obj2.sehrCode;
-          obj1.businessId = obj2.id;
+          obj2["reward"] = obj1.reward.title
         }
       }
-   
-      shopKeeper = shopKeeper.filter(obj => obj.sehrCode === 'string' || obj.sehrCode === null);
+      let filterData = []
+      shopKeeper.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+      shopKeeper = shopKeeper.filter((item)=> item?.reward === 'Small Business' || item.reward === 'Large Business'|| item.reward === 'Mega Business' || item.reward === 'SEHR CODED SHOP'  )
+      
+      // sehrShops = sehrShops.filter((customer)=> customer.isLocked === false)
+
+
       
       shopKeeper = shopKeeper.map(obj => {
         const updatedObj = {};
@@ -63,6 +63,7 @@ const SehrCodeRequests = () => {
         "owner name",
         "shop name",
         "mobile number",
+        "sehr package",
         "category",
         "province", 
         "division",
@@ -407,6 +408,23 @@ num = String(num).padStart(lastdigits.length, '0');
       icon: 'success',
     });
   };
+  const handleDelete = (item)=>{
+    Swal.fire({
+      title: 'Are you sure you want to delete this user?',
+      text: 'You won\'t be able to revert this!',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Confirm',
+      cancelButtonText: 'Cancel',
+      reverseButtons: true,
+    }).then(async(result) => {
+      if (result.isConfirmed) {
+        await AxiosInstance.delete(`/api/user/${item?.id}/delete`)
+        await AxiosInstance.delete(`/api/business/${item?.id}`)
+        await fetchData()
+      }
+    });
+  }
   
   // Render the current page's records
   const renderData = () => {
@@ -418,6 +436,7 @@ num = String(num).padStart(lastdigits.length, '0');
         <td>{item.ownerName}</td>
         <td>{item.businessName}</td>
         <td>{item.mobile}</td>
+        <td>{item.reward}</td>
         <td>{item.category}</td>
         <td>{item.province}</td>
         <td>{item.division}</td>
@@ -427,7 +446,7 @@ num = String(num).padStart(lastdigits.length, '0');
         
       
         <td>
-          <div className='d-flex justify-content-between flex-wrap' style={{ width:"380px" }}>
+          <div className='d-flex justify-content-between flex-wrap' style={{ width:"480px" }}>
           <button className="btn btn-info text-light" onClick={()=>ViewModal({...item,action: 'view'})}>
             <CIcon icon={cilViewColumn} size="sm" /> View
           </button>
@@ -436,6 +455,9 @@ num = String(num).padStart(lastdigits.length, '0');
           </button>
           <button className="btn btn-info ms-2 text-light" onClick={()=> generateCode(item.province,item.division,item.district,item.tehsil,item.businessId)}>
             <CIcon icon={cilShortText} size="sm" /> Generate sehr code
+          </button>
+          <button className="btn btn-warning ms-2 text-light" onClick={()=> handleDelete(item)}>
+            <CIcon icon={cilTrash} size="sm" /> delete
           </button>
           </div>
         </td>
@@ -532,7 +554,7 @@ num = String(num).padStart(lastdigits.length, '0');
     </CModal>
     <CModal alignment="center" visible={viewModalVisible} size='sm' onClose={() => setViewModalVisible(false)}>
       <CModalHeader>
-        <CModalTitle>View Shopkeeper Details</CModalTitle>
+        <CModalTitle>View SehrCodeRequest Details</CModalTitle>
       </CModalHeader>
       <CModalBody>
       <CForm>
