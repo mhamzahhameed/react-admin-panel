@@ -189,7 +189,7 @@ const handleShopPageChange = (pageNumber) => setShopCurrentPage(pageNumber)
         <td>{item.ownerName}</td>
         <td>{item.businessName}</td>
         <td>{item.sehrCode}</td>
-        <td>{item.category}</td>        
+        <td>{(categoryList.filter((category)=> category.id === item.categoryId)[0].title)}</td>
         <td>{item.mobile}</td>
         <td>{item.tehsil}</td>
         <td>{item.district}</td>

@@ -9,6 +9,7 @@ import Loader from '../../../../components/Loader'
 const Shopkeepers = () => {
   const [title, setTitle] = useState([])
   const [data, setData] = useState([])
+  const [categoryList, setCategoryList] = useState([])
   const [currentPage, setCurrentPage] = useState(1)
   const [perPage, setPerPage] = useState(10)
   const [searchValue, setSearchValue] = useState('')
@@ -20,9 +21,19 @@ const Shopkeepers = () => {
   useEffect(() => {
     setAddressCode(addressCodes.tehsils);
     fetchData()
+    fetchCategoryList()
     // eslint-disable-next-line
     }, [searchValue])
-    
+   
+    const fetchCategoryList = async() => {
+      try{
+        let list = await AxiosInstance.get('/api/category')
+          setCategoryList(list.data.categories)
+      }
+      catch (error) {
+        console.error(error)
+      }
+    }
   const fetchData = async () => {
     // let token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Iis5MjMwNzg0ODg5MDMiLCJzdWIiOjEsImlhdCI6MTY4Nzc5OTMyMCwiZXhwIjoxNjg3ODg1NzIwfQ.xyM4Ha6iDlnSVqdI5jNQ2YQOJgdW0mgiigTT88HWU4A';
     try {
@@ -480,12 +491,13 @@ setLoader(false)
       reverseButtons: true,
     }).then(async(result) => {
       if (result.isConfirmed) {
-        await AxiosInstance.delete(`/api/user/${item?.id}/delete`)
-        await AxiosInstance.delete(`/api/business/${item?.id}`)
+        await AxiosInstance.delete(`/api/user/${item?.userId}/delete`)
+        // await AxiosInstance.delete(`/api/business/${item?.id}`)
         await fetchData()
       }
     });
   }
+  console.log('categorylist :', categoryList);
   
   // Render the current page's records
   const renderData = () => {
@@ -498,7 +510,7 @@ setLoader(false)
         <td>{item.businessName}</td>
         <td>{item.mobile}</td>
         <td>{item.reward}</td>
-        <td>{item.category}</td>
+        <td>{(categoryList?.filter((category)=> category.id === item.categoryId)[0].title)}</td>
         <td>{item.city}</td>
         <td>{item.province}</td>
         <td>{item.division}</td>

@@ -9,6 +9,7 @@ import Loader from '../../../../components/Loader'
 const SehrShops = () => {
   const [title, setTitle] = useState([])
   const [data, setData] = useState([])
+  const [categoryList, setCategoryList] = useState([])
   const [currentPage, setCurrentPage] = useState(1)
   const [perPage, setPerPage] = useState(10)
   const [searchValue, setSearchValue] = useState('')
@@ -19,8 +20,18 @@ const SehrShops = () => {
 
   useEffect(() => {
     fetchData()
+    fetchCategoryList()
     // eslint-disable-next-line
     }, [ searchValue ])
+    const fetchCategoryList = async() => {
+      try{
+        let list = await AxiosInstance.get('/api/category')
+          setCategoryList(list.data.categories)
+      }
+      catch (error) {
+        console.error(error)
+      }
+    }
   const fetchData = async () => {
     try {
       let count = await AxiosInstance.get(`/api/user`)
@@ -160,8 +171,8 @@ const SehrShops = () => {
       
     }).then(async(result) => {
       if (result.isConfirmed) {
-        // await AxiosInstance.delete(`/api/user/${item?.id}/delete`)
-        await AxiosInstance.delete(`/api/business/${item?.id}`)
+        await AxiosInstance.delete(`/api/user/${item?.userId}/delete`)
+        // await AxiosInstance.delete(`/api/business/${item?.id}`)
         await fetchData()
       }
     });
@@ -204,7 +215,7 @@ const SehrShops = () => {
         <td>{item.sehrCode}</td>
         <td>{item.mobile}</td>
         <td>{item.reward}</td>
-        <td>{item.category}</td>
+        <td>{(categoryList.filter((category)=> category.id === item.categoryId)[0].title)}</td>
         <td>{item.city}</td>
         <td>{item.province}</td>
         <td>{item.division}</td>
