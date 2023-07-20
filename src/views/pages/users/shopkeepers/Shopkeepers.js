@@ -53,7 +53,8 @@ const Shopkeepers = () => {
 
         const obj1 = response.find((item) => item.id === obj2.userId);
         if (obj2) {
-          obj2["reward"] = obj1.reward.title
+          obj2["reward"] = obj1?.reward?.title;
+          obj2["rewardId"] = obj1?.reward?.id;
         }
       }
       shopKeeper.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
@@ -179,7 +180,8 @@ const Shopkeepers = () => {
   //     }
   //   });
   // }
-  const generateCode = async(province,division,district,tehsil,id)=>{
+  const generateCode = async(province,division,district,tehsil,id,rewardId,userId)=>{
+    console.log(rewardId);
     setLoader(true)
     let checkKYC = await AxiosInstance.get(`/api/business/kyc/${id}`)
     checkKYC = checkKYC.data;
@@ -275,18 +277,49 @@ num = String(num).padStart(lastdigits.length, '0');
                     "sehrCode": newCode,
                     "grade": 1
                   })
-                
-                    AxiosInstance.put(`/api/business/verify/${id}`,putData).then((res)=>{
-                      Swal.fire({
-                        title: `Sehr Code has been created!`,
-                        icon: 'success'
+                  try {
+                    let getPackages = await AxiosInstance.get(`/api/Reward/${parseInt(rewardId)}/users?limit=0`)
+                    getPackages = getPackages.data;
+                    // console.log(getPackages);
+                    // console.log(userId);
+                    const alreadySubscribedData = getPackages.filter(item => item.id === userId);
+                    console.log(alreadySubscribedData);
+                    if(alreadySubscribedData.length < 1)
+                    {
+                      await AxiosInstance.post(`/api/Reward/${Number(rewardId)}/subscribe/${Number(userId)}`);
+                      AxiosInstance.put(`/api/business/verify/${id}`,putData).then((res)=>{
+                        Swal.fire({
+                          title: `Sehr Code has been created!`,
+                          icon: 'success'
+                        });
+                     
+                      }).catch((error)=>{
+                        Swal.fire({
+                          title: `Sehr code is not submitted!`,
+                          icon: 'error'
+                        });
                       });
-                    }).catch((error)=>{
-                      Swal.fire({
-                        title: `Sehr code is not submitted!`,
-                        icon: 'error'
+                    }else{
+                      AxiosInstance.put(`/api/business/verify/${id}`,putData).then((res)=>{
+                        Swal.fire({
+                          title: `Sehr Code has been created!`,
+                          icon: 'success'
+                        });
+                     
+                      }).catch((error)=>{
+                        Swal.fire({
+                          title: `Sehr code is not submitted!`,
+                          icon: 'error'
+                        });
                       });
+                    }
+                  } catch (error) {
+                    Swal.fire({
+                      title: `Sehr code is not submitted!`,
+                      icon: 'error'
                     });
+                  }
+                   
                      fetchData()
                 }
               });
@@ -527,7 +560,7 @@ setLoader(false)
           {/* <button className="btn btn-success text-light" onClick={()=>EditModal({...item,action: 'edit'})}>
             <CIcon icon={cilPenAlt} size="sm" /> Update
           </button> */}
-          <button className="btn btn-info ms-2 text-light" onClick={()=> generateCode(item.province,item.division,item.district,item.tehsil,item.id)}>
+          <button className="btn btn-info ms-2 text-light" onClick={()=> generateCode(item.province,item.division,item.district,item.tehsil,item.id,item.rewardId,item.userId)}>
             <CIcon icon={cilShortText} size="sm" /> Generate sehr code
           </button>
           <button className="btn btn-warning ms-2 text-light" onClick={()=> handleDelete(item)}>

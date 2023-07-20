@@ -1,5 +1,4 @@
 import axios from 'axios';
-import store from '../store.js';
 
 const AxiosInstance = axios.create({
   baseURL: 'https://api.sehrapp.com',
@@ -8,23 +7,12 @@ const AxiosInstance = axios.create({
   },
 });
 
-let token = store.getState().token;
-if (!token) {
-  token = localStorage.getItem('token');
+function getToken() {
+  return localStorage.getItem('token');
 }
 
-updateAxiosAuthorizationHeader(token);
-
-// Subscribe to Redux store changes
-store.subscribe(() => {
-  const newToken = store.getState().token;
-  if (newToken !== token) {
-    token = newToken;
-    updateAxiosAuthorizationHeader(token);
-  }
-});
-
-function updateAxiosAuthorizationHeader(token) {
+function updateAxiosAuthorizationHeader() {
+  const token = getToken();
   if (token) {
     AxiosInstance.defaults.headers.common['Authorization'] = `Bearer ${token}`;
   } else {
@@ -32,6 +20,14 @@ function updateAxiosAuthorizationHeader(token) {
   }
 }
 
+// Initial setup
+updateAxiosAuthorizationHeader();
 
+// Listen for changes in localStorage across different tabs/windows
+window.addEventListener('storage', (event) => {
+  if (event.key === 'token') {
+    updateAxiosAuthorizationHeader();
+  }
+});
 
 export default AxiosInstance;
