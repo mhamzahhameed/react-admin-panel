@@ -15,11 +15,13 @@ if (!token) {
 
 updateAxiosAuthorizationHeader(token);
 
+// Subscribe to Redux store changes
 store.subscribe(() => {
   const newToken = store.getState().token;
   if (newToken !== token) {
     token = newToken;
     updateAxiosAuthorizationHeader(token);
+    saveTokenToLocalStorage(token); // Save the new token to localStorage
   }
 });
 
@@ -31,6 +33,8 @@ function updateAxiosAuthorizationHeader(token) {
   }
 }
 
-
+function saveTokenToLocalStorage(token) {
+  localStorage.setItem('token', token);
+}
 
 export default AxiosInstance;
