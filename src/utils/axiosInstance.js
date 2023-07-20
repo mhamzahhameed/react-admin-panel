@@ -15,13 +15,6 @@ if (!token) {
 
 updateAxiosAuthorizationHeader(token);
 
-window.addEventListener('storage', (event) => {
-  if (event.key === 'token') {
-    token = event.newValue;
-    updateAxiosAuthorizationHeader(token);
-  }
-});
-
 store.subscribe(() => {
   const newToken = store.getState().token;
   if (newToken !== token) {
@@ -37,5 +30,7 @@ function updateAxiosAuthorizationHeader(token) {
     delete AxiosInstance.defaults.headers.common['Authorization'];
   }
 }
+
+
 
 export default AxiosInstance;
