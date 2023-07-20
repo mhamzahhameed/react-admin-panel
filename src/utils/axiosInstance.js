@@ -1,4 +1,5 @@
 import axios from 'axios';
+import store from '../store.js';
 
 const AxiosInstance = axios.create({
   baseURL: 'https://api.sehrapp.com',
@@ -7,27 +8,34 @@ const AxiosInstance = axios.create({
   },
 });
 
-function getToken() {
-  return localStorage.getItem('token');
+let token = store.getState().token;
+if (!token) {
+  token = localStorage.getItem('token');
 }
 
-function updateAxiosAuthorizationHeader() {
-  const token = getToken();
+updateAxiosAuthorizationHeader(token);
+
+window.addEventListener('storage', (event) => {
+  if (event.key === 'token') {
+    token = event.newValue;
+    updateAxiosAuthorizationHeader(token);
+  }
+});
+
+store.subscribe(() => {
+  const newToken = store.getState().token;
+  if (newToken !== token) {
+    token = newToken;
+    updateAxiosAuthorizationHeader(token);
+  }
+});
+
+function updateAxiosAuthorizationHeader(token) {
   if (token) {
     AxiosInstance.defaults.headers.common['Authorization'] = `Bearer ${token}`;
   } else {
     delete AxiosInstance.defaults.headers.common['Authorization'];
   }
 }
-
-// Initial setup
-updateAxiosAuthorizationHeader();
-
-// Listen for changes in localStorage across different tabs/windows
-window.addEventListener('storage', (event) => {
-  if (event.key === 'token') {
-    updateAxiosAuthorizationHeader();
-  }
-});
 
 export default AxiosInstance;
