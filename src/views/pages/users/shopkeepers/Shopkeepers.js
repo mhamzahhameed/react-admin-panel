@@ -1,4 +1,4 @@
-import { cilPenAlt, cilShortText, cilTrash, cilViewColumn } from '@coreui/icons'
+import { cilShortText, cilTrash, cilViewColumn } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
 import { CButton, CForm, CFormInput,  CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle } from '@coreui/react';
 import React, { useEffect, useState } from 'react'
@@ -9,6 +9,7 @@ import Loader from '../../../../components/Loader'
 const Shopkeepers = () => {
   const [title, setTitle] = useState([])
   const [data, setData] = useState([])
+  const [categoryList, setCategoryList] = useState([])
   const [currentPage, setCurrentPage] = useState(1)
   const [perPage, setPerPage] = useState(10)
   const [searchValue, setSearchValue] = useState('')
@@ -20,9 +21,19 @@ const Shopkeepers = () => {
   useEffect(() => {
     setAddressCode(addressCodes.tehsils);
     fetchData()
+    fetchCategoryList()
     // eslint-disable-next-line
     }, [searchValue])
-    
+   
+    const fetchCategoryList = async() => {
+      try{
+        let list = await AxiosInstance.get('/api/category')
+          setCategoryList(list.data.categories)
+      }
+      catch (error) {
+        console.error(error)
+      }
+    }
   const fetchData = async () => {
     // let token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Iis5MjMwNzg0ODg5MDMiLCJzdWIiOjEsImlhdCI6MTY4Nzc5OTMyMCwiZXhwIjoxNjg3ODg1NzIwfQ.xyM4Ha6iDlnSVqdI5jNQ2YQOJgdW0mgiigTT88HWU4A';
     try {
@@ -66,6 +77,7 @@ const Shopkeepers = () => {
         "mobile number",
         "sehr package",
         "category",
+        'staff code',
         "province", 
         "division",
         "district",
@@ -140,10 +152,10 @@ const Shopkeepers = () => {
       setCurrentPage(currentPage + 1)
     }
   }
-  const EditModal = (data)=>{
-    setEditFormData(data);
-    setEditModalVisible(true);
-  }
+  // const EditModal = (data)=>{
+  //   setEditFormData(data);
+  //   setEditModalVisible(true);
+  // }
   const ViewModal = (data)=>{
     setEditFormData(data)
     setViewModalVisible(true);
@@ -479,12 +491,13 @@ setLoader(false)
       reverseButtons: true,
     }).then(async(result) => {
       if (result.isConfirmed) {
-        await AxiosInstance.delete(`/api/user/${item?.id}/delete`)
-        await AxiosInstance.delete(`/api/business/${item?.id}`)
+        await AxiosInstance.delete(`/api/user/${item?.userId}/delete`)
+        // await AxiosInstance.delete(`/api/business/${item?.id}`)
         await fetchData()
       }
     });
   }
+  console.log('categorylist :', categoryList);
   
   // Render the current page's records
   const renderData = () => {
@@ -497,7 +510,8 @@ setLoader(false)
         <td>{item.businessName}</td>
         <td>{item.mobile}</td>
         <td>{item.reward}</td>
-        <td>{item.category}</td>
+        <td>{(categoryList?.filter((category)=> category.id === item.categoryId)[0].title)}</td>
+        <td>{item.city}</td>
         <td>{item.province}</td>
         <td>{item.division}</td>
         <td>{item.district}</td>
@@ -506,13 +520,13 @@ setLoader(false)
         
       
         <td>
-          <div className='d-flex justify-content-between flex-wrap' style={{ width:"480px" }}>
+          <div className='d-flex justify-content-between flex-wrap' style={{ width:"370px" }}>
           <button className="btn btn-info text-light" onClick={()=>ViewModal({...item,action: 'view'})}>
             <CIcon icon={cilViewColumn} size="sm" /> View
           </button>
-          <button className="btn btn-success text-light" onClick={()=>EditModal({...item,action: 'edit'})}>
+          {/* <button className="btn btn-success text-light" onClick={()=>EditModal({...item,action: 'edit'})}>
             <CIcon icon={cilPenAlt} size="sm" /> Update
-          </button>
+          </button> */}
           <button className="btn btn-info ms-2 text-light" onClick={()=> generateCode(item.province,item.division,item.district,item.tehsil,item.id)}>
             <CIcon icon={cilShortText} size="sm" /> Generate sehr code
           </button>
@@ -651,14 +665,14 @@ setLoader(false)
               value={editFormData.mobile || ''}
               disabled
         />
-        <CFormInput
+        {/* <CFormInput
               type="text"
               id="cnic"
               label="CNIC"
               aria-describedby="name"
               value={editFormData.cnic || ''}
               disabled
-        />
+        /> */}
         <CFormInput
               type="text"
               id="tehsil"

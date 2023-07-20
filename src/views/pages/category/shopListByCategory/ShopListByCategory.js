@@ -4,7 +4,7 @@ import AxiosInstance from 'src/utils/axiosInstance'
 
 const ShopListByCommission = () => {
   const [title, setTitle] = useState([])
-  const [shopTitle] = useState(['#', 'owner name', 'shop name','sehr code', 'category', 'cell', 'cnic', "tehsil", 'district', "division", 'province', 'createdat' ])
+  const [shopTitle] = useState(['#', 'owner name', 'shop name','sehr code', 'category', 'cell', "tehsil", 'district', "division", 'province', 'createdat' ])
   const [detailModal, setDetailModal] = useState(false)
   const [data, setData] = useState([])
   const [shopListByCategory , setShopListByCategory] = useState([])
@@ -31,28 +31,31 @@ const ShopListByCommission = () => {
   }
   const fetchData = async () => {
     try {
-      let businessCount = await AxiosInstance.get('/api/business/all')
+      let count = await AxiosInstance.get(`/api/user`)
+      let businessCount = await AxiosInstance.get(`/api/business/all`)
+      count = count.data.total;
       businessCount = businessCount.data.total;
-      let response = await AxiosInstance.get("/api/user?limit=0")
-      response = response.data.users;
-      let business = await AxiosInstance.get(`/api/business/all?limit=${businessCount}`)
-      business = business.data.businesses;
-      let shopKeepers =  response.filter(item => {
-        return item.roles.some(role => role.role === 'shopKeeper');
-      });
-    let sehrShops = shopKeepers;
-    for (const element of sehrShops) {
-      const obj1 = element;
+        let response = await AxiosInstance.get(`/api/user?limit=${count}`)
+        response = response.data.users;
+        let business = await AxiosInstance.get(`/api/business/all?limit=${businessCount}`)
+        business = business.data.businesses;
+        let sehrShops = business.filter(obj => obj.sehrCode !== null);
+        
+      for (const element of sehrShops) {
+        const obj2 = element;
 
-      const obj2 = business.find((item) => item.userId === obj1.id);
-      if (obj2) {
-        obj1.category = obj2.district;
-        obj1.businessName = obj2.businessName;
-        obj1.ownerName = obj2.ownerName;
-        obj1.sehrCode = obj2.sehrCode;
+        const obj1 = response.find((item) => item.id === obj2.userId);
+        if (obj2) {
+          obj2["isLocked"] = obj1.isLocked
+          obj2["reward"] = obj1.reward.title
+
+        }
       }
-    }
-    sehrShops = sehrShops.filter(obj => obj.sehrCode !== 'string' && obj.sehrCode !== null);
+        console.log('sehrshops :', sehrShops);
+      
+      // sehrShops = sehrShops.filter(obj => obj.hasOwnProperty("sehrCode"));
+      sehrShops = sehrShops.filter((customer)=> customer.isLocked === false)
+      sehrShops.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
     sehrShops = sehrShops.map(obj => {
       const updatedObj = {};
       for (const [key, value] of Object.entries(obj)) {
@@ -153,7 +156,9 @@ const handleShopPageChange = (pageNumber) => setShopCurrentPage(pageNumber)
 
   const detailModalHandler =  (item) => {
     setDetailModal(true)
-    setShopListByCategory(data.filter((shop) => shop.category === item.title))
+    console.log('data :', data);
+    setShopListByCategory(data?.filter((shop) => shop.categoryId === item.id))
+    console.log('shoplist :', shopListByCategory)
   }
   
   // Render the current page's records
@@ -164,7 +169,7 @@ const handleShopPageChange = (pageNumber) => setShopCurrentPage(pageNumber)
       <tr key={ item.id }>
       <td>{index+1}</td>
       <td>{item.title}</td>
-      <td>{(data.filter((shop) => shop.category === item.title).length)}</td>
+      <td>{(data.filter((shop) => shop.categoryId === item.id).length)}</td>
         <td>
           <button className="btn btn-primary ms-2" onClick={() => detailModalHandler(item)}>
                 View
@@ -184,9 +189,8 @@ const handleShopPageChange = (pageNumber) => setShopCurrentPage(pageNumber)
         <td>{item.ownerName}</td>
         <td>{item.businessName}</td>
         <td>{item.sehrCode}</td>
-        <td>{item.category}</td>        
+        <td>{(categoryList.filter((category)=> category.id === item.categoryId)[0].title)}</td>
         <td>{item.mobile}</td>
-        <td>{item.cnic}</td>
         <td>{item.tehsil}</td>
         <td>{item.district}</td>
         <td>{item.division}</td>
