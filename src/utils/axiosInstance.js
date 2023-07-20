@@ -1,10 +1,37 @@
 import axios from 'axios';
-const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IjAzMDEzMzMyMjIxIiwic3ViIjoxLCJpYXQiOjE2ODk2NzMzNzYsImV4cCI6MTY4OTc1OTc3Nn0.q0UDjy81Y6PdF10o8Y14wQolI7OQt1-q_2TwBwhdMfg';
+import store from '../store.js';
+
 const AxiosInstance = axios.create({
-    baseURL: 'https://api.sehrapp.com', 
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
-    },
-  });
-export default AxiosInstance
+  baseURL: 'https://api.sehrapp.com',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
+let token = store.getState().token;
+if (!token) {
+  token = localStorage.getItem('token');
+}
+
+updateAxiosAuthorizationHeader(token);
+
+// Subscribe to Redux store changes
+store.subscribe(() => {
+  const newToken = store.getState().token;
+  if (newToken !== token) {
+    token = newToken;
+    updateAxiosAuthorizationHeader(token);
+  }
+});
+
+function updateAxiosAuthorizationHeader(token) {
+  if (token) {
+    AxiosInstance.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+  } else {
+    delete AxiosInstance.defaults.headers.common['Authorization'];
+  }
+}
+
+
+
+export default AxiosInstance;
