@@ -1,30 +1,6 @@
 import axios from 'axios';
 import store from '../store.js';
 
-const AxiosInstance = axios.create({
-  baseURL: 'https://api.sehrapp.com',
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
-
-let token = store.getState().token;
-if (!token) {
-  token = localStorage.getItem('token');
-}
-
-updateAxiosAuthorizationHeader(token);
-
-// Subscribe to Redux store changes
-store.subscribe(() => {
-  const newToken = store.getState().token;
-  if (newToken !== token) {
-    token = newToken;
-    updateAxiosAuthorizationHeader(token);
-    saveTokenToLocalStorage(token); // Save the new token to localStorage
-  }
-});
-
 function updateAxiosAuthorizationHeader(token) {
   if (token) {
     AxiosInstance.defaults.headers.common['Authorization'] = `Bearer ${token}`;
@@ -33,8 +9,26 @@ function updateAxiosAuthorizationHeader(token) {
   }
 }
 
-function saveTokenToLocalStorage(token) {
-  localStorage.setItem('token', token);
-}
+store.subscribe(() => {
+  const newToken = store.getState().token;
+  let token = '';
+  if (newToken !== null) {
+    token = newToken;
+    updateAxiosAuthorizationHeader(token);
+  } else {
+    token = localStorage.getItem('token');
+    updateAxiosAuthorizationHeader(token);
+  }
+});
+
+const AxiosInstance = axios.create({
+  baseURL: 'https://api.sehrapp.com',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
+const initialToken = localStorage.getItem('token');
+updateAxiosAuthorizationHeader(initialToken);
 
 export default AxiosInstance;
