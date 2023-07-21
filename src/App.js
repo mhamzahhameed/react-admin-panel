@@ -31,7 +31,7 @@ const App = () => {
       if (token) {
         try {
           const decodedToken = jwtDecode(token);
-          const expirationTime = decodedToken.exp;
+          const expirationTime = decodedToken.exp - 60;
           const currentTime = Math.floor(Date.now() / 1000);
           if (expirationTime < currentTime) {
             dispatch({ type: 'SET_Logout', payload: true });

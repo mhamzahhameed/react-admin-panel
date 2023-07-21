@@ -277,17 +277,10 @@ num = String(num).padStart(lastdigits.length, '0');
                     "sehrCode": newCode,
                     "grade": 1
                   })
-                  try {
-                    let getPackages = await AxiosInstance.get(`/api/Reward/${parseInt(rewardId)}/users?limit=0`)
-                    getPackages = getPackages.data;
-                    // console.log(getPackages);
-                    // console.log(userId);
-                    const alreadySubscribedData = getPackages.filter(item => item.id === userId);
-                    console.log(alreadySubscribedData);
-                    if(alreadySubscribedData.length < 1)
-                    {
-                      await AxiosInstance.post(`/api/Reward/${Number(rewardId)}/subscribe/${Number(userId)}`);
-                      AxiosInstance.put(`/api/business/verify/${id}`,putData).then((res)=>{
+                
+                
+                      AxiosInstance.post(`/api/Reward/${Number(rewardId)}/subscribe/${Number(userId)}`).then((rewardRes)=>{
+                             AxiosInstance.put(`/api/business/verify/${id}`,putData).then((res)=>{
                         Swal.fire({
                           title: `Sehr Code has been created!`,
                           icon: 'success'
@@ -299,26 +292,24 @@ num = String(num).padStart(lastdigits.length, '0');
                           icon: 'error'
                         });
                       });
-                    }else{
-                      AxiosInstance.put(`/api/business/verify/${id}`,putData).then((res)=>{
-                        Swal.fire({
+                      }).catch((err)=>{
+                        console.log(err.response.data.message)
+                        if(err.response.data.message === 'Already subscribed to this reward.')
+                        {
+                               Swal.fire({
                           title: `Sehr Code has been created!`,
                           icon: 'success'
                         });
-                     
-                      }).catch((error)=>{
-                        Swal.fire({
+                        }else{
+                                 Swal.fire({
                           title: `Sehr code is not submitted!`,
                           icon: 'error'
                         });
+                        }
                       });
-                    }
-                  } catch (error) {
-                    Swal.fire({
-                      title: `Sehr code is not submitted!`,
-                      icon: 'error'
-                    });
-                  }
+                 
+                   
+                
                    
                      fetchData()
                 }
