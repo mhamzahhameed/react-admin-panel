@@ -371,7 +371,7 @@ const SehrShops = () => {
               id="category"
               label="Category"
               aria-describedby="name"
-              value={editFormData.category || ''}
+              value={(categoryList.filter((category)=> category.id === editFormData.categoryId)[0]?.title)}
               disabled
         />
         <CFormInput

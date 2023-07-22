@@ -98,7 +98,11 @@ const PackagesDetail = () => {
   // Handle Save Changes button onclicking
   const handleSavePackage = async () => {
     try {
-    const packageData = { "title": editFormData.title }
+    const packageData = {
+      "title": editFormData.title,
+      "salesTarget": Number(editFormData.salesTarget),
+      "description": editFormData.description
+    }
      await AxiosInstance.post('/api/Reward', packageData)
 
     await fetchData()
@@ -183,14 +187,14 @@ const PackagesDetail = () => {
               id="salesTarget"
               label="Sales Target"
               aria-describedby="salesTarget"
-              onChange={(e) => setEditFormData({ ...editFormData, title: e.target.value })}
+              onChange={(e) => setEditFormData({ ...editFormData, salesTarget: e.target.value })}
             />
             <CFormInput
               type="text"
-              id="Description"
-              label="Descrition"
+              id="description"
+              label="Description"
               aria-describedby="description"
-              onChange={(e) => setEditFormData({ ...editFormData, title: e.target.value })}
+              onChange={(e) => setEditFormData({ ...editFormData, description: e.target.value })}
             />
           </CForm>
         </CModalBody>
@@ -214,7 +218,7 @@ const PackagesDetail = () => {
               label="ID"
               aria-describedby="name"
               value={editFormData.title || ''}
-              onChange={(e) => setEditFormData({ ...editFormData, title: e.target.value })}
+              onChange={(e) => setEditFormData({ ...editFormData, id: e.target.value })}
             />
             <CFormInput
               type="text"
@@ -230,7 +234,7 @@ const PackagesDetail = () => {
               label="Sales Target"
               aria-describedby="salesTarget"
               value={editFormData.salesTarget || ''}
-              onChange={(e) => setEditFormData({ ...editFormData, title: e.target.value })}
+              onChange={(e) => setEditFormData({ ...editFormData, salesTarget: e.target.value })}
             />
             <CFormInput
               type="text"
@@ -238,7 +242,7 @@ const PackagesDetail = () => {
               label="Description"
               aria-describedby="description"
               value={editFormData.title || ''}
-              onChange={(e) => setEditFormData({ ...editFormData, title: e.target.value })}
+              onChange={(e) => setEditFormData({ ...editFormData, description: e.target.value })}
             />
           </CForm>
           </CForm>
