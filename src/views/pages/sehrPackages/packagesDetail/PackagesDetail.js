@@ -114,22 +114,21 @@ const PackagesDetail = () => {
     } 
     
 
-  const editModal = (id) => {
-
-    setEditFormData({});
-    if (id) {
-      const editData = data?.find(item => item.id === id);
-      setEditFormData(editData);
-    }
+  const editModal = (item)=> {
+    setEditFormData(item);
     setEditModalVisible(true);
   };
 
   // Handle Save Changes button onclicking
-  const handleSaveChanges = async(id) => {
+  const handleSaveChanges = async() => {
     try{
-      console.log("id",id);
-      const packageData = { "title": editFormData.title }
-      await AxiosInstance.patch(`/api/Reward/${id}`, packageData)
+      console.log("id",editFormData.id);
+      const packageData = {
+        "title": editFormData.title,
+        "salesTarget": Number(editFormData.salesTarget),
+        "description": editFormData.description
+      }
+      await AxiosInstance.patch(`/api/Reward/${editFormData.id}`, packageData)
       await fetchData()
       setEditModalVisible(false);
       setEditFormData({});
@@ -150,7 +149,7 @@ const PackagesDetail = () => {
         <td>{item.description}</td>
         <td>
           <div className='d-flex justify-content-between flex-wrap' style={{ width:"150px" }}>
-          <button className="btn btn-success text-light" onClick={() => editModal(item.id)}>
+          <button className="btn btn-success text-light" onClick={() => editModal(item)}>
             <CIcon icon={cilPenAlt} size="sm" /> Update
           </button>
           <button className="btn btn-danger ms-2 text-light" onClick={() => handleDelete(item.id)}>
@@ -215,8 +214,8 @@ const PackagesDetail = () => {
           <CFormInput
               type="hidden"
               id="id"
-              label="ID"
-              aria-describedby="name"
+              label=""
+              aria-describedby="id"
               value={editFormData.title || ''}
               onChange={(e) => setEditFormData({ ...editFormData, id: e.target.value })}
             />
@@ -241,7 +240,7 @@ const PackagesDetail = () => {
               id="description"
               label="Description"
               aria-describedby="description"
-              value={editFormData.title || ''}
+              value={editFormData.description || ''}
               onChange={(e) => setEditFormData({ ...editFormData, description: e.target.value })}
             />
           </CForm>
@@ -251,7 +250,7 @@ const PackagesDetail = () => {
           <CButton color="secondary" onClick={() => setEditModalVisible(false)}>
             Close
           </CButton>
-          <CButton color="primary" onClick={() => handleSaveChanges(editFormData.id)}>Save changes</CButton>
+          <CButton color="primary" onClick={() => handleSaveChanges()}>Save changes</CButton>
         </CModalFooter>
       </CModal>
       <div className="card">
