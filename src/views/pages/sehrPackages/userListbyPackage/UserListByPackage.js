@@ -231,7 +231,7 @@ const UserListByPackage = () => {
         </CModalHeader>
         <CModalBody>
         <CDropdown className="custom-dropdown mb-3" size="lg">
-      <CDropdownToggle caret>Dropdown</CDropdownToggle>
+      <CDropdownToggle caret>Select Package</CDropdownToggle>
       <CDropdownMenu className="custom-dropdown-menu" style={{ zIndex: '100' }}>
         {packageList.map((item) => (
           <CDropdownItem key={item.id} onClick={() => handleDropdownItemClick(item)}>
