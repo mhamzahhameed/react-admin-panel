@@ -54,3 +54,7 @@
     content: "Loading...";
   }
 }
+.html-content-container img {
+  max-width: 100%;
+  height: auto;
+}

@@ -1,6 +1,6 @@
 import { cilViewColumn } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
-import { CButton, CForm,  CFormInput,  CFormTextarea,  CImage,  CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle } from '@coreui/react'
+import { CButton, CForm,  CFormInput,  CImage,  CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle } from '@coreui/react'
 import React, { useEffect, useState } from 'react'
 import AxiosInstance from 'src/utils/axiosInstance'
 // import Swal from 'sweetalert2'
@@ -259,18 +259,20 @@ const BlogList = () => {
         <CModalTitle>View Blog Details</CModalTitle>
       </CModalHeader>
       <CModalBody>
-      <CForm>
-        <CFormTextarea
-              type="textArea"
-              id="content"
-              label="Content"
-              rows={5}
-              aria-describedby="name"
-              value={ editFormData?.content || ''}
-              disabled
-        />
-        </CForm>
-      {(editFormData?.image !== null && editFormData?.imagee !== "" && editFormData?.image !== "not defined") && <CImage fluid src={editFormData?.image} />}
+     
+      <div className="container">
+        <p className='fw-bold h3 text-center'>Content</p>
+      <div className="row">
+        <div className="col-md-8 mx-auto border">
+          <div
+            className="html-content-container"
+            dangerouslySetInnerHTML={{ __html: editFormData?.content || '' }}
+          />
+        </div>
+      </div>
+    </div>
+      
+      {(editFormData?.image !== null && editFormData?.image !== "" && editFormData?.image !== "not defined") && <CImage fluid src={editFormData?.image} />}
       </CModalBody>
     </CModal>
     
