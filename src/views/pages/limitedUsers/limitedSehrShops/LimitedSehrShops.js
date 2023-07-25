@@ -188,7 +188,7 @@ const LimitedSehrShops = () => {
       reverseButtons: true,
     }).then(async(result) => {
       if (result.isConfirmed) {
-        await AxiosInstance.post(`/api/user/${item?.id}/lock`)
+        await AxiosInstance.post(`/api/user/${item?.userId}/unlock`)
         await fetchData()
       }
     });
@@ -368,7 +368,7 @@ const LimitedSehrShops = () => {
               id="category"
               label="Category"
               aria-describedby="name"
-              value={editFormData.category || ''}
+              value={(categoryList.filter((category)=> category.id === editFormData.categoryId)[0]?.title)}
               disabled
         />
         <CFormInput
@@ -379,14 +379,14 @@ const LimitedSehrShops = () => {
               value={editFormData.mobile || ''}
               disabled
         />
-        <CFormInput
+        {/* <CFormInput
               type="text"
               id="cnic"
               label="CNIC"
               aria-describedby="name"
               value={editFormData.cnic || ''}
               disabled
-        />
+        /> */}
         <CFormInput
               type="text"
               id="tehsil"

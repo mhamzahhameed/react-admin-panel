@@ -190,7 +190,7 @@ const SehrShops = () => {
       reverseButtons: true,
     }).then(async(result) => {
       if (result.isConfirmed) {
-        await AxiosInstance.post(`/api/user/${item?.id}/lock`)
+        await AxiosInstance.post(`/api/user/${item?.userId}/lock`)
         await fetchData()
       }
     });

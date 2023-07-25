@@ -188,7 +188,7 @@ const CategoryCommission = () => {
         <td>{item.commission}%</td>
         <td>
           <button className="btn btn-success text-light" onClick={() => editModal(item)}>
-            <CIcon icon={cilPenAlt} size="sm" /> Update
+            <CIcon icon={cilPenAlt} size="sm" /> Update Commission
           </button>
           {/* <button className="btn btn-danger ms-2 text-light" onClick={() => handleDelete(item.id)}>
             <CIcon icon={cilTrash} size="sm" />
@@ -320,9 +320,9 @@ const CategoryCommission = () => {
             <table className="table table-striped table-bordered">
               <thead>
                 <tr>
-                  {title.map((item, index) => {
+                  {title.map((item) => {
                     return (
-                      <th scope="col" className="text-uppercase" key={index}>
+                      <th scope="col" className="text-uppercase" key={item.id}>
                         {item}
                       </th>
                     )

@@ -123,11 +123,11 @@ const Education = () => {
   }
 
   // Handle Save Changes button onclicking
-  const handleSaveEducation = () => {
+  const handleSaveEducation = async() => {
     const education = { "title": editFormData.title }
-    AxiosInstance.post('/api/education', education)
+    await AxiosInstance.post('/api/education', education)
 
-    fetchData()
+    await fetchData()
     setEditEducationModal(false);
     setEditFormData({});
   };
@@ -200,7 +200,7 @@ const Education = () => {
           <CButton color="secondary" onClick={() => setEditEducationModal(false)}>
             Close
           </CButton>
-          <CButton color="primary" onClick={handleSaveEducation}>Save Education</CButton>
+          <CButton color="primary" onClick={()=>handleSaveEducation}>Save Education</CButton>
         </CModalFooter>
       </CModal>
       <CModal alignment="center" visible={editModalVisible} onClose={() => setEditModalVisible(false)}>

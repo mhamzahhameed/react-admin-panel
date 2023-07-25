@@ -41,7 +41,7 @@ const LimitedCustomers = () => {
         "action"
     ])
 
-      // customer = customer.filter((customer)=> customer.isLocked === true)
+      customer = customer.filter((customer)=> customer.isLocked === true)
       customer.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
 
       customer = customer.map(obj => {
