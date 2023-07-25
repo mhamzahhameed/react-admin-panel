@@ -515,8 +515,8 @@ setLoader(false)
       reverseButtons: true,
     }).then(async(result) => {
       if (result.isConfirmed) {
+        await AxiosInstance.delete(`/api/business/${item?.id}`)
         await AxiosInstance.delete(`/api/user/${item?.userId}/delete`)
-        // await AxiosInstance.delete(`/api/business/${item?.id}`)
         await fetchData()
       }
     });

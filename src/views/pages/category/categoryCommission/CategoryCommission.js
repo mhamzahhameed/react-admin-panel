@@ -1,10 +1,10 @@
-import { cilPenAlt, cilPlus, cilTrash } from '@coreui/icons'
+import { cilPenAlt, cilPlus } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
 import { CButton, CDropdown, CDropdownItem, CDropdownMenu, CDropdownToggle, CForm, CFormInput, CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle } from '@coreui/react'
 import { number } from 'prop-types'
 import React, { useEffect, useState } from 'react'
 import AxiosInstance from 'src/utils/axiosInstance'
-import Swal from 'sweetalert2'
+// import Swal from 'sweetalert2'
 const CategoryCommission = () => {
   const [title, setTitle] = useState([])
   const [data, setData] = useState([])
@@ -107,29 +107,29 @@ const CategoryCommission = () => {
     }
   }
 
-  const handleDelete = async(id) => {
-    try{
-      console.log('id', id);
-    Swal.fire({
-      title: 'Are you sure?',
-      text: 'You won\'t be able to revert this!',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Yes, delete it!',
-      cancelButtonText: 'Cancel',
-      reverseButtons: true,
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        // Perform the delete operation
-        await AxiosInstance.delete(`/api/category/${id}`)
-        await fetchData()
-      }
-    });
-    } catch(error){
-      console.error(error)
-    }
+  // const handleDelete = async(id) => {
+  //   try{
+  //     console.log('id', id);
+  //   Swal.fire({
+  //     title: 'Are you sure?',
+  //     text: 'You won\'t be able to revert this!',
+  //     icon: 'warning',
+  //     showCancelButton: true,
+  //     confirmButtonText: 'Yes, delete it!',
+  //     cancelButtonText: 'Cancel',
+  //     reverseButtons: true,
+  //   }).then(async (result) => {
+  //     if (result.isConfirmed) {
+  //       // Perform the delete operation
+  //       await AxiosInstance.delete(`/api/category/${id}`)
+  //       await fetchData()
+  //     }
+  //   });
+  //   } catch(error){
+  //     console.error(error)
+  //   }
     
-  }
+  // }
 
   // Handle Save Changes button onclicking
   const handleSaveCommission = async () => {
@@ -190,9 +190,9 @@ const CategoryCommission = () => {
           <button className="btn btn-success text-light" onClick={() => editModal(item)}>
             <CIcon icon={cilPenAlt} size="sm" /> Update
           </button>
-          <button className="btn btn-danger ms-2 text-light" onClick={() => handleDelete(item.id)}>
+          {/* <button className="btn btn-danger ms-2 text-light" onClick={() => handleDelete(item.id)}>
             <CIcon icon={cilTrash} size="sm" />
-          </button>
+          </button> */}
         </td>
       </tr>
     ))
