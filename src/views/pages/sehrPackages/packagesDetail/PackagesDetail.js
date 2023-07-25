@@ -1,4 +1,4 @@
-import { cilPenAlt, cilPlus, cilTrash } from '@coreui/icons'
+import { cilPlus, cilTrash } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
 import { CButton, CForm, CFormInput, CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle } from '@coreui/react'
 import React, { useEffect, useState } from 'react'
@@ -114,10 +114,10 @@ const PackagesDetail = () => {
     } 
     
 
-  const editModal = (item)=> {
-    setEditFormData(item);
-    setEditModalVisible(true);
-  };
+  // const editModal = (item)=> {
+  //   setEditFormData(item);
+  //   setEditModalVisible(true);
+  // };
 
   // Handle Save Changes button onclicking
   const handleSaveChanges = async() => {
@@ -148,10 +148,10 @@ const PackagesDetail = () => {
         <td>{item.salesTarget}</td>
         <td>{item.description}</td>
         <td>
-          <div className='d-flex justify-content-between flex-wrap' style={{ width:"150px" }}>
-          <button className="btn btn-success text-light" onClick={() => editModal(item)}>
+          <div className='d-flex justify-content-between flex-wrap' style={{ width:"50px" }}>
+          {/* <button className="btn btn-success text-light" onClick={() => editModal(item)}>
             <CIcon icon={cilPenAlt} size="sm" /> Update
-          </button>
+          </button> */}
           <button className="btn btn-danger ms-2 text-light" onClick={() => handleDelete(item.id)}>
             <CIcon icon={cilTrash} size="sm" />
           </button>

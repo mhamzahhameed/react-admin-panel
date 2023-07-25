@@ -1,9 +1,10 @@
-import { cilLockLocked, cilPenAlt, cilTrash, cilViewColumn } from '@coreui/icons'
+import { cilLockLocked, cilTrash, cilViewColumn } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
 import { CButton, CForm,  CFormInput, CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle } from '@coreui/react'
 import React, { useEffect, useState } from 'react'
 import Swal from 'sweetalert2'
 import AxiosInstance from 'src/utils/axiosInstance'
+import Loader from '../../../../components/Loader'
 // import Swal from 'sweetalert2'
 const LimitedSehrShops = () => {
   const [title, setTitle] = useState([])
@@ -15,13 +16,13 @@ const LimitedSehrShops = () => {
   const [editModalVisible, setEditModalVisible] = useState(false)
   const [viewModalVisible, setViewModalVisible] = useState(false)
   const [editFormData, setEditFormData] = useState({});
+  const [loader,setLoader] = useState(true);
 
   useEffect(() => {
     fetchData()
     fetchCategoryList()
     // eslint-disable-next-line
-    }, [searchValue])
-   
+    }, [ searchValue ])
     const fetchCategoryList = async() => {
       try{
         let list = await AxiosInstance.get('/api/category')
@@ -35,12 +36,12 @@ const LimitedSehrShops = () => {
     try {
       let count = await AxiosInstance.get(`/api/user`)
       let businessCount = await AxiosInstance.get(`/api/business/all`)
-      count = count.data.total;
-      businessCount = businessCount.data.total;
+      count = await count.data.total;
+      businessCount = await businessCount.data.total;
         let response = await AxiosInstance.get(`/api/user?limit=${count}`)
-        response = response.data.users;
+        response = await response.data.users;
         let business = await AxiosInstance.get(`/api/business/all?limit=${businessCount}`)
-        business = business.data.businesses;
+        business = await business.data.businesses;
         let sehrShops = business.filter(obj => obj.sehrCode !== null);
         
       for (const element of sehrShops) {
@@ -73,6 +74,7 @@ const LimitedSehrShops = () => {
         "mobile number",
         "sehr package",
         "category",
+        'staff code',
         "province", 
         "division",
         "district",
@@ -95,7 +97,7 @@ const LimitedSehrShops = () => {
         
         })
         : fetchedData
-
+        setLoader(false)
       setData(filteredData)
     } catch (error) {
       console.error(error)
@@ -149,10 +151,10 @@ const LimitedSehrShops = () => {
       setCurrentPage(currentPage + 1)
     }
   }
-  const EditModal = (data)=>{
-    setEditFormData(data);
-    setEditModalVisible(true);
-  }
+  // const EditModal = (data)=>{
+  //   setEditFormData(data);
+  //   setEditModalVisible(true);
+  // }
   const ViewModal = (data)=>{
     setEditFormData(data)
     setViewModalVisible(true);
@@ -169,15 +171,15 @@ const LimitedSehrShops = () => {
       
     }).then(async(result) => {
       if (result.isConfirmed) {
-        // await AxiosInstance.delete(`/api/user/${item?.id}/delete`)
         await AxiosInstance.delete(`/api/business/${item?.id}`)
+        await AxiosInstance.delete(`/api/user/${item?.userId}/delete`)
         await fetchData()
       }
     });
   }
 
   // Function to set the user as limited or locked
-  const handleLimit = (item)=>{
+  const handleUnLimit = (item)=>{
     Swal.fire({
       title: 'Are you sure you want to limit this user?',
       text: 'You would be able to revert this!',
@@ -214,20 +216,21 @@ const LimitedSehrShops = () => {
         <td>{item.mobile}</td>
         <td>{item.reward}</td>
         <td>{(categoryList.filter((category)=> category.id === item.categoryId)[0].title)}</td>
+        <td>{item.city}</td>
         <td>{item.province}</td>
         <td>{item.division}</td>
         <td>{item.district}</td>
         <td>{item.tehsil}</td>
         <td>
-          <div className='d-flex justify-content-between flex-wrap' style={{ width:"360px" }}>
+          <div className='d-flex justify-content-between flex-wrap' style={{ width:"290px" }}>
           <button className="btn btn-info text-light" onClick={()=>ViewModal({...item,action: 'view'})}>
             <CIcon icon={cilViewColumn} size="sm" /> View
           </button>
-          <button className="btn btn-success text-light" onClick={()=>EditModal({...item,action: 'edit'})}>
+          {/* <button className="btn btn-success text-light" onClick={()=>EditModal({...item,action: 'edit'})}>
             <CIcon icon={cilPenAlt} size="sm" /> Update
-          </button>
-          <button className="btn btn-warning ms-2 text-light" onClick={()=> handleLimit(item)}>
-            <CIcon icon={cilLockLocked} size="sm"/> Limit
+          </button> */}
+          <button className="btn btn-warning ms-2 text-light" onClick={()=> handleUnLimit(item)}>
+            <CIcon icon={cilLockLocked} size="sm"/> UnLimit
           </button>
           <button className="btn btn-warning ms-2 text-light" onClick={()=> handleDelete(item)}>
             <CIcon icon={cilTrash} size="sm" /> delete
@@ -244,7 +247,7 @@ const LimitedSehrShops = () => {
   const pageNumbers = getPageNumbers(currentPage,totalPages);
   
   return (
-    <div className="container">
+    loader ? <Loader/> :<div className="container">
     <CModal alignment="center" visible={editModalVisible} onClose={() => setEditModalVisible(false)}>
       <CModalHeader>
         <CModalTitle>Edit Customer Details</CModalTitle>
@@ -335,7 +338,7 @@ const LimitedSehrShops = () => {
     </CModal>
     <CModal alignment="center" visible={viewModalVisible} size='sm' onClose={() => setViewModalVisible(false)}>
       <CModalHeader>
-        <CModalTitle>View SehrShop Details</CModalTitle>
+        <CModalTitle>View LimitedSehrShop Details</CModalTitle>
       </CModalHeader>
       <CModalBody>
       <CForm>

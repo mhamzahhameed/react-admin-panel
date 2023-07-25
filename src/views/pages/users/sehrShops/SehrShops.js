@@ -26,7 +26,7 @@ const SehrShops = () => {
     const fetchCategoryList = async() => {
       try{
         let list = await AxiosInstance.get('/api/category')
-          setCategoryList(list.data.categories)
+          setCategoryList(await list.data.categories)
       }
       catch (error) {
         console.error(error)
@@ -36,12 +36,12 @@ const SehrShops = () => {
     try {
       let count = await AxiosInstance.get(`/api/user`)
       let businessCount = await AxiosInstance.get(`/api/business/all`)
-      count = count.data.total;
-      businessCount = businessCount.data.total;
+      count = await count.data.total;
+      businessCount = await businessCount.data.total;
         let response = await AxiosInstance.get(`/api/user?limit=${count}`)
-        response = response.data.users;
+        response = await response.data.users;
         let business = await AxiosInstance.get(`/api/business/all?limit=${businessCount}`)
-        business = business.data.businesses;
+        business = await business.data.businesses;
         let sehrShops = business.filter(obj => obj.sehrCode !== null);
         
       for (const element of sehrShops) {
