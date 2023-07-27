@@ -11,6 +11,7 @@ const PurchasingBySehrShops = () => {
   const [shopTitle] = useState(['#', 'shop name', "sehrcode", 'payment', "status", 'transaction data'])
   const [OrderList, setOrderList] = useState([])
   const [data, setData] = useState([])
+  const [spentAmount, setSpentAmount] = useState(0)
   // const [categoryList, setCategoryList] = useState([])
   const [currentPage, setCurrentPage] = useState(1)
   const [perPage, setPerPage] = useState(10)
@@ -161,6 +162,7 @@ const PurchasingBySehrShops = () => {
     let orderData = await AxiosInstance.get(`/api/shop/orders/${item.sehrCode}`)
     await setOrderList(orderData.data.orders)
     setEditFormData(item)
+    calculateSpentAmount()
     setViewModalVisible(true);
   }
   // const handleDelete = (item) => {
@@ -241,6 +243,14 @@ const PurchasingBySehrShops = () => {
         </td>
       </tr>
     ))
+  }
+  const calculateSpentAmount = ()=> {
+    let amount = 0
+    OrderList.length && OrderList?.map((item)=>{
+      amount += Number(item.amount)
+      return amount
+    })
+    setSpentAmount(amount)
   }
 
   const getShopCurrentPageData = () => OrderList?.slice(shopStartIndex, shopEndIndex)
@@ -386,11 +396,20 @@ const PurchasingBySehrShops = () => {
           <CButton color="primary" onClick={handleSaveChanges}>Save changes</CButton>
         </CModalFooter>
       </CModal>
-      <CModal alignment="center" visible={viewModalVisible} size='lg' onClose={() => setViewModalVisible(false)}>
+      <CModal alignment="center" visible={viewModalVisible} size='lg' onClose={() => {
+        setViewModalVisible(false) 
+        setEditFormData({})
+        }}>
         <CModalHeader>
           <CModalTitle>View Orders Details</CModalTitle>
         </CModalHeader>
         <CModalBody>
+          {OrderList.length && <div>
+            <h3>Target Ammount : {editFormData?.reward?.salesTarget}</h3>
+            <h3>Remaining Amount : {editFormData?.reward?.salesTarget - spentAmount }</h3>
+            <h3>Spent Amount : {spentAmount}</h3>
+            <h2>Progress : {((spentAmount / editFormData?.reward?.salesTarget) * 100).toFixed(5)} %</h2>
+          </div>}
           {OrderList.length ? <div className="table-responsive">
             <table className="table table-striped table-bordered">
               <thead>
