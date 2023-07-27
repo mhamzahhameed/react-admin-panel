@@ -11,6 +11,8 @@ const PurchasingByShops = () => {
   const [shopTitle] = useState(['#', 'shop name', 'payment', "status", 'transaction data'])
   const [OrderList, setOrderList] = useState([])
   const [data, setData] = useState([])
+  const [spentAmount, setSpentAmount] = useState(0)
+  const [totalCommission, setTotalCommission] = useState(0)
   // const [categoryList, setCategoryList] = useState([])
   const [currentPage, setCurrentPage] = useState(1)
   const [perPage, setPerPage] = useState(10)
@@ -159,9 +161,31 @@ const PurchasingByShops = () => {
   // }
   const ViewModal = async (item) => {
     let orderData = await AxiosInstance.get(`/api/shop/${item.userId}/orders`)
-    await setOrderList(orderData.data.orders)
+    setOrderList(orderData.data.orders)
+    setEditFormData(item)
     setViewModalVisible(true);
   }
+
+  useEffect(() => {
+    const calculateSpentAmount = () => {
+      let amount = 0;
+      let commission = 0;
+
+      OrderList.length &&
+        OrderList.forEach((item) => {
+          amount += Number(item.amount);
+          commission += Number(item.commission);
+        });
+
+      setTotalCommission(amount !== 0 ? amount : 0);
+      setSpentAmount(commission !== 0 ? commission : 0);
+    };
+
+    if (viewModalVisible) {
+      // Calculate spentAmount and totalCommission when the modal is visible
+      calculateSpentAmount();
+    }
+  }, [OrderList, viewModalVisible]);
   // const handleDelete = (item) => {
   //   Swal.fire({
   //     title: 'Are you sure you want to delete this user?',
@@ -280,9 +304,6 @@ const PurchasingByShops = () => {
         <td>{item.amount}</td>
         <td>{item.status}</td>
         <td>{item.date.slice(1, 10)}</td>
-        <td>{item.division}</td>
-        <td>{item.province}</td>
-        <td>{item.createdAt?.slice(0, 10)}</td>
       </tr>
     ))
   }
@@ -385,11 +406,39 @@ const PurchasingByShops = () => {
           <CButton color="primary" onClick={handleSaveChanges}>Save changes</CButton>
         </CModalFooter>
       </CModal>
-      <CModal alignment="center" visible={viewModalVisible} size='lg' onClose={() => setViewModalVisible(false)}>
+      <CModal alignment="center" visible={viewModalVisible} size='xl' onClose={() => {
+        setViewModalVisible(false)
+        setEditFormData({})
+        setTotalCommission(0)
+        setSpentAmount(0)
+        }}>
         <CModalHeader>
           <CModalTitle>View Orders Details</CModalTitle>
         </CModalHeader>
         <CModalBody>
+        {spentAmount && 
+            <div className='Cotainer d-flex justify-content-between my-5 mx-2'>
+              <div className='col-2 card px-2 py-4 d-flex justify-content-center align-items-center bg-warning'>
+                <h5 className='text-uppercase fw-bolder mt-4'>Target </h5>
+                <p className='text-uppercase fw-bolder'><strong>Rs-/ {editFormData?.reward?.salesTarget}</strong></p>
+              </div>
+              <div className='col-2 card px-2 py-4 d-flex justify-content-center align-items-center bg-info'>
+                <h5 className='text-uppercase fw-bolder mt-4'>Spent</h5>
+                <p className='text-uppercase fw-bolder'><strong>Rs-/ {spentAmount}</strong></p>
+              </div>
+              <div className='col-2 card px-2 py-4 d-flex justify-content-center align-items-center bg-danger'>
+                <h5 className='text-uppercase fw-bolder mt-4'>Remaining</h5>
+                <p className='text-uppercase fw-bolder'><strong>Rs-/ {editFormData?.reward?.salesTarget - spentAmount }</strong></p>
+              </div>
+              <div className='col-2 card px-2 py-4 d-flex justify-content-center align-items-center bg-success'>
+                <h5 className='text-uppercase fw-bolder mt-4'>Commission</h5>
+                <p className='text-uppercase fw-bolder'><strong>Rs-/ {totalCommission}</strong></p>
+              </div>
+              <div className='col-2 card px-2 py-4 d-flex justify-content-center align-items-center bg-secondary'>
+                <h5 className='text-uppercase fw-bolder mt-4'>Progress</h5>
+                <p className='text-uppercase fw-bolder'><strong>{((spentAmount / editFormData?.reward?.salesTarget) * 100).toFixed(5)} %</strong></p>
+              </div>
+          </div>}
           {OrderList.length ? <div className="table-responsive">
             <table className="table table-striped table-bordered">
               <thead>
