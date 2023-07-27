@@ -1,13 +1,14 @@
-import { cilLockLocked, cilTrash, cilViewColumn } from '@coreui/icons'
+import { cilViewColumn } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
-import { CButton, CForm,  CFormInput,  CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle } from '@coreui/react'
+import { CButton, CForm, CFormInput, CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle } from '@coreui/react'
 import React, { useEffect, useState } from 'react'
 import AxiosInstance from 'src/utils/axiosInstance'
-import Swal from 'sweetalert2'
 import Loader from '../../../../components/Loader'
 // import Swal from 'sweetalert2'
 const PurchasingByCustomers = () => {
   const [title, setTitle] = useState([])
+  const [shopTitle] = useState(['#', 'shop name', 'payment', "status", 'transaction data'])
+  const [OrderList, setOrderList] = useState([])
   const [data, setData] = useState([])
   const [currentPage, setCurrentPage] = useState(1)
   const [perPage, setPerPage] = useState(10)
@@ -15,39 +16,37 @@ const PurchasingByCustomers = () => {
   const [editModalVisible, setEditModalVisible] = useState(false)
   const [viewModalVisible, setViewModalVisible] = useState(false)
   const [editFormData, setEditFormData] = useState({});
-  const [loader,setLoader] = useState(true);
-  
+  const [shopCurrentPage, setShopCurrentPage] = useState(1)
+  const [shopPerPage, setShopPerPage] = useState(5)
+  const [loader, setLoader] = useState(true);
+
   useEffect(() => {
     fetchData()
     // eslint-disable-next-line
-    }, [ searchValue ])
+  }, [searchValue])
   const fetchData = async () => {
     try {
-        let response = await AxiosInstance.get(`/api/user?limit=0`)
-        response = await response.data.users;
-        let customer =   response.filter(obj => {
-          const userRole = obj.roles.find(roleObj => roleObj.role === 'user');
-          return userRole && obj.roles.length === 1;
-        });
+      let response = await AxiosInstance.get(`/api/user?limit=0`)
+      response = await response.data.users;
+      let customer = response.filter(obj => {
+        const userRole = obj.roles.find(roleObj => roleObj.role === 'user');
+        return userRole && obj.roles.length === 1;
+      });
       console.log('customers :', customer);
 
       setTitle([
         "#",
         "name",
-        "mobile number",
-        "cnic",
         "sehr package",
-        "province", 
-        "division",
-        "district",
-        "tehsil",
-        "action"
-    ])
-      customer = customer?.filter(item => item.isLocked === false)
-      console.log('customers unlocked :', customer);
+        "cell n0.",
+        "Joining date",
+        "status",
+        "target",
+        "details"
+      ])
+      customer = customer?.filter(item => item.reward !== null)
+      // console.log('customers unlocked :', customer);
       customer.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-
-
       customer = customer.map(obj => {
         const updatedObj = {};
         for (const [key, value] of Object.entries(obj)) {
@@ -55,21 +54,20 @@ const PurchasingByCustomers = () => {
         }
         return updatedObj;
       });
-      // customer = customer?.filter(item => JSON.parse(item?.isLocked) === false)
       const fetchedData = customer
       const filteredData = searchValue
         ? fetchedData.filter((item) => {
-          const name = item.firstName+" "+item.lastName;
-         return name.toLowerCase().includes(searchValue) ||
-          item.mobile.toLowerCase().includes(searchValue) ||
-          item.cnic.toLowerCase().includes(searchValue) ||
-          item.tehsil.toLowerCase().includes(searchValue) ||
-          item.district.toLowerCase().includes(searchValue) ||
-          item.lastRewardPaidAt.toLowerCase().includes(searchValue) ||
-          item.division.toLowerCase().includes(searchValue)
+          const name = item.firstName + " " + item.lastName;
+          return name.toLowerCase().includes(searchValue) ||
+            item.mobile.toLowerCase().includes(searchValue) ||
+            item.cnic.toLowerCase().includes(searchValue) ||
+            item.tehsil.toLowerCase().includes(searchValue) ||
+            item.district.toLowerCase().includes(searchValue) ||
+            item.lastRewardPaidAt.toLowerCase().includes(searchValue) ||
+            item.division.toLowerCase().includes(searchValue)
         })
         : fetchedData
-        setLoader(false)
+      setLoader(false)
       setData(filteredData)
       console.log('data :', data)
     } catch (error) {
@@ -79,32 +77,32 @@ const PurchasingByCustomers = () => {
   const getPageNumbers = (currentPage, totalPages, displayRange = 3) => {
     let startPage = currentPage - Math.floor(displayRange / 2);
     let endPage = currentPage + Math.floor(displayRange / 2);
-  
+
     if (startPage < 1) {
       startPage = 1;
       endPage = Math.min(displayRange, totalPages);
     }
-  
+
     if (endPage > totalPages) {
       endPage = totalPages;
       startPage = Math.max(totalPages - displayRange + 1, 1);
     }
-  
+
     return Array.from({ length: endPage - startPage + 1 }, (_, index) => startPage + index);
   };
-   let endIndex = currentPage * perPage
-    const startIndex = endIndex - perPage
-    const diff = data.length - startIndex
-    if(diff < perPage) {
-      endIndex = startIndex + diff
-    }
+  let endIndex = currentPage * perPage
+  const startIndex = endIndex - perPage
+  const diff = data.length - startIndex
+  if (diff < perPage) {
+    endIndex = startIndex + diff
+  }
   // Function to calculate the current page's records
   const getCurrentPageData = () => data.slice(startIndex, endIndex)
-  
+
   // Function to handle page changes
   const handlePageChange = (pageNumber) => setCurrentPage(pageNumber)
-  
-  const clickPageData = (value)=>{
+
+  const clickPageData = (value) => {
     setPerPage(value);
     setCurrentPage(1);
   }
@@ -127,47 +125,48 @@ const PurchasingByCustomers = () => {
   //   setEditFormData(data);
   //   setEditModalVisible(true);
   // }
-  const ViewModal = (data)=>{
-    setEditFormData(data)
+  const ViewModal = async (item) => {
+    let orderData = await AxiosInstance.get(`/api/shop/${item.id}/orders`)
+    await setOrderList(orderData.data.orders)
     setViewModalVisible(true);
   }
-  const handleDelete = (item)=>{
-    Swal.fire({
-      title: 'Are you sure you want to delete this user?',
-      text: 'You won\'t be able to revert this!',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Confirm',
-      cancelButtonText: 'Cancel',
-      reverseButtons: true,
-    }).then(async(result) => {
-      if (result.isConfirmed) {
-        await AxiosInstance.delete(`/api/user/${item?.id}/delete`)
-        await fetchData()
-      }
-    });
-  }
+  // const handleDelete = (item)=>{
+  //   Swal.fire({
+  //     title: 'Are you sure you want to delete this user?',
+  //     text: 'You won\'t be able to revert this!',
+  //     icon: 'warning',
+  //     showCancelButton: true,
+  //     confirmButtonText: 'Confirm',
+  //     cancelButtonText: 'Cancel',
+  //     reverseButtons: true,
+  //   }).then(async(result) => {
+  //     if (result.isConfirmed) {
+  //       await AxiosInstance.delete(`/api/user/${item?.id}/delete`)
+  //       await fetchData()
+  //     }
+  //   });
+  // }
 
   // Function to set the user as limited
-  const handleLimit = (item)=>{
-    Swal.fire({
-      title: 'Are you sure you want to limit this user?',
-      text: 'You would be able to revert this!',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Confirm',
-      cancelButtonText: 'Cancel',
-      reverseButtons: true,
-    }).then(async(result) => {
-      if (result.isConfirmed) {
-        await AxiosInstance.post(`/api/user/${item?.id}/lock`)
-        await fetchData()
-      }
-    });
-  }
-  
+  // const handleLimit = (item)=>{
+  //   Swal.fire({
+  //     title: 'Are you sure you want to limit this user?',
+  //     text: 'You would be able to revert this!',
+  //     icon: 'warning',
+  //     showCancelButton: true,
+  //     confirmButtonText: 'Confirm',
+  //     cancelButtonText: 'Cancel',
+  //     reverseButtons: true,
+  //   }).then(async(result) => {
+  //     if (result.isConfirmed) {
+  //       await AxiosInstance.post(`/api/user/${item?.id}/lock`)
+  //       await fetchData()
+  //     }
+  //   });
+  // }
+
   // Handle Save Changes button onclicking
-  const handleSaveChanges = async() => {
+  const handleSaveChanges = async () => {
     // let response = await AxiosInstance.put('/api/user/update-profile',JSON.stringify(editFormData));
     // console.log(response);
     // setEditModalVisible(false);
@@ -179,197 +178,249 @@ const PurchasingByCustomers = () => {
 
     return currentPageData.map((item, index) => (
       <tr key={index}>
-        <td>{index+1}</td>
-        <td>{item.firstName+" "+item.lastName}</td>
+        <td>{index + 1}</td>
+        <td>{item.firstName + " " + item.lastName}</td>
+        <td>{item.reward.title}</td>
         <td>{item.mobile}</td>
-        <td>{item.cnic}</td>
-        <td>{item.reward.title? item.reward.title : 'not subscribed yet' }</td>
-        <td>{item.province}</td>
-        <td>{item.division}</td>
-        <td>{item.district}</td>
-        <td>{item.tehsil}</td>
+        <td>{item.verifiedAt?.slice(0, 10)}</td>
+        <td>{item.isLocked === true ? "limited" : "active"}</td>
+        <td>{item.reward.salesTarget}</td>
         <td>
-          <div className='d-flex justify-content-between flex-wrap' style={{ width:"270px" }}>
-          <button className="btn btn-info text-light" onClick={()=>ViewModal(item)}>
-            <CIcon icon={cilViewColumn} size="sm" /> View
-          </button>
-          {/* <button className="btn btn-success text-light" onClick={()=>EditModal({...item,action: 'edit'})}>
+          <div className='d-flex justify-content-between flex-wrap' style={{ width: "80px" }}>
+            <button className="btn btn-info text-light" onClick={() => ViewModal(item)}>
+              <CIcon icon={cilViewColumn} size="sm" /> View Orders
+            </button>
+            {/* <button className="btn btn-success text-light" onClick={()=>EditModal({...item,action: 'edit'})}>
             <CIcon icon={cilPenAlt} size="sm" /> Update
           </button> */}
-          <button className="btn btn-warning ms-2 text-light" onClick={()=> handleLimit(item)}>
+            {/* <button className="btn btn-warning ms-2 text-light" onClick={()=> handleLimit(item)}>
             <CIcon icon={cilLockLocked} size="sm"/> Limit
           </button>
           <button className="btn btn-warning ms-2 text-light" onClick={()=> handleDelete(item)}>
             <CIcon icon={cilTrash} size="sm"/> delete
-          </button>
+          </button> */}
           </div>
         </td>
       </tr>
     ))
   }
 
+  const getShopCurrentPageData = () => OrderList?.slice(shopStartIndex, shopEndIndex)
+  let shopEndIndex = shopCurrentPage * shopPerPage
+  let shopStartIndex = shopEndIndex - shopPerPage
+  let shopDiff = OrderList?.length - shopStartIndex
+  if (shopDiff < shopPerPage) {
+    shopEndIndex = shopStartIndex + shopDiff
+  }
+
+  // Function to handle page changes for shop list
+  const handleShopPageChange = (pageNumber) => setShopCurrentPage(pageNumber)
+
+  const OnShopPageClick = (page) => {
+    setShopPerPage(page)
+    setShopCurrentPage(1)
+  }
+
+  // Function to handle previous page for shop list
+  const goToShopPreviousPage = () => {
+    if (shopCurrentPage > 1) {
+      setShopCurrentPage(shopCurrentPage - 1)
+    }
+  }
+
+  const goToShopNextPage = () => {
+    const totalPages = Math.ceil(OrderList?.length / shopPerPage)
+    if (shopCurrentPage < totalPages) {
+      setShopCurrentPage(shopCurrentPage + 1)
+    }
+  }
+
+  const renderShopData = () => {
+    const currentPageData = getShopCurrentPageData()
+    return currentPageData.map((item, index) => (
+      <tr key={item.id}>
+        <td>{index + 1}</td>
+        <td>{item.business.businessName}</td>
+        <td>{item.amount}</td>
+        <td>{item.status}</td>
+        <td>{item.date.slice(1, 10)}</td>
+        <td>{item.division}</td>
+        <td>{item.province}</td>
+        <td>{item.createdAt?.slice(0, 10)}</td>
+      </tr>
+    ))
+  }
+
+  const totalShopPages = Math.ceil(OrderList?.length / shopPerPage)
+  // Generate an array of page numbers
+  const shopPageNumbers = getPageNumbers(shopCurrentPage, totalShopPages)
+
   // Calculate total number of pages
   const totalPages = Math.ceil(data.length / perPage)
   // Generate an array of page numbers
-  const pageNumbers = getPageNumbers(currentPage,totalPages);
-  
+  const pageNumbers = getPageNumbers(currentPage, totalPages);
+
   return (
-    loader ? <Loader/> :<div className="container">
-    <CModal alignment="center" visible={editModalVisible} onClose={() => setEditModalVisible(false)}>
-      <CModalHeader>
-        <CModalTitle>Edit Customer Details</CModalTitle>
-      </CModalHeader>
-      <CModalBody>
-      {editFormData.action === 'edit' ? <CForm>
-  <CFormInput
-    type="text"
-    id="name"
-    label="Firstname"
-    aria-describedby="name"
-    value={editFormData?.firstName|| '' }
-  onChange={(e) => setEditFormData({ ...editFormData, firstName: e.target.value })}
-  />
-   <CFormInput
-    type="text"
-    id="name"
-    label="Lastname"
-    aria-describedby="name"
-    value={editFormData?.lastName || '' }
-  onChange={(e) => setEditFormData({ ...editFormData, lastName: e.target.value })}
-  />
-   <CFormInput
-    type="tel"
-    id="mobile"
-    label="Mobile Number"
-    aria-describedby="name"
-    value={editFormData.mobile || ''}
-  onChange={(e) => setEditFormData({ ...editFormData, mobile: e.target.value })}
-  />
-  <CFormInput
-    type="text"
-    id="cnic"
-    label="CNIC"
-    aria-describedby="name"
-    value={editFormData.cnic || ''}
-  onChange={(e) => setEditFormData({ ...editFormData, cnic: e.target.value })}
-  />
-  <CFormInput
-    type="text"
-    id="province"
-    label="Province"
-    aria-describedby="name"
-    value={editFormData.province || ''}
-  onChange={(e) => setEditFormData({ ...editFormData, province: e.target.value })}
-  />
-  <CFormInput
-    type="text"
-    id="division"
-    label="Division"
-    aria-describedby="name"
-    value={editFormData.division || ''}
-  onChange={(e) => setEditFormData({ ...editFormData, division: e.target.value })}
-  />
-  <CFormInput
-    type="text"
-    id="district"
-    label="District"
-    aria-describedby="name"
-    value={editFormData.district || ''}
-  onChange={(e) => setEditFormData({ ...editFormData, district: e.target.value })}
-  />
-  <CFormInput
-    type="text"
-    id="tehsil"
-    label="Tehsil"
-    aria-describedby="name"
-    value={editFormData.tehsil || ''}
-  onChange={(e) => setEditFormData({ ...editFormData, tehsil: e.target.value })}
-  />
-  
-</CForm> : ""
-}
-      </CModalBody>
-      <CModalFooter>
-        <CButton color="secondary" onClick={() => setEditModalVisible(false)}>
-          Close
-        </CButton>
-        {editFormData.action === 'edit' ? <CButton color="primary" onClick={handleSaveChanges}>Save changes</CButton> : ""}
-      </CModalFooter>
-    </CModal>
-    <CModal alignment="center" visible={viewModalVisible} size='sm' onClose={() => setViewModalVisible(false)}>
-      <CModalHeader>
-        <CModalTitle>View Customer Details</CModalTitle>
-      </CModalHeader>
-      <CModalBody>
-      <CForm>
-        <CFormInput
+    loader ? <Loader /> : <div className="container">
+      <CModal alignment="center" visible={editModalVisible} onClose={() => setEditModalVisible(false)}>
+        <CModalHeader>
+          <CModalTitle>Edit Customer Details</CModalTitle>
+        </CModalHeader>
+        <CModalBody>
+          {editFormData.action === 'edit' ? <CForm>
+            <CFormInput
               type="text"
               id="name"
-              label="Name"
+              label="Firstname"
               aria-describedby="name"
-              value={`${editFormData.firstName} ${editFormData.lastName}` || ''}
-              disabled
-        />
-        <CFormInput
+              value={editFormData?.firstName || ''}
+              onChange={(e) => setEditFormData({ ...editFormData, firstName: e.target.value })}
+            />
+            <CFormInput
               type="text"
+              id="name"
+              label="Lastname"
+              aria-describedby="name"
+              value={editFormData?.lastName || ''}
+              onChange={(e) => setEditFormData({ ...editFormData, lastName: e.target.value })}
+            />
+            <CFormInput
+              type="tel"
               id="mobile"
-              label="Cell"
+              label="Mobile Number"
               aria-describedby="name"
               value={editFormData.mobile || ''}
-              disabled
-        />
-        <CFormInput
+              onChange={(e) => setEditFormData({ ...editFormData, mobile: e.target.value })}
+            />
+            <CFormInput
               type="text"
               id="cnic"
               label="CNIC"
               aria-describedby="name"
               value={editFormData.cnic || ''}
-              disabled
-        />
-        <CFormInput
-              type="text"
-              id="tehsil"
-              label="Tehsil"
-              aria-describedby="name"
-              value={editFormData.tehsil || ''}
-              disabled
-        />
-        <CFormInput
-              type="text"
-              id="district"
-              label="District"
-              aria-describedby="name"
-              value={editFormData.district || ''}
-              disabled
-        />
-        <CFormInput
-              type="text"
-              id="division"
-              label="Division"
-              aria-describedby="name"
-              value={(editFormData.division? editFormData.division: 'Not defined') || ""}
-              disabled
-        />
-        <CFormInput
+              onChange={(e) => setEditFormData({ ...editFormData, cnic: e.target.value })}
+            />
+            <CFormInput
               type="text"
               id="province"
               label="Province"
               aria-describedby="name"
               value={editFormData.province || ''}
-              disabled
-        />
-        <CFormInput
+              onChange={(e) => setEditFormData({ ...editFormData, province: e.target.value })}
+            />
+            <CFormInput
               type="text"
-              id="createdAt"
-              label="Created At"
+              id="division"
+              label="Division"
               aria-describedby="name"
-              value={editFormData?.createdAt?.slice(0, 10) || ''}
-              disabled
-        />
-        </CForm>
-      </CModalBody>
-    </CModal>
-    
+              value={editFormData.division || ''}
+              onChange={(e) => setEditFormData({ ...editFormData, division: e.target.value })}
+            />
+            <CFormInput
+              type="text"
+              id="district"
+              label="District"
+              aria-describedby="name"
+              value={editFormData.district || ''}
+              onChange={(e) => setEditFormData({ ...editFormData, district: e.target.value })}
+            />
+            <CFormInput
+              type="text"
+              id="tehsil"
+              label="Tehsil"
+              aria-describedby="name"
+              value={editFormData.tehsil || ''}
+              onChange={(e) => setEditFormData({ ...editFormData, tehsil: e.target.value })}
+            />
+
+          </CForm> : ""
+          }
+        </CModalBody>
+        <CModalFooter>
+          <CButton color="secondary" onClick={() => setEditModalVisible(false)}>
+            Close
+          </CButton>
+          {editFormData.action === 'edit' ? <CButton color="primary" onClick={handleSaveChanges}>Save changes</CButton> : ""}
+        </CModalFooter>
+      </CModal>
+      <CModal alignment="center" visible={viewModalVisible} size='lg' onClose={() => setViewModalVisible(false)}>
+        <CModalHeader>
+          <CModalTitle>View Orders Details</CModalTitle>
+        </CModalHeader>
+        <CModalBody>
+          {OrderList.length ? <div className="table-responsive">
+            <table className="table table-striped table-bordered">
+              <thead>
+                <tr>
+                  {shopTitle.map((item, index) => {
+                    return (
+                      <th scope="col" className="text-uppercase" key={index}>
+                        {item}
+                      </th>
+                    )
+                  })}
+                </tr>
+              </thead>
+              <tbody>{renderShopData()}</tbody>
+            </table>
+          </div> : <div>
+            <h3>No Orders yet</h3>
+          </div>
+          }
+        </CModalBody>
+        <CModalFooter>
+          {OrderList.length && <div className="card-footer d-flex justify-content-between flex-wrap w-100">
+            <div className="col-4">
+              <select
+                className="form-select form-select"
+                onChange={(e) => OnShopPageClick(e.target.value)}
+              >
+                <option value="5" defaultValue>
+                  5
+                </option>
+                <option value="10">10</option>
+
+                <option value="29">20</option>
+                <option value="30">30</option>
+                <option value="50">50</option>
+              </select>
+            </div>
+            <nav aria-label="...">
+              <ul className="pagination">
+                <li className={shopCurrentPage === 1 ? 'page-item disabled' : 'page-item'}>
+                  <button
+                    className="page-link"
+                    onClick={goToShopPreviousPage}
+                    disabled={shopCurrentPage === 1}
+                  >
+                    Previous
+                  </button>
+                </li>
+
+                {shopPageNumbers.map((pageNumber, index) => {
+                  return (
+                    <li
+                      className={shopCurrentPage === pageNumber ? 'active page-item' : 'page-item'}
+                      aria-current="page"
+                      key={index}
+                    >
+                      <button className="page-link" onClick={() => handleShopPageChange(pageNumber)}>
+                        {pageNumber}
+                      </button>
+                    </li>
+                  )
+                })}
+                <li className={shopCurrentPage === totalShopPages ? 'page-item disabled' : 'page-item'}>
+                  <button className="page-link" onClick={goToShopNextPage}>
+                    Next
+                  </button>
+                </li>
+              </ul>
+            </nav>
+          </div>}
+        </CModalFooter>
+      </CModal>
+
       <div className="card">
         <div className="card-header">Purchasing By Customers</div>
         <div className="card-body">
@@ -383,7 +434,7 @@ const PurchasingByCustomers = () => {
                   value={searchValue}
                   onChange={(e) => setSearchValue(e.target.value)}
                 />
-                
+
               </div>
               <button className="btn btn-primary ms-2" onClick={() => setSearchValue('')}>
                 Clear

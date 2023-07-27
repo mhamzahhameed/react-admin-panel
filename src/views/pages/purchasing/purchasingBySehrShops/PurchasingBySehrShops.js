@@ -6,9 +6,9 @@ import Swal from 'sweetalert2'
 import AxiosInstance from 'src/utils/axiosInstance'
 import Loader from '../../../../components/Loader'
 // import Swal from 'sweetalert2'
-const PurchasingByShops = () => {
+const PurchasingBySehrShops = () => {
   const [title, setTitle] = useState([])
-  const [shopTitle] = useState(['#', 'shop name', 'payment', "status", 'transaction data'])
+  const [shopTitle] = useState(['#', 'shop name', "sehrcode", 'payment', "status", 'transaction data'])
   const [OrderList, setOrderList] = useState([])
   const [data, setData] = useState([])
   // const [categoryList, setCategoryList] = useState([])
@@ -18,9 +18,10 @@ const PurchasingByShops = () => {
   const [editModalVisible, setEditModalVisible] = useState(false)
   const [viewModalVisible, setViewModalVisible] = useState(false)
   const [editFormData, setEditFormData] = useState({});
-  const [loader, setLoader] = useState(true);
   const [shopCurrentPage, setShopCurrentPage] = useState(1)
   const [shopPerPage, setShopPerPage] = useState(5)
+  const [loader, setLoader] = useState(true);
+
 
   useEffect(() => {
     fetchData()
@@ -46,26 +47,24 @@ const PurchasingByShops = () => {
       response = await response.data.users;
       let business = await AxiosInstance.get(`/api/business/all?limit=${businessCount}`)
       business = await business.data.businesses;
-      let shops = business.filter(obj => obj.sehrCode === null);
+      let sehrShops = business.filter(obj => obj.sehrCode !== null);
 
-      for (const element of shops) {
+      for (const element of sehrShops) {
         const obj2 = element;
 
         const obj1 = response.find((item) => item.id === obj2.userId);
         if (obj2) {
           obj2["isLocked"] = obj1.isLocked
           obj2["reward"] = obj1.reward
-          obj2.verifiedAt = obj1.verifiedAt
+
         }
       }
-      console.log('shops :', shops);
+      console.log('sehrshops :', sehrShops);
 
-      // shops = shops.filter(obj => obj.hasOwnProperty("sehrCode"));
-      // shops = shops.filter((customer)=> customer.isLocked === false)
-      shops = shops.filter((item) => item?.reward?.title === 'Small Business' || item.reward?.title === 'Large Business' || item.reward?.title === 'Mega Business' || item.reward?.title === 'SEHR CODED SHOP')
-
-      shops.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-      shops = shops.map(obj => {
+      // sehrShops = sehrShops.filter(obj => obj.hasOwnProperty("sehrCode"));
+      // sehrShops = sehrShops.filter((customer)=> customer.isLocked === false)
+      sehrShops.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+      sehrShops = sehrShops.map(obj => {
         const updatedObj = {};
         for (const [key, value] of Object.entries(obj)) {
           updatedObj[key] = value ? value : 'not defined';
@@ -76,6 +75,7 @@ const PurchasingByShops = () => {
         "#",
         "owner name",
         "shop name",
+        "sehr code",
         "sehr package",
         "cell",
         "joining date",
@@ -83,7 +83,7 @@ const PurchasingByShops = () => {
         "Target",
         "Details"
       ])
-      const fetchedData = shops
+      const fetchedData = sehrShops
       const filteredData = searchValue
         ? fetchedData.filter((item) => {
 
@@ -158,8 +158,9 @@ const PurchasingByShops = () => {
   //   setEditModalVisible(true);
   // }
   const ViewModal = async (item) => {
-    let orderData = await AxiosInstance.get(`/api/shop/${item.userId}/orders`)
+    let orderData = await AxiosInstance.get(`/api/shop/orders/${item.sehrCode}`)
     await setOrderList(orderData.data.orders)
+    setEditFormData(item)
     setViewModalVisible(true);
   }
   // const handleDelete = (item) => {
@@ -215,6 +216,7 @@ const PurchasingByShops = () => {
         <td>{index + 1}</td>
         <td>{item.ownerName}</td>
         <td>{item.businessName}</td>
+        <td>{item.sehrCode}</td>
         <td>{item.reward.title}</td>
         <td>{item.mobile}</td>
         <td>{item.verifiedAt?.slice(0, 10)}</td>
@@ -223,7 +225,7 @@ const PurchasingByShops = () => {
 
         <td>
           <div className='d-flex justify-content-between flex-wrap' style={{ width: "80px" }}>
-            <button className="btn btn-info text-light" onClick={() => ViewModal(item)}>
+            <button className="btn btn-info text-light" onClick={() => ViewModal({ ...item, action: 'view' })}>
               <CIcon icon={cilViewColumn} size="sm" /> View Orders
             </button>
             {/* <button className="btn btn-success text-light" onClick={()=>EditModal({...item,action: 'edit'})}>
@@ -276,13 +278,11 @@ const PurchasingByShops = () => {
     return currentPageData.map((item, index) => (
       <tr key={item.id}>
         <td>{index + 1}</td>
-        <td>{item.business.businessName}</td>
+        <td>{editFormData.businessName}</td>
+        <td>{editFormData.sehrCode}</td>
         <td>{item.amount}</td>
         <td>{item.status}</td>
         <td>{item.date.slice(1, 10)}</td>
-        <td>{item.division}</td>
-        <td>{item.province}</td>
-        <td>{item.createdAt?.slice(0, 10)}</td>
       </tr>
     ))
   }
@@ -290,6 +290,7 @@ const PurchasingByShops = () => {
   const totalShopPages = Math.ceil(OrderList?.length / shopPerPage)
   // Generate an array of page numbers
   const shopPageNumbers = getPageNumbers(shopCurrentPage, totalShopPages)
+
   // Calculate total number of pages
   const totalPages = Math.ceil(data.length / perPage)
   // Generate an array of page numbers
@@ -463,7 +464,7 @@ const PurchasingByShops = () => {
         </CModalFooter>
       </CModal>
       <div className="card">
-        <div className="card-header">Purchasing By Shops</div>
+        <div className="card-header">Purchasing By SehrShops</div>
         <div className="card-body">
           <div>
             <div className="d-flex my-2 justify-content-end">
@@ -551,4 +552,4 @@ const PurchasingByShops = () => {
     </div>
   )
 }
-export default PurchasingByShops
+export default PurchasingBySehrShops

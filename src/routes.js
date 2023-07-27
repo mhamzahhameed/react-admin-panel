@@ -4,7 +4,6 @@ import SehrShops from './views/pages/users/sehrShops/SehrShops'
 import LimitedCustomers from './views/pages/limitedUsers/limitedCustomers/LimitedCustomers'
 import LimitedSehrShops from './views/pages/limitedUsers/limitedSehrShops/LimitedSehrShops'
 import PurchasingByCustomers from './views/pages/purchasing/purchasingByCustomers/PurchasingByCustomers'
-import PurchasingByShops from './views/pages/purchasing/purchasingByShops/PurchasingByShops'
 import SehrCodeRequests from './views/pages/requests/sehrCodeRequests/SehrCodeRequests'
 import PaymentRequests from './views/pages/requests/paymentRequests/PaymentRequests'
 import Education from './views/pages/education/education/Education'
@@ -19,9 +18,8 @@ import Province from './views/pages/address/province/Province'
 import PostBlog from './views/pages/blog/postBlog/PostBlog'
 import VerifyOPT from './views/otp/VerifyOTP'
 import BlogList from './views/pages/blog/blogList/BlogList'
-// import AllBlogs from './views/pages/blog/allBlogs/AllBlogs'
-
-
+import PurchasingBySehrShops from './views/pages/purchasing/purchasingBySehrShops/PurchasingBySehrShops'
+import PurchasingByShops from './views/pages/purchasing/purchasingByShops/PurchasingByShops'
 const Dashboard = React.lazy(() => import('./views/dashboard/Dashboard'))
 const Colors = React.lazy(() => import('./views/theme/colors/Colors'))
 const Typography = React.lazy(() => import('./views/theme/typography/Typography'))
@@ -82,6 +80,7 @@ const routes = [
   { path: '/limited-users/sehr-shops', name: 'Limited Sehr Shops', element: LimitedSehrShops, exact: true },
   { path: '/purchasing/purchasing-by-customer', name: 'Pusrchasing by Customer', element: PurchasingByCustomers, exact: true },
   { path: '/purchasing/purchasing-by-shops', name: 'Pusrchasing by Shops', element: PurchasingByShops, exact: true },
+  { path: '/purchasing/purchasing-by-sehr-shops', name: 'Pusrchasing by Sehr Shops', element: PurchasingBySehrShops, exact: true },
   { path: '/request/sehr-code-request', name: 'Sehr Code Request', element: SehrCodeRequests, exact: true },
   { path: '/request/payment-request', name: 'Payment Request', element: PaymentRequests, exact: true },
   { path: '/education/education', name: 'Education', element: Education, exact: true },
