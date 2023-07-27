@@ -87,6 +87,12 @@ const _nav = [
     icon: <CIcon icon={cilCart} customClassName="nav-icon" />,
   },
   {
+    component: CNavItem,
+    name: 'Pusrchasing by Sehr Shops',
+    to: '/purchasing/purchasing-by-sehr-shops',
+    icon: <CIcon icon={cilCart} customClassName="nav-icon" />,
+  },
+  {
     component: CNavTitle,
     name: 'Request',
   },
