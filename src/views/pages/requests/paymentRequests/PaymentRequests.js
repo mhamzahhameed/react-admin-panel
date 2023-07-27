@@ -83,7 +83,7 @@ const PaymentRequests = () => {
         "sehr code",
         "sehr package",
         "category",
-        'staff code',
+        // 'staff code',
         // 'total orders',
         // 'total amount',
         // 'total commission',
@@ -262,7 +262,7 @@ const viewProof = (link)=>{
         
         <td>{item.reward}</td>
         <td>{(categoryList.filter((category)=> category.id === item.categoryId)[0].title)}</td>
-        <td>{item.city}</td>
+        {/* <td>{item.city}</td> */}
         {/* <td>{item.totalOrders}</td>
         <td>{item.totalAmount}</td>
         <td>{item.totalCommission}</td> */}
