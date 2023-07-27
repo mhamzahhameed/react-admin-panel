@@ -8,7 +8,7 @@ import Loader from '../../../../components/Loader'
 // import Swal from 'sweetalert2'
 const PurchasingBySehrShops = () => {
   const [title, setTitle] = useState([])
-  const [shopTitle] = useState(['#', 'shop name', "sehrcode", 'payment', "status","commission", 'transaction data'])
+  const [shopTitle] = useState(['#', 'shop name', "sehrcode", 'payment', "status","commission", 'transaction date'])
   const [OrderList, setOrderList] = useState([])
   const [data, setData] = useState([])
   const [spentAmount, setSpentAmount] = useState(0)
