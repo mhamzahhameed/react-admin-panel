@@ -177,8 +177,8 @@ const PurchasingByShops = () => {
           commission += Number(item.commission);
         });
 
-      setTotalCommission(amount !== 0 ? amount : 0);
-      setSpentAmount(commission !== 0 ? commission : 0);
+        setTotalCommission(commission !== 0 ? commission : 0);
+        setSpentAmount(amount !== 0 ?amount : 0);
     };
 
     if (viewModalVisible) {
