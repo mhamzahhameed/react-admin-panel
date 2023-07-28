@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import React from 'react'
 import {
   CRow,
@@ -9,10 +10,11 @@ import {
   CWidgetStatsA,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
-import { cilArrowBottom, cilOptions } from '@coreui/icons'
+import { cilOptions } from '@coreui/icons'
 import { CChartBar } from '@coreui/react-chartjs'
 
-const WidgetsDropdown = () => {
+const WidgetsDropdown = (props) => {
+  console.log('props : ', props);
   return (
     <CRow>
       <CCol sm={6} lg={3}>
@@ -21,10 +23,8 @@ const WidgetsDropdown = () => {
           color="primary"
           value={
             <>
-              44K{' '}
-              <span className="fs-6 fw-normal">
-                (-23.6% <CIcon icon={cilArrowBottom} />)
-              </span>
+              { props?.users?.length }
+              
             </>
           }
           title="Users"
@@ -113,10 +113,8 @@ const WidgetsDropdown = () => {
           color="info"
           value={
             <>
-              44K{' '}
-              <span className="fs-6 fw-normal">
-                (-23.6% <CIcon icon={cilArrowBottom} />)
-              </span>
+              {props.customers?.length}
+              
             </>
           }
           title="Customers"
@@ -205,10 +203,7 @@ const WidgetsDropdown = () => {
           color="danger"
           value={
             <>
-              44K{' '}
-              <span className="fs-6 fw-normal">
-                (-23.6% <CIcon icon={cilArrowBottom} />)
-              </span>
+              {props.shops?.length}
             </>
           }
           title="Shops"
@@ -297,10 +292,7 @@ const WidgetsDropdown = () => {
           color="success"
           value={
             <>
-              44K{' '}
-              <span className="fs-6 fw-normal">
-                (-23.6% <CIcon icon={cilArrowBottom} />)
-              </span>
+              {props.sehrShops?.length}
             </>
           }
           title="SehrSHops"

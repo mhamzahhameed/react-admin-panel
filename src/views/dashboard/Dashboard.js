@@ -28,20 +28,15 @@ import {
   cibCcPaypal,
   cibCcStripe,
   cibCcVisa,
-  cibGoogle,
-  cibFacebook,
-  cibLinkedin,
+ 
   cifBr,
   cifEs,
   cifFr,
   cifIn,
   cifPl,
   cifUs,
-  cibTwitter,
   cilCloudDownload,
   cilPeople,
-  cilUser,
-  cilUserFemale,
 } from '@coreui/icons'
 
 import avatar1 from 'src/assets/images/avatars/1.jpg'
@@ -51,18 +46,21 @@ import avatar4 from 'src/assets/images/avatars/4.jpg'
 import avatar5 from 'src/assets/images/avatars/5.jpg'
 import avatar6 from 'src/assets/images/avatars/6.jpg'
 
-import WidgetsBrand from '../widgets/WidgetsBrand'
+// import WidgetsBrand from '../widgets/WidgetsBrand'
 import WidgetsDropdown from '../widgets/WidgetsDropdown'
 import AxiosInstance from 'src/utils/axiosInstance'
 
 const Dashboard = () => {
   const random = (min, max) => Math.floor(Math.random() * (max - min + 1) + min)
+  // eslint-disable-next-line
   const [loader, setLoader] = useState(true)
   const [userdata, setUserData] = useState([])
   const [customerdata, setCustomerData] = useState([])
-  const [Sehrdata, setSehrData] = useState([])
+  const [sehrdata, setSehrData] = useState([])
   const [shopdata, setShopData] = useState([])
+  // eslint-disable-next-line
   const [educationList, setEducationList] = useState([])
+  // eslint-disable-next-line
   const [userListByEducation, setUserListByEducation] = useState([])
 
 
@@ -75,27 +73,27 @@ const Dashboard = () => {
     { title: 'Paid', value: 'Average Rate', percent: 40.15, color: 'primary' },
   ]
 
-  const progressGroupExample1 = [
-    { title: 'Monday', value1: 34, value2: 78 },
-    { title: 'Tuesday', value1: 56, value2: 94 },
-    { title: 'Wednesday', value1: 12, value2: 67 },
-    { title: 'Thursday', value1: 43, value2: 91 },
-    { title: 'Friday', value1: 22, value2: 73 },
-    { title: 'Saturday', value1: 53, value2: 82 },
-    { title: 'Sunday', value1: 9, value2: 69 },
-  ]
+  // const progressGroupExample1 = [
+  //   { title: 'Monday', value1: 34, value2: 78 },
+  //   { title: 'Tuesday', value1: 56, value2: 94 },
+  //   { title: 'Wednesday', value1: 12, value2: 67 },
+  //   { title: 'Thursday', value1: 43, value2: 91 },
+  //   { title: 'Friday', value1: 22, value2: 73 },
+  //   { title: 'Saturday', value1: 53, value2: 82 },
+  //   { title: 'Sunday', value1: 9, value2: 69 },
+  // ]
 
-  const progressGroupExample2 = [
-    { title: 'Male', icon: cilUser, value: 53 },
-    { title: 'Female', icon: cilUserFemale, value: 43 },
-  ]
+  // const progressGroupExample2 = [
+  //   { title: 'Male', icon: cilUser, value: 53 },
+  //   { title: 'Female', icon: cilUserFemale, value: 43 },
+  // ]
 
-  const progressGroupExample3 = [
-    { title: 'Organic Search', icon: cibGoogle, percent: 56, value: '191,235' },
-    { title: 'Facebook', icon: cibFacebook, percent: 15, value: '51,223' },
-    { title: 'Twitter', icon: cibTwitter, percent: 11, value: '37,564' },
-    { title: 'LinkedIn', icon: cibLinkedin, percent: 8, value: '27,319' },
-  ]
+  // const progressGroupExample3 = [
+  //   { title: 'Organic Search', icon: cibGoogle, percent: 56, value: '191,235' },
+  //   { title: 'Facebook', icon: cibFacebook, percent: 15, value: '51,223' },
+  //   { title: 'Twitter', icon: cibTwitter, percent: 11, value: '37,564' },
+  //   { title: 'LinkedIn', icon: cibLinkedin, percent: 8, value: '27,319' },
+  // ]
 
   const tableExample = [
     {
@@ -208,15 +206,15 @@ const Dashboard = () => {
     try {
         let response = await AxiosInstance.get("/api/user?limit=0")
         let data =    response.data.users;
-      data = data.map(obj => {
-        const updatedObj = {};
-        for (const [key, value] of Object.entries(obj)) {
-          updatedObj[key] = value ? value : 'not defined';
-        }
-        return updatedObj;
+      let customer =   data.filter(obj => {
+        const userRole = obj.roles.find(roleObj => roleObj.role === 'user');
+        return userRole && obj.roles.length === 1;
       });
+      customer = customer.filter((customer)=> customer.isLocked === false)
+
 
       setUserData(data)
+      setCustomerData(customer)
     } catch (error) {
       console.error(error)
     }
@@ -245,7 +243,7 @@ const Dashboard = () => {
       console.log('sehrshops :', business);
       
       // sehrShops = sehrShops.filter(obj => obj.hasOwnProperty("sehrCode"));
-      // sehrShops = sehrShops.filter((customer)=> customer.isLocked === false)
+      business = business.filter((customer)=> customer.isLocked === false)
       business.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
       business = business.map(obj => {
         const updatedObj = {};
@@ -255,7 +253,9 @@ const Dashboard = () => {
         return updatedObj;
       });
       let sehrShops = business.filter(obj => obj.sehrCode !== null);
-      let shops = business.filter(obj => obj.sehrCode === null);
+      let shops = business.filter(obj => obj.sehrCode === null || obj.sehrCode === 'not defined');
+          shops = shops.filter((item)=> item?.reward.title === 'Small Business' || item.reward.title === 'Large Business'|| item.reward.title === 'Mega Business' || item.reward.title === 'SEHR CODED SHOP'  )
+
       setSehrData(sehrShops)
       setShopData(shops)
       setLoader(false)
@@ -266,7 +266,7 @@ const Dashboard = () => {
 
   return (
     <>
-      <WidgetsDropdown />
+      <WidgetsDropdown users = {userdata} customers = {customerdata} shops = {shopdata} sehrShops = {sehrdata} />
       <CCard className="mb-4">
         <CCardBody>
           <CRow>
@@ -394,14 +394,14 @@ const Dashboard = () => {
         </CCardFooter>
       </CCard>
 
-      <WidgetsBrand withCharts />
+      {/* <WidgetsBrand withCharts /> */}
 
       <CRow>
         <CCol xs>
           <CCard className="mb-4">
             <CCardHeader>Traffic {' & '} Sales</CCardHeader>
             <CCardBody>
-              <CRow>
+              {/* <CRow>
                 <CCol xs={12} md={6} xl={6}>
                   <CRow>
                     <CCol sm={6}>
@@ -481,9 +481,7 @@ const Dashboard = () => {
                     </div>
                   ))}
                 </CCol>
-              </CRow>
-
-              <br />
+              </CRow> */}
 
               <CTable align="middle" className="mb-0 border" hover responsive>
                 <CTableHead color="light">
