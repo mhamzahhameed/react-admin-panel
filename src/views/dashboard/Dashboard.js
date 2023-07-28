@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 
 import {
   CAvatar,
@@ -53,16 +53,26 @@ import avatar6 from 'src/assets/images/avatars/6.jpg'
 
 import WidgetsBrand from '../widgets/WidgetsBrand'
 import WidgetsDropdown from '../widgets/WidgetsDropdown'
+import AxiosInstance from 'src/utils/axiosInstance'
 
 const Dashboard = () => {
   const random = (min, max) => Math.floor(Math.random() * (max - min + 1) + min)
+  const [loader, setLoader] = useState(true)
+  const [userdata, setUserData] = useState([])
+  const [customerdata, setCustomerData] = useState([])
+  const [Sehrdata, setSehrData] = useState([])
+  const [shopdata, setShopData] = useState([])
+  const [educationList, setEducationList] = useState([])
+  const [userListByEducation, setUserListByEducation] = useState([])
+
+
 
   const progressExample = [
-    { title: 'Visits', value: '29.703 Users', percent: 40, color: 'success' },
-    { title: 'Unique', value: '24.093 Users', percent: 20, color: 'info' },
-    { title: 'Pageviews', value: '78.706 Views', percent: 60, color: 'warning' },
-    { title: 'New Users', value: '22.123 Users', percent: 80, color: 'danger' },
-    { title: 'Bounce Rate', value: 'Average Rate', percent: 40.15, color: 'primary' },
+    { title: 'SherShops', value: '29.703 Users', percent: 40, color: 'success' },
+    { title: 'Limited SehrShops', value: '24.093 Users', percent: 20, color: 'info' },
+    { title: 'Limited Customers', value: '78.706 Views', percent: 60, color: 'warning' },
+    { title: 'Commission', value: '22.123 Users', percent: 80, color: 'danger' },
+    { title: 'Paid', value: 'Average Rate', percent: 40.15, color: 'primary' },
   ]
 
   const progressGroupExample1 = [
@@ -177,6 +187,82 @@ const Dashboard = () => {
       activity: 'Last week',
     },
   ]
+
+  useEffect(() => {
+    fetchUserData()
+    fetchBusinessData()
+    fetchEducationList()
+  // eslint-disable-next-line
+  }, [])
+
+  const fetchEducationList = async() => {
+    try{
+      let list = await AxiosInstance.get('/api/education')
+        setEducationList(list.data.education)
+    }
+    catch (error) {
+      console.error(error)
+    }
+  }
+  const fetchUserData = async () => {
+    try {
+        let response = await AxiosInstance.get("/api/user?limit=0")
+        let data =    response.data.users;
+      data = data.map(obj => {
+        const updatedObj = {};
+        for (const [key, value] of Object.entries(obj)) {
+          updatedObj[key] = value ? value : 'not defined';
+        }
+        return updatedObj;
+      });
+
+      setUserData(data)
+    } catch (error) {
+      console.error(error)
+    }
+  }
+  const fetchBusinessData = async () => {
+    try {
+      let count = await AxiosInstance.get(`/api/user`)
+      let businessCount = await AxiosInstance.get(`/api/business/all`)
+      count = await count.data.total;
+      businessCount = await businessCount.data.total;
+      let response = await AxiosInstance.get(`/api/user?limit=${count}`)
+      response = await response.data.users;
+      let business = await AxiosInstance.get(`/api/business/all?limit=${businessCount}`)
+      business = await business.data.businesses;
+      
+      for (const element of business) {
+        const obj2 = element;
+        
+        const obj1 = response.find((item) => item.id === obj2.userId);
+        if (obj2) {
+          obj2["isLocked"] = obj1.isLocked
+          obj2["reward"] = obj1.reward
+          
+        }
+      }
+      console.log('sehrshops :', business);
+      
+      // sehrShops = sehrShops.filter(obj => obj.hasOwnProperty("sehrCode"));
+      // sehrShops = sehrShops.filter((customer)=> customer.isLocked === false)
+      business.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+      business = business.map(obj => {
+        const updatedObj = {};
+        for (const [key, value] of Object.entries(obj)) {
+          updatedObj[key] = value ? value : 'not defined';
+        }
+        return updatedObj;
+      });
+      let sehrShops = business.filter(obj => obj.sehrCode !== null);
+      let shops = business.filter(obj => obj.sehrCode === null);
+      setSehrData(sehrShops)
+      setShopData(shops)
+      setLoader(false)
+    } catch (error) {
+      console.error(error)
+    }
+  }
 
   return (
     <>
