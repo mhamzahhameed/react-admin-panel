@@ -1,8 +1,9 @@
-import { cilViewColumn } from '@coreui/icons'
+import { cilDelete, cilViewColumn } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
-import { CButton, CForm,  CFormInput,  CImage,  CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle } from '@coreui/react'
+import {  CModal, CModalBody, CModalHeader, CModalTitle } from '@coreui/react'
 import React, { useEffect, useState } from 'react'
 import AxiosInstance from 'src/utils/axiosInstance'
+import Swal from 'sweetalert2'
 // import Swal from 'sweetalert2'
 const BlogList = () => {
   const [title, setTitle] = useState([])
@@ -10,7 +11,7 @@ const BlogList = () => {
   const [currentPage, setCurrentPage] = useState(1)
   const [perPage, setPerPage] = useState(10)
   const [searchValue, setSearchValue] = useState('')
-  const [editModalVisible, setEditModalVisible] = useState(false)
+  // const [editModalVisible, setEditModalVisible] = useState(false)
   const [viewModalVisible, setViewModalVisible] = useState(false)
   const [editFormData, setEditFormData] = useState({});
   
@@ -112,32 +113,48 @@ const BlogList = () => {
   //   setEditModalVisible(true);
   // }
   const ViewModal = (data)=>{
+    console.log(data);
     setEditFormData(data)
     setViewModalVisible(true);
   }
-  // const handleDelete = (id)=>{
-  //   // Swal.fire({
-  //   //   title: 'Are you sure you want to limit this user?',
-  //   //   text: 'You won\'t be able to revert this!',
-  //   //   icon: 'warning',
-  //   //   showCancelButton: true,
-  //   //   confirmButtonText: 'Confirm',
-  //   //   cancelButtonText: 'Cancel',
-  //   //   reverseButtons: true,
-  //   // }).then((result) => {
-  //   //   if (result.isConfirmed) {
-  //   //     // Perform the delete operation
-  //   //     console.log(id)
-  //   //   }
-  //   // });
-  // }
+  const handleDelete = (id)=>{
+    Swal.fire({
+      title: 'Are you sure you want to delete this blog?',
+      text: 'You won\'t be able to revert this!',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Confirm',
+      cancelButtonText: 'Cancel',
+      reverseButtons: true,
+    }).then(async(result) => {
+      if (result.isConfirmed) {
+       try {
+         await AxiosInstance.delete(`/api/blog/posts/${id}`);
+        Swal.fire({
+          title: 'Blog is deleted successfully!',
+         
+          icon: 'success',
+         
+        })
+       } catch (error) {
+        Swal.fire({
+          title: error.message,
+         
+          icon: 'error',
+         
+        })
+       }
+      }
+    });
+    fetchData();
+  }
   // Handle Save Changes button onclicking
-  const handleSaveChanges = async() => {
-    let response = await AxiosInstance.put('/api/user/update-profile',JSON.stringify(editFormData));
-    console.log(response);
-    setEditModalVisible(false);
-    setEditFormData({});
-  };
+  // const handleSaveChanges = async() => {
+  //   let response = await AxiosInstance.put('/api/user/update-profile',JSON.stringify(editFormData));
+  //   console.log(response);
+  //   setEditModalVisible(false);
+  //   setEditFormData({});
+  // };
   // Render the current page's records
   const renderData = () => {
     const currentPageData = getCurrentPageData()
@@ -150,16 +167,16 @@ const BlogList = () => {
         <td>{(item?.image !== "null" && item.image !== "" && item?.image !== "not defined")? " Click on view": " no image"}</td>
         <td>{(item?.video !== "null" && item.video !== "" && item?.video !== "not defined")? " Click on view": " no video"}</td>
         <td>
-          <div className='d-flex justify-content-between flex-wrap' style={{ width:"275px" }}>
+          <div className='d-flex justify-content-between flex-wrap' style={{ width:"170px" }}>
           <button className="btn btn-info text-light" onClick={()=>ViewModal(item)}>
             <CIcon icon={cilViewColumn} size="sm" /> View
           </button>
           {/* <button className="btn btn-success text-light" onClick={()=>EditModal({...item,action: 'edit'})}>
             <CIcon icon={cilPenAlt} size="sm" /> Update
           </button> */}
-          {/* <button className="btn btn-warning ms-2 text-light" onClick={()=> handleDelete(index)}>
+          <button className="btn btn-warning  text-light" onClick={()=> handleDelete(item.id)}>
             <CIcon icon={cilDelete} size="sm"/> Delete
-          </button> */}
+          </button>
           </div>
         </td>
       </tr>
@@ -170,80 +187,68 @@ const BlogList = () => {
   const totalPages = Math.ceil(data.length / perPage)
   // Generate an array of page numbers
   const pageNumbers = getPageNumbers(currentPage,totalPages);
-  
+  const getEmbeddedLink = (url) => {
+    // Regular expression to match YouTube video URLs
+    const regExp = /^(https?:\/\/)?(www\.)?youtube\.com\/watch\?v=(\w+)$/;
+    const match = url.match(regExp);
+
+    if (match) {
+      const videoId = match[3];
+      return `https://www.youtube.com/embed/${videoId}`;
+    } else {
+      // Return the original URL if it doesn't match the YouTube video URL pattern
+      return url;
+    }
+  };
   return (
     <div className="container">
-    <CModal alignment="center" visible={editModalVisible} onClose={() => setEditModalVisible(false)}>
+    {/* <CModal alignment="center" size='xl' visible={editModalVisible} onClose={() => setEditModalVisible(false)}>
       <CModalHeader>
         <CModalTitle>Edit Blog Details</CModalTitle>
       </CModalHeader>
       <CModalBody>
       {editFormData.action === 'edit' ? <CForm>
-  <CFormInput
+ 
+      <CFormInput
     type="text"
-    id="name"
-    label="Firstname"
-    aria-describedby="name"
-    value={editFormData?.firstName|| '' }
-  onChange={(e) => setEditFormData({ ...editFormData, firstName: e.target.value })}
+    id="title"
+    name='title'
+    required
+    label={"Title"}
+    value={editFormData?.title || ""}
   />
-   <CFormInput
-    type="text"
-    id="name"
-    label="Lastname"
-    aria-describedby="name"
-    value={editFormData?.lastName || '' }
-  onChange={(e) => setEditFormData({ ...editFormData, lastName: e.target.value })}
-  />
-   <CFormInput
-    type="tel"
-    id="mobile"
-    label="Mobile Number"
-    aria-describedby="name"
-    value={editFormData.mobile || ''}
-  onChange={(e) => setEditFormData({ ...editFormData, mobile: e.target.value })}
-  />
-  <CFormInput
-    type="text"
-    id="cnic"
-    label="CNIC"
-    aria-describedby="name"
-    value={editFormData.cnic || ''}
-  onChange={(e) => setEditFormData({ ...editFormData, cnic: e.target.value })}
-  />
-  <CFormInput
-    type="text"
-    id="province"
-    label="Province"
-    aria-describedby="name"
-    value={editFormData.province || ''}
-  onChange={(e) => setEditFormData({ ...editFormData, province: e.target.value })}
-  />
-  <CFormInput
-    type="text"
-    id="division"
-    label="Division"
-    aria-describedby="name"
-    value={editFormData.division || ''}
-  onChange={(e) => setEditFormData({ ...editFormData, division: e.target.value })}
-  />
-  <CFormInput
-    type="text"
-    id="district"
-    label="District"
-    aria-describedby="name"
-    value={editFormData.district || ''}
-  onChange={(e) => setEditFormData({ ...editFormData, district: e.target.value })}
-  />
-  <CFormInput
-    type="text"
-    id="tehsil"
-    label="Tehsil"
-    aria-describedby="name"
-    value={editFormData.tehsil || ''}
-  onChange={(e) => setEditFormData({ ...editFormData, tehsil: e.target.value })}
-  />
-  
+  <p className='mt-2'>Content</p>
+  <CKEditor
+                    editor={ ClassicEditor }
+                    data={editFormData?.content || ""}
+                    // config={{ 
+                    //   plugins: ['Base64UploadAdapter']
+                    //  }}
+                    onReady={ editor => {
+                        // You can store the "editor" and use when it is needed.
+                        console.log( 'Editor is ready to use!', editor );
+                    } }
+                    onChange={ ( event, editor ) => {
+                        const data = editor.getData();
+                        
+                        console.log( { event, editor, data } );
+                    } }
+                    onBlur={ ( event, editor ) => {
+                        console.log( 'Blur.', editor );
+                    } }
+                    onFocus={ ( event, editor ) => {
+                        console.log( 'Focus.', editor );
+                    } }
+                />
+                 <CFormTextarea
+    id="description"
+    label="Description"
+    name='description'
+    rows={5}
+    required
+    
+    value={editFormData?.description || ""}
+  ></CFormTextarea>
 </CForm> : ""
 }
       </CModalBody>
@@ -253,7 +258,7 @@ const BlogList = () => {
         </CButton>
         {editFormData.action === 'edit' ? <CButton color="primary" onClick={handleSaveChanges}>Save changes</CButton> : ""}
       </CModalFooter>
-    </CModal>
+    </CModal> */}
     <CModal alignment="center" visible={viewModalVisible} size='lg' onClose={() => setViewModalVisible(false)}>
       <CModalHeader>
         <CModalTitle>View Blog Details</CModalTitle>
@@ -270,9 +275,22 @@ const BlogList = () => {
           />
         </div>
       </div>
+      <p className='fw-bold h3 text-center' >Image</p>
+      <div className='d-flex justify-content-center align-items-center'>
+      {editFormData?.image && editFormData?.image !== 'not defined' ? <img src={editFormData?.image} height={400} alt={editFormData?.image}/> : <p className='text-center text-danger'>No Image Found!</p>}
+      </div>
+      <p className='fw-bold h3 text-center' >Video</p>
+      <div className='d-flex justify-content-center align-items-center'>
+      {editFormData?.video && editFormData?.video !== 'not defined' ?     <div className="embed-responsive embed-responsive-16by9">
+      <iframe
+        className="embed-responsive-item"
+        src={getEmbeddedLink(editFormData?.video)}
+        title="YouTube Video Player"
+        allowFullScreen
+      />
+    </div> : <p className='text-center text-danger'>No Video Found!</p>}
+      </div>
     </div>
-      
-      {(editFormData?.image !== null && editFormData?.image !== "" && editFormData?.image !== "not defined") && <CImage fluid src={editFormData?.image} />}
       </CModalBody>
     </CModal>
     
