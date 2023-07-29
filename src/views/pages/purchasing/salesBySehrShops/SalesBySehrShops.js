@@ -53,6 +53,7 @@ const SalesBySehrShops = () => {
       let requestCount = await AxiosInstance.get('/api/shop/payments')
       requestCount = await requestCount.data.total
       let payments = await AxiosInstance.get(`/api/shop/payments?limit=${requestCount}`)
+      // eslint-disable-next-line
       payments = await payments.data.payments
 
       for (const element of sehrShops) {
