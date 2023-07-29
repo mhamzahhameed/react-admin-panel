@@ -17,6 +17,7 @@ import CIcon from '@coreui/icons-react'
 import { cilLockLocked, cilUser } from '@coreui/icons'
 import axios from 'axios';
 import Loader from '../../../components/Loader';
+import logo from '../../../assets/brand/sehr_logo.png';
 const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -104,7 +105,7 @@ const Login = () => {
               <CCard className="p-4" >
                 <CCardBody >
                   <CForm className='d-flex justify-content-center align-items-center flex-column p-5' onSubmit={(e) => handleLogin(e)}>
-                    <h1>Login</h1>
+                    <img src={logo} height={100} className='border p-2 rounded-circle mb-2' alt='sehr logo'/>
                     {errors && <div className="error alert alert-danger">{errors}</div>}
                     <p className="text-medium-emphasis text-uppercase">login to Admin Dashboard</p>
                     <CInputGroup className="mb-3">
