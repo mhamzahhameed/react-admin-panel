@@ -5,12 +5,15 @@ import React, { useEffect, useState } from 'react'
 import AxiosInstance from 'src/utils/axiosInstance'
 import Loader from '../../../../components/Loader'
 // import Swal from 'sweetalert2'
-const PurchasingBySehrShops = () => {
+const SalesBySehrShops = () => {
   const [title, setTitle] = useState([])
-  const [shopTitle] = useState(['#', 'shop name', "sehrcode", 'payment', "status","commission", 'transaction date'])
+  const [shopTitle] = useState(['#', 'shop name', "sehrcode",'customer', 'payment', "status","commission", 'transaction date'])
   const [orderList, setOrderList] = useState([])
   const [data, setData] = useState([])
+  const [paymentList, setPaymentList] = useState([])
+  const [paymentData, setPaymentData] = useState([])
   const [spentAmount, setSpentAmount] = useState(0)
+  const [paid, setPaid] = useState(0)
   const [totalCommission, setTotalCommission] = useState(0)
   // const [categoryList, setCategoryList] = useState([])
   const [currentPage, setCurrentPage] = useState(1)
@@ -25,9 +28,18 @@ const PurchasingBySehrShops = () => {
 
   useEffect(() => {
     fetchData()
+    // fetchCategoryList()
     // eslint-disable-next-line
   }, [searchValue])
-
+  // const fetchCategoryList = async () => {
+  //   try {
+  //     let list = await AxiosInstance.get('/api/category')
+  //     setCategoryList(await list.data.categories)
+  //   }
+  //   catch (error) {
+  //     console.error(error)
+  //   }
+  // }
   const fetchData = async () => {
     try {
       let count = await AxiosInstance.get(`/api/user`)
@@ -39,6 +51,10 @@ const PurchasingBySehrShops = () => {
       let business = await AxiosInstance.get(`/api/business/all?limit=${businessCount}`)
       business = await business.data.businesses;
       let sehrShops = business.filter(obj => obj.sehrCode !== null);
+      let requestCount = await AxiosInstance.get('/api/shop/payments')
+      requestCount = await requestCount.data.total
+      let payments = await AxiosInstance.get(`/api/shop/payments?limit=${requestCount}`)
+      payments = await payments.data.payments
 
       for (const element of sehrShops) {
         const obj2 = element;
@@ -47,6 +63,7 @@ const PurchasingBySehrShops = () => {
         if (obj2) {
           obj2["isLocked"] = obj1.isLocked
           obj2["reward"] = obj1.reward
+
         }
       }
       console.log('sehrshops :', sehrShops);
@@ -91,6 +108,7 @@ const PurchasingBySehrShops = () => {
         : fetchedData
       setLoader(false)
       setData(filteredData)
+    setPaymentData(payments)
     } catch (error) {
       console.error(error)
     }
@@ -145,6 +163,7 @@ const PurchasingBySehrShops = () => {
   }
 
 
+
   // Render the current page's records
   const renderData = () => {
     const currentPageData = getCurrentPageData()
@@ -174,9 +193,10 @@ const PurchasingBySehrShops = () => {
   
 
   const ViewModal = async (item) => {
-    let orderData = await AxiosInstance.get(`/api/shop/${item.userId}/orders`);
+    let orderData = await AxiosInstance.get(`/api/shop/orders/${item.sehrCode}`);
     setOrderList(orderData.data.orders);
     setEditFormData(item);
+    setPaymentList(paymentData?.filter((payment)=> payment.business.id === item.id).filter((payment)=> payment.status === 'paid'))
     setViewModalVisible(true);
   };
 
@@ -215,9 +235,10 @@ const PurchasingBySehrShops = () => {
     return currentPageData.map((item, index) => (
       <tr key={item.id}>
         <td>{index + 1}</td>
-        <td>{item.business.businessName}</td>
-        <td>{item.business.sehrCode}</td>
+        <td>{editFormData.businessName}</td>
+        <td>{editFormData.sehrCode}</td>
         <td>{item.amount}</td>
+        <td>{item.customer.firstName + " " + item.customer.lastName}</td>
         <td>{item.status}</td>
         <td>{item.commission}</td>
         <td>{item.date.slice(1, 10)}</td>
@@ -239,17 +260,22 @@ const PurchasingBySehrShops = () => {
       let amount = 0;
       let commission = 0;
 
-      orderList.length &&
+     ( orderList.length &&
         orderList.forEach((item) => {
-        if (item.status !== 'rejected'){
-          amount += Number(item.amount);
-          commission += Number(item.commission);
-        }
-      });
+          if (item.status !== 'rejected'){
+            amount += Number(item.amount);
+            commission += Number(item.commission);
+          }
+        })
+        )
+        
+      
 
       setTotalCommission(commission !== 0 ? commission : 0);
       setSpentAmount(amount !== 0 ?amount : 0);
     };
+
+    
 
     if (viewModalVisible) {
       // Calculate spentAmount and totalCommission when the modal is visible
@@ -257,9 +283,25 @@ const PurchasingBySehrShops = () => {
     }
   }, [orderList, viewModalVisible]);
 
+  useEffect (() => {
+    const calculatePiad = ()=>{
+    let paidCommission = 0
+    paymentList.length && 
+      paymentList.forEach((item)=>{
+        paidCommission += Number(item.amount)
+      })
+      setPaid(paidCommission)
+    }
+    if (viewModalVisible) {
+      // Calculate Paid commission when the modal is visible
+      calculatePiad();
+    }
+  },[paymentList, viewModalVisible])
+
 
   return (
     loader ? <Loader /> : <div className="container">
+
       <CModal alignment="center" visible={viewModalVisible} size='xl' onClose={() => {
         setViewModalVisible(false)
         setEditFormData({})
@@ -267,30 +309,26 @@ const PurchasingBySehrShops = () => {
         setSpentAmount(0)
         }}>
         <CModalHeader>
-          <CModalTitle> Purchasing Details</CModalTitle>
+          <CModalTitle>Sales Detail</CModalTitle>
         </CModalHeader>
         <CModalBody>
           {spentAmount && 
             <div className='Cotainer d-flex justify-content-between my-5 mx-2'>
-              <div className='col-2 card px-2 py-4 d-flex justify-content-center align-items-center bg-warning'>
-                <h5 className='text-uppercase fw-bolder mt-4'>Target </h5>
-                <p className='text-uppercase fw-bolder'><strong>Rs-/ {editFormData?.reward?.salesTarget}</strong></p>
-              </div>
               <div className='col-2 card px-2 py-4 d-flex justify-content-center align-items-center bg-info'>
-                <h5 className='text-uppercase fw-bolder mt-4'>Spent</h5>
+                <h5 className='text-uppercase fw-bolder mt-4'>Sale</h5>
                 <p className='text-uppercase fw-bolder'><strong>Rs-/ {spentAmount}</strong></p>
-              </div>
-              <div className='col-2 card px-2 py-4 d-flex justify-content-center align-items-center bg-danger'>
-                <h5 className='text-uppercase fw-bolder mt-4'>Remaining</h5>
-                <p className='text-uppercase fw-bolder'><strong>Rs-/ {editFormData?.reward?.salesTarget - spentAmount }</strong></p>
               </div>
               <div className='col-2 card px-2 py-4 d-flex justify-content-center align-items-center bg-success'>
                 <h5 className='text-uppercase fw-bolder mt-4'>Commission</h5>
                 <p className='text-uppercase fw-bolder'><strong>Rs-/ {totalCommission}</strong></p>
               </div>
               <div className='col-2 card px-2 py-4 d-flex justify-content-center align-items-center bg-secondary'>
-                <h5 className='text-uppercase fw-bolder mt-4'>Progress</h5>
-                <p className='text-uppercase fw-bolder'><strong>{((spentAmount / editFormData?.reward?.salesTarget) * 100).toFixed(5)} %</strong></p>
+                <h5 className='text-uppercase fw-bolder mt-4'>Paid</h5>
+                <p className='text-uppercase fw-bolder'><strong>{paid}</strong></p>
+              </div>
+              <div className='col-2 card px-2 py-4 d-flex justify-content-center align-items-center bg-danger'>
+                <h5 className='text-uppercase fw-bolder mt-4'>Remaining</h5>
+                <p className='text-uppercase fw-bolder'><strong>Rs-/ {totalCommission - paid }</strong></p>
               </div>
               <div className='col-2 card px-2 py-4 d-flex justify-content-center align-items-center bg-info'>
                 <h5 className='text-uppercase fw-bolder mt-4'>Orders</h5>
@@ -369,8 +407,9 @@ const PurchasingBySehrShops = () => {
           </div>}
         </CModalFooter>
       </CModal>
+
       <div className="card">
-        <div className="card-header">Purchasing By SehrShops</div>
+        <div className="card-header">Sales By SehrShops</div>
         <div className="card-body">
           <div>
             <div className="d-flex my-2 justify-content-end">
@@ -458,4 +497,4 @@ const PurchasingBySehrShops = () => {
     </div>
   )
 }
-export default PurchasingBySehrShops
+export default SalesBySehrShops

@@ -11,7 +11,7 @@ const Education = () => {
   const [perPage, setPerPage] = useState(5)
   const [searchValue, setSearchValue] = useState('')
   const [editModalVisible, setEditModalVisible] = useState(false)
-  const [editEducationModal, setEditEducationModal] = useState(false)
+  const [addEducationModal, setAddEducationModal] = useState(false)
 
   const [editFormData, setEditFormData] = useState({});
 
@@ -125,10 +125,11 @@ const Education = () => {
   // Handle Save Changes button onclicking
   const handleSaveEducation = async() => {
     const education = { "title": editFormData.title }
+    console.log('add education :', editFormData.title);
     await AxiosInstance.post('/api/education', education)
 
     await fetchData()
-    setEditEducationModal(false);
+    setAddEducationModal(false);
     setEditFormData({});
   };
 
@@ -180,7 +181,7 @@ const Education = () => {
 
   return (
     <div className="container">
-      <CModal alignment="center" visible={editEducationModal} onClose={() => setEditEducationModal(false)}>
+      <CModal alignment="center" visible={addEducationModal} onClose={() => setAddEducationModal(false)}>
         <CModalHeader>
           <CModalTitle>Add New Education</CModalTitle>
         </CModalHeader>
@@ -197,10 +198,10 @@ const Education = () => {
           </CForm>
         </CModalBody>
         <CModalFooter>
-          <CButton color="secondary" onClick={() => setEditEducationModal(false)}>
+          <CButton color="secondary" onClick={() => setAddEducationModal(false)}>
             Close
           </CButton>
-          <CButton color="primary" onClick={()=>handleSaveEducation}>Save Education</CButton>
+          <CButton color="primary" onClick={()=>handleSaveEducation()}> Add Education</CButton>
         </CModalFooter>
       </CModal>
       <CModal alignment="center" visible={editModalVisible} onClose={() => setEditModalVisible(false)}>
@@ -231,14 +232,14 @@ const Education = () => {
           <CButton color="secondary" onClick={() => setEditModalVisible(false)}>
             Close
           </CButton>
-          <CButton color="primary" onClick={() => handleSaveChanges(editFormData.id)}>Save changes</CButton>
+          <CButton color="primary" onClick={() => handleSaveChanges()}>Save changes</CButton>
         </CModalFooter>
       </CModal>
       <div className="card">
         <div className="card-header"> Education</div>
         <div className="card-body">
         <div className='container'>
-        <CButton className="ms-2 mb-2" onClick={() => setEditEducationModal(true)}>
+        <CButton className="ms-2 mb-2" onClick={() => setAddEducationModal(true)}>
         <CIcon icon={cilPlus} size="lg" className='mt-1' /> <p className=' my-1 d-inline-block'> Add Education</p>
         </CButton>
         </div>

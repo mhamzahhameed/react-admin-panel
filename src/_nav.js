@@ -8,6 +8,7 @@ import {
   cilCheckCircle,
   cilDescription,
   cilEducation,
+  cilMoney,
   cilSpeedometer,
   cilUser,
 } from '@coreui/icons'
@@ -91,6 +92,18 @@ const _nav = [
     name: 'Pusrchasing by Sehr Shops',
     to: '/purchasing/purchasing-by-sehr-shops',
     icon: <CIcon icon={cilCart} customClassName="nav-icon" />,
+  },
+  {
+    component: CNavItem,
+    name: 'Sales by Sehr Shops',
+    to: '/purchasing/sales-by-sehr-shops',
+    icon: <CIcon icon={cilCart} customClassName="nav-icon" />,
+  },
+  {
+    component: CNavItem,
+    name: 'Payments by Sehr Shops',
+    to: '/purchasing/payments-by-sehr-shops',
+    icon: <CIcon icon={cilMoney} customClassName="nav-icon" />,
   },
   {
     component: CNavTitle,

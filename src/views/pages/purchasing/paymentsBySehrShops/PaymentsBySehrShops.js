@@ -1,25 +1,24 @@
 import { cilViewColumn } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
-import { CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle } from '@coreui/react'
+import {  CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle } from '@coreui/react'
 import React, { useEffect, useState } from 'react'
 import AxiosInstance from 'src/utils/axiosInstance'
 import Loader from '../../../../components/Loader'
-// import Swal from 'sweetalert2'
-const PurchasingBySehrShops = () => {
+const PaymentsBySehrShops = () => {
   const [title, setTitle] = useState([])
-  const [shopTitle] = useState(['#', 'shop name', "sehrcode", 'payment', "status","commission", 'transaction date'])
-  const [orderList, setOrderList] = useState([])
+  const [paymentTitle] = useState(['#', 'shop name', "sehrcode", 'payment', "status","transaction id", 'transaction date'])
   const [data, setData] = useState([])
-  const [spentAmount, setSpentAmount] = useState(0)
-  const [totalCommission, setTotalCommission] = useState(0)
-  // const [categoryList, setCategoryList] = useState([])
+  const [paymentdata, setPaymentData] = useState([])
+  const [paymentList, setPaymentList] = useState([])
   const [currentPage, setCurrentPage] = useState(1)
   const [perPage, setPerPage] = useState(10)
   const [searchValue, setSearchValue] = useState('')
-  const [viewModalVisible, setViewModalVisible] = useState(false)
+  const [viewPaymentVisible, setViewPaymentVisible] = useState(false)
   const [editFormData, setEditFormData] = useState({});
+  // eslint-disable-next-line
   const [shopCurrentPage, setShopCurrentPage] = useState(1)
-  const [shopPerPage, setShopPerPage] = useState(5)
+  const [paymentCurrentPage, setPaymentCurrentPage] = useState(1)
+  const [paymentPerPage, setPaymentPerPage] = useState(5)
   const [loader, setLoader] = useState(true);
 
 
@@ -39,6 +38,10 @@ const PurchasingBySehrShops = () => {
       let business = await AxiosInstance.get(`/api/business/all?limit=${businessCount}`)
       business = await business.data.businesses;
       let sehrShops = business.filter(obj => obj.sehrCode !== null);
+      let requestCount = await AxiosInstance.get('/api/shop/payments')
+      requestCount = await requestCount.data.total
+      let payments = await AxiosInstance.get(`/api/shop/payments?limit=${requestCount}`)
+      payments = await payments.data.payments
 
       for (const element of sehrShops) {
         const obj2 = element;
@@ -47,6 +50,7 @@ const PurchasingBySehrShops = () => {
         if (obj2) {
           obj2["isLocked"] = obj1.isLocked
           obj2["reward"] = obj1.reward
+
         }
       }
       console.log('sehrshops :', sehrShops);
@@ -91,6 +95,7 @@ const PurchasingBySehrShops = () => {
         : fetchedData
       setLoader(false)
       setData(filteredData)
+      setPaymentData(payments)
     } catch (error) {
       console.error(error)
     }
@@ -144,7 +149,6 @@ const PurchasingBySehrShops = () => {
     }
   }
 
-
   // Render the current page's records
   const renderData = () => {
     const currentPageData = getCurrentPageData()
@@ -163,145 +167,90 @@ const PurchasingBySehrShops = () => {
 
         <td>
           <div className='d-flex justify-content-between flex-wrap' style={{ width: "80px" }}>
-            <button className="btn btn-info text-light" onClick={() => ViewModal({ ...item, action: 'view' })}>
-              <CIcon icon={cilViewColumn} size="sm" /> View Orders
+            <button className="btn btn-info text-light" onClick={() => PaymentModal({ ...item, action: 'view' })}>
+              <CIcon icon={cilViewColumn} size="sm" /> Payments
             </button>
           </div>
         </td>
       </tr>
     ))
   }
-  
 
-  const ViewModal = async (item) => {
-    let orderData = await AxiosInstance.get(`/api/shop/${item.userId}/orders`);
-    setOrderList(orderData.data.orders);
+  const PaymentModal = async (item) => {
+    setPaymentList(paymentdata?.filter((payment)=> payment.business.id === item.id).filter((payment)=> payment.status !== 'pending'))
     setEditFormData(item);
-    setViewModalVisible(true);
+    setViewPaymentVisible(true);
   };
 
-  const getShopCurrentPageData = () => orderList?.slice(shopStartIndex, shopEndIndex)
-  let shopEndIndex = shopCurrentPage * shopPerPage
-  let shopStartIndex = shopEndIndex - shopPerPage
-  let shopDiff = orderList?.length - shopStartIndex
-  if (shopDiff < shopPerPage) {
-    shopEndIndex = shopStartIndex + shopDiff
+  const getPaymentCurrentPageData = () => paymentList?.slice(paymentStartIndex, paymentEndIndex)
+  let paymentEndIndex = paymentCurrentPage * paymentPerPage
+  let paymentStartIndex = paymentEndIndex - paymentPerPage
+  let paymentDiff = paymentList?.length - paymentStartIndex
+  if (paymentDiff < paymentPerPage) {
+    paymentEndIndex = paymentStartIndex + paymentDiff
   }
 
-  // Function to handle page changes for shop list
-  const handleShopPageChange = (pageNumber) => setShopCurrentPage(pageNumber)
+  // Function to handle page changes for payment list
+  const handlePaymentPageChange = (pageNumber) => setPaymentCurrentPage(pageNumber)
 
-  const OnShopPageClick = (page) => {
-    setShopPerPage(page)
-    setShopCurrentPage(1)
+  const OnPaymentPageClick = (page) => {
+    setPaymentPerPage(page)
+    setPaymentCurrentPage(1)
   }
 
-  // Function to handle previous page for shop list
-  const goToShopPreviousPage = () => {
-    if (shopCurrentPage > 1) {
-      setShopCurrentPage(shopCurrentPage - 1)
+  // Function to handle previous page for payment list
+  const goToPaymentPreviousPage = () => {
+    if (paymentCurrentPage > 1) {
+      setPaymentCurrentPage(paymentCurrentPage - 1)
     }
   }
 
-  const goToShopNextPage = () => {
-    const totalPages = Math.ceil(orderList?.length / shopPerPage)
-    if (shopCurrentPage < totalPages) {
-      setShopCurrentPage(shopCurrentPage + 1)
+  const goToPaymentNextPage = () => {
+    const totalPages = Math.ceil(paymentList?.length / paymentPerPage)
+    if (paymentCurrentPage < totalPages) {
+      setPaymentCurrentPage(paymentCurrentPage + 1)
     }
   }
 
-  const renderShopData = () => {
-    const currentPageData = getShopCurrentPageData()
+  const renderPaymentData = () => {
+    const currentPageData = getPaymentCurrentPageData()
     return currentPageData.map((item, index) => (
       <tr key={item.id}>
         <td>{index + 1}</td>
-        <td>{item.business.businessName}</td>
-        <td>{item.business.sehrCode}</td>
+        <td>{editFormData.businessName}</td>
+        <td>{editFormData.sehrCode}</td>
         <td>{item.amount}</td>
         <td>{item.status}</td>
-        <td>{item.commission}</td>
-        <td>{item.date.slice(1, 10)}</td>
+        <td>{item.description}</td>
+        <td>{item.createdAt.slice(1, 10)}</td>
       </tr>
     ))
   }
 
-  const totalShopPages = Math.ceil(orderList?.length / shopPerPage)
+  const totalPaymentPages = Math.ceil(paymentList?.length / paymentPerPage)
   // Generate an array of page numbers
-  const shopPageNumbers = getPageNumbers(shopCurrentPage, totalShopPages)
+  const paymentPageNumbers = getPageNumbers(paymentCurrentPage, totalPaymentPages)
 
   // Calculate total number of pages
   const totalPages = Math.ceil(data.length / perPage)
   // Generate an array of page numbers
   const pageNumbers = getPageNumbers(currentPage, totalPages);
 
-  useEffect(() => {
-    const calculateSpentAmount = () => {
-      let amount = 0;
-      let commission = 0;
-
-      orderList.length &&
-        orderList.forEach((item) => {
-        if (item.status !== 'rejected'){
-          amount += Number(item.amount);
-          commission += Number(item.commission);
-        }
-      });
-
-      setTotalCommission(commission !== 0 ? commission : 0);
-      setSpentAmount(amount !== 0 ?amount : 0);
-    };
-
-    if (viewModalVisible) {
-      // Calculate spentAmount and totalCommission when the modal is visible
-      calculateSpentAmount();
-    }
-  }, [orderList, viewModalVisible]);
-
-
   return (
     loader ? <Loader /> : <div className="container">
-      <CModal alignment="center" visible={viewModalVisible} size='xl' onClose={() => {
-        setViewModalVisible(false)
+      <CModal alignment="center" visible={viewPaymentVisible} size='xl' onClose={() => {
+        setViewPaymentVisible(false)
         setEditFormData({})
-        setTotalCommission(0)
-        setSpentAmount(0)
         }}>
         <CModalHeader>
-          <CModalTitle> Purchasing Details</CModalTitle>
+          <CModalTitle>View payments Details</CModalTitle>
         </CModalHeader>
         <CModalBody>
-          {spentAmount && 
-            <div className='Cotainer d-flex justify-content-between my-5 mx-2'>
-              <div className='col-2 card px-2 py-4 d-flex justify-content-center align-items-center bg-warning'>
-                <h5 className='text-uppercase fw-bolder mt-4'>Target </h5>
-                <p className='text-uppercase fw-bolder'><strong>Rs-/ {editFormData?.reward?.salesTarget}</strong></p>
-              </div>
-              <div className='col-2 card px-2 py-4 d-flex justify-content-center align-items-center bg-info'>
-                <h5 className='text-uppercase fw-bolder mt-4'>Spent</h5>
-                <p className='text-uppercase fw-bolder'><strong>Rs-/ {spentAmount}</strong></p>
-              </div>
-              <div className='col-2 card px-2 py-4 d-flex justify-content-center align-items-center bg-danger'>
-                <h5 className='text-uppercase fw-bolder mt-4'>Remaining</h5>
-                <p className='text-uppercase fw-bolder'><strong>Rs-/ {editFormData?.reward?.salesTarget - spentAmount }</strong></p>
-              </div>
-              <div className='col-2 card px-2 py-4 d-flex justify-content-center align-items-center bg-success'>
-                <h5 className='text-uppercase fw-bolder mt-4'>Commission</h5>
-                <p className='text-uppercase fw-bolder'><strong>Rs-/ {totalCommission}</strong></p>
-              </div>
-              <div className='col-2 card px-2 py-4 d-flex justify-content-center align-items-center bg-secondary'>
-                <h5 className='text-uppercase fw-bolder mt-4'>Progress</h5>
-                <p className='text-uppercase fw-bolder'><strong>{((spentAmount / editFormData?.reward?.salesTarget) * 100).toFixed(5)} %</strong></p>
-              </div>
-              <div className='col-2 card px-2 py-4 d-flex justify-content-center align-items-center bg-info'>
-                <h5 className='text-uppercase fw-bolder mt-4'>Orders</h5>
-                <p className='text-uppercase fw-bolder'><strong>{orderList?.length} </strong></p>
-              </div>
-          </div>}
-          {orderList.length ? <div className="table-responsive">
+          {paymentList.length ? <div className="table-responsive">
             <table className="table table-striped table-bordered">
               <thead>
                 <tr>
-                  {shopTitle.map((item, index) => {
+                  {paymentTitle.map((item, index) => {
                     return (
                       <th scope="col" className="text-uppercase" key={index}>
                         {item}
@@ -310,19 +259,19 @@ const PurchasingBySehrShops = () => {
                   })}
                 </tr>
               </thead>
-              <tbody>{renderShopData()}</tbody>
+              <tbody>{renderPaymentData()}</tbody>
             </table>
           </div> : <div>
-            <h3>No Orders yet</h3>
+            <h3>No payments yet</h3>
           </div>
           }
         </CModalBody>
         <CModalFooter>
-          {orderList.length && <div className="card-footer d-flex justify-content-between flex-wrap w-100">
+          {paymentList.length && <div className="card-footer d-flex justify-content-between flex-wrap w-100">
             <div className="col-4">
               <select
                 className="form-select form-select"
-                onChange={(e) => OnShopPageClick(e.target.value)}
+                onChange={(e) => OnPaymentPageClick(e.target.value)}
               >
                 <option value="5" defaultValue>
                   5
@@ -339,28 +288,28 @@ const PurchasingBySehrShops = () => {
                 <li className={shopCurrentPage === 1 ? 'page-item disabled' : 'page-item'}>
                   <button
                     className="page-link"
-                    onClick={goToShopPreviousPage}
+                    onClick={goToPaymentPreviousPage}
                     disabled={shopCurrentPage === 1}
                   >
                     Previous
                   </button>
                 </li>
 
-                {shopPageNumbers.map((pageNumber, index) => {
+                {paymentPageNumbers.map((pageNumber, index) => {
                   return (
                     <li
                       className={shopCurrentPage === pageNumber ? 'active page-item' : 'page-item'}
                       aria-current="page"
                       key={index}
                     >
-                      <button className="page-link" onClick={() => handleShopPageChange(pageNumber)}>
+                      <button className="page-link" onClick={() => handlePaymentPageChange(pageNumber)}>
                         {pageNumber}
                       </button>
                     </li>
                   )
                 })}
-                <li className={shopCurrentPage === totalShopPages ? 'page-item disabled' : 'page-item'}>
-                  <button className="page-link" onClick={goToShopNextPage}>
+                <li className={shopCurrentPage === totalPaymentPages ? 'page-item disabled' : 'page-item'}>
+                  <button className="page-link" onClick={goToPaymentNextPage}>
                     Next
                   </button>
                 </li>
@@ -370,7 +319,7 @@ const PurchasingBySehrShops = () => {
         </CModalFooter>
       </CModal>
       <div className="card">
-        <div className="card-header">Purchasing By SehrShops</div>
+        <div className="card-header">Payments BySehr Shops</div>
         <div className="card-body">
           <div>
             <div className="d-flex my-2 justify-content-end">
@@ -458,4 +407,4 @@ const PurchasingBySehrShops = () => {
     </div>
   )
 }
-export default PurchasingBySehrShops
+export default PaymentsBySehrShops
