@@ -1,23 +1,24 @@
 import { cilViewColumn } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
-import { CButton, CForm, CFormInput, CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle } from '@coreui/react'
+import { CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle } from '@coreui/react'
 import React, { useEffect, useState } from 'react'
-import Swal from 'sweetalert2'
 import AxiosInstance from 'src/utils/axiosInstance'
 import Loader from '../../../../components/Loader'
 // import Swal from 'sweetalert2'
 const SalesBySehrShops = () => {
   const [title, setTitle] = useState([])
-  const [shopTitle] = useState(['#', 'shop name', "sehrcode", 'payment', "status","commission", 'transaction date'])
+  const [shopTitle] = useState(['#', 'shop name', "sehrcode",'customer', 'payment', "status","commission", 'transaction date'])
   const [orderList, setOrderList] = useState([])
   const [data, setData] = useState([])
+  const [paymentList, setPaymentList] = useState([])
+  const [paymentData, setPaymentData] = useState([])
   const [spentAmount, setSpentAmount] = useState(0)
+  const [paid, setPaid] = useState(0)
   const [totalCommission, setTotalCommission] = useState(0)
   // const [categoryList, setCategoryList] = useState([])
   const [currentPage, setCurrentPage] = useState(1)
   const [perPage, setPerPage] = useState(10)
   const [searchValue, setSearchValue] = useState('')
-  const [editModalVisible, setEditModalVisible] = useState(false)
   const [viewModalVisible, setViewModalVisible] = useState(false)
   const [editFormData, setEditFormData] = useState({});
   const [shopCurrentPage, setShopCurrentPage] = useState(1)
@@ -53,7 +54,6 @@ const SalesBySehrShops = () => {
       let requestCount = await AxiosInstance.get('/api/shop/payments')
       requestCount = await requestCount.data.total
       let payments = await AxiosInstance.get(`/api/shop/payments?limit=${requestCount}`)
-      // eslint-disable-next-line
       payments = await payments.data.payments
 
       for (const element of sehrShops) {
@@ -108,6 +108,7 @@ const SalesBySehrShops = () => {
         : fetchedData
       setLoader(false)
       setData(filteredData)
+    setPaymentData(payments)
     } catch (error) {
       console.error(error)
     }
@@ -160,54 +161,8 @@ const SalesBySehrShops = () => {
       setCurrentPage(currentPage + 1)
     }
   }
-  // const EditModal = (data)=>{
-  //   setEditFormData(data);
-  //   setEditModalVisible(true);
-  // }
 
-  // const handleDelete = (item) => {
-  //   Swal.fire({
-  //     title: 'Are you sure you want to delete this user?',
-  //     text: 'You won\'t be able to revert this!',
-  //     icon: 'warning',
-  //     showCancelButton: true,
-  //     confirmButtonText: 'Confirm',
-  //     cancelButtonText: 'Cancel',
-  //     reverseButtons: true,
 
-  //   }).then(async (result) => {
-  //     if (result.isConfirmed) {
-  //       await AxiosInstance.delete(`/api/business/${item?.id}`)
-  //       await AxiosInstance.delete(`/api/user/${item?.userId}/delete`)
-  //       await fetchData()
-  //     }
-  //   });
-  // }
-
-  // Function to set the user as limited or locked
-  // const handleLimit = (item) => {
-  //   Swal.fire({
-  //     title: 'Are you sure you want to limit this user?',
-  //     text: 'You would be able to revert this!',
-  //     icon: 'warning',
-  //     showCancelButton: true,
-  //     confirmButtonText: 'Confirm',
-  //     cancelButtonText: 'Cancel',
-  //     reverseButtons: true,
-  //   }).then(async (result) => {
-  //     if (result.isConfirmed) {
-  //       await AxiosInstance.post(`/api/user/${item?.userId}/lock`)
-  //       await fetchData()
-  //     }
-  //   });
-  // }
-  // Handle Save Changes button onclicking
-  const handleSaveChanges = () => {
-    Swal.fire({
-      title: 'Data is updated successfully!',
-      icon: 'success',
-    });
-  };
 
   // Render the current page's records
   const renderData = () => {
@@ -230,16 +185,6 @@ const SalesBySehrShops = () => {
             <button className="btn btn-info text-light" onClick={() => ViewModal({ ...item, action: 'view' })}>
               <CIcon icon={cilViewColumn} size="sm" /> View Orders
             </button>
-            
-            {/* <button className="btn btn-success text-light" onClick={()=>EditModal({...item,action: 'edit'})}>
-            <CIcon icon={cilPenAlt} size="sm" /> Update
-          </button> */}
-            {/* <button className="btn btn-warning ms-2 text-light" onClick={() => handleLimit(item)}>
-              <CIcon icon={cilLockLocked} size="sm" /> Limit
-            </button>
-            <button className="btn btn-warning ms-2 text-light" onClick={() => handleDelete(item)}>
-              <CIcon icon={cilTrash} size="sm" /> delete
-            </button> */}
           </div>
         </td>
       </tr>
@@ -251,6 +196,7 @@ const SalesBySehrShops = () => {
     let orderData = await AxiosInstance.get(`/api/shop/orders/${item.sehrCode}`);
     setOrderList(orderData.data.orders);
     setEditFormData(item);
+    setPaymentList(paymentData?.filter((payment)=> payment.business.id === item.id).filter((payment)=> payment.status === 'paid'))
     setViewModalVisible(true);
   };
 
@@ -292,6 +238,7 @@ const SalesBySehrShops = () => {
         <td>{editFormData.businessName}</td>
         <td>{editFormData.sehrCode}</td>
         <td>{item.amount}</td>
+        <td>{item.customer.firstName + " " + item.customer.lastName}</td>
         <td>{item.status}</td>
         <td>{item.commission}</td>
         <td>{item.date.slice(1, 10)}</td>
@@ -313,15 +260,22 @@ const SalesBySehrShops = () => {
       let amount = 0;
       let commission = 0;
 
-      orderList.length &&
+     ( orderList.length &&
         orderList.forEach((item) => {
-          amount += Number(item.amount);
-          commission += Number(item.commission);
-        });
+          if (item.status !== 'rejected'){
+            amount += Number(item.amount);
+            commission += Number(item.commission);
+          }
+        })
+        )
+        
+      
 
       setTotalCommission(commission !== 0 ? commission : 0);
       setSpentAmount(amount !== 0 ?amount : 0);
     };
+
+    
 
     if (viewModalVisible) {
       // Calculate spentAmount and totalCommission when the modal is visible
@@ -329,97 +283,25 @@ const SalesBySehrShops = () => {
     }
   }, [orderList, viewModalVisible]);
 
+  useEffect (() => {
+    const calculatePiad = ()=>{
+    let paidCommission = 0
+    paymentList.length && 
+      paymentList.forEach((item)=>{
+        paidCommission += Number(item.amount)
+      })
+      setPaid(paidCommission)
+    }
+    if (viewModalVisible) {
+      // Calculate Paid commission when the modal is visible
+      calculatePiad();
+    }
+  },[paymentList, viewModalVisible])
+
 
   return (
     loader ? <Loader /> : <div className="container">
-      <CModal alignment="center" visible={editModalVisible} onClose={() => setEditModalVisible(false)}>
-        <CModalHeader>
-          <CModalTitle>Edit Customer Details</CModalTitle>
-        </CModalHeader>
-        <CModalBody>
-          {editFormData.action === 'edit' ? <CForm>
-            <CFormInput
-              type="text"
-              id="ownerName"
-              label="Owner Name"
-              aria-describedby="ownerName"
-              value={editFormData?.ownerName || ''}
-              onChange={(e) => setEditFormData({ ...editFormData, ownerName: e.target.value })}
-            />
-            <CFormInput
-              type="text"
-              id="businessName"
-              label="Business Name"
-              aria-describedby="businessName"
-              value={editFormData?.businessName || ''}
-              onChange={(e) => setEditFormData({ ...editFormData, businessName: e.target.value })}
-            />
-            <CFormInput
-              type="text"
-              id="sehrCode"
-              label="Sehr Code"
-              aria-describedby="sehrCode"
-              value={editFormData?.sehrCode || ''}
-              onChange={(e) => setEditFormData({ ...editFormData, sehrCode: e.target.value })}
-            />
-            <CFormInput
-              type="tel"
-              id="mobile"
-              label="Mobile Number"
-              aria-describedby="name"
-              value={editFormData.mobile || ''}
-              onChange={(e) => setEditFormData({ ...editFormData, mobile: e.target.value })}
-            />
-            <CFormInput
-              type="text"
-              id="category"
-              label="Category"
-              aria-describedby="category"
-              value={editFormData.category || ''}
-              onChange={(e) => setEditFormData({ ...editFormData, category: e.target.value })}
-            />
-            <CFormInput
-              type="text"
-              id="province"
-              label="Province"
-              aria-describedby="name"
-              value={editFormData.province || ''}
-              onChange={(e) => setEditFormData({ ...editFormData, province: e.target.value })}
-            />
-            <CFormInput
-              type="text"
-              id="division"
-              label="Division"
-              aria-describedby="name"
-              value={editFormData.division || ''}
-              onChange={(e) => setEditFormData({ ...editFormData, division: e.target.value })}
-            />
-            <CFormInput
-              type="text"
-              id="district"
-              label="District"
-              aria-describedby="name"
-              value={editFormData.district || ''}
-              onChange={(e) => setEditFormData({ ...editFormData, district: e.target.value })}
-            />
-            <CFormInput
-              type="text"
-              id="tehsil"
-              label="Tehsil"
-              aria-describedby="name"
-              value={editFormData.tehsil || ''}
-              onChange={(e) => setEditFormData({ ...editFormData, tehsil: e.target.value })}
-            />
 
-          </CForm> : ""}
-        </CModalBody>
-        <CModalFooter>
-          <CButton color="secondary" onClick={() => setEditModalVisible(false)}>
-            Close
-          </CButton>
-          <CButton color="primary" onClick={handleSaveChanges}>Save changes</CButton>
-        </CModalFooter>
-      </CModal>
       <CModal alignment="center" visible={viewModalVisible} size='xl' onClose={() => {
         setViewModalVisible(false)
         setEditFormData({})
@@ -427,30 +309,26 @@ const SalesBySehrShops = () => {
         setSpentAmount(0)
         }}>
         <CModalHeader>
-          <CModalTitle>View Orders Details</CModalTitle>
+          <CModalTitle>Sales Detail</CModalTitle>
         </CModalHeader>
         <CModalBody>
           {spentAmount && 
             <div className='Cotainer d-flex justify-content-between my-5 mx-2'>
-              <div className='col-2 card px-2 py-4 d-flex justify-content-center align-items-center bg-warning'>
-                <h5 className='text-uppercase fw-bolder mt-4'>Target </h5>
-                <p className='text-uppercase fw-bolder'><strong>Rs-/ {editFormData?.reward?.salesTarget}</strong></p>
-              </div>
               <div className='col-2 card px-2 py-4 d-flex justify-content-center align-items-center bg-info'>
-                <h5 className='text-uppercase fw-bolder mt-4'>Spent</h5>
+                <h5 className='text-uppercase fw-bolder mt-4'>Sale</h5>
                 <p className='text-uppercase fw-bolder'><strong>Rs-/ {spentAmount}</strong></p>
-              </div>
-              <div className='col-2 card px-2 py-4 d-flex justify-content-center align-items-center bg-danger'>
-                <h5 className='text-uppercase fw-bolder mt-4'>Remaining</h5>
-                <p className='text-uppercase fw-bolder'><strong>Rs-/ {editFormData?.reward?.salesTarget - spentAmount }</strong></p>
               </div>
               <div className='col-2 card px-2 py-4 d-flex justify-content-center align-items-center bg-success'>
                 <h5 className='text-uppercase fw-bolder mt-4'>Commission</h5>
                 <p className='text-uppercase fw-bolder'><strong>Rs-/ {totalCommission}</strong></p>
               </div>
               <div className='col-2 card px-2 py-4 d-flex justify-content-center align-items-center bg-secondary'>
-                <h5 className='text-uppercase fw-bolder mt-4'>Progress</h5>
-                <p className='text-uppercase fw-bolder'><strong>{((spentAmount / editFormData?.reward?.salesTarget) * 100).toFixed(5)} %</strong></p>
+                <h5 className='text-uppercase fw-bolder mt-4'>Paid</h5>
+                <p className='text-uppercase fw-bolder'><strong>{paid}</strong></p>
+              </div>
+              <div className='col-2 card px-2 py-4 d-flex justify-content-center align-items-center bg-danger'>
+                <h5 className='text-uppercase fw-bolder mt-4'>Remaining</h5>
+                <p className='text-uppercase fw-bolder'><strong>Rs-/ {totalCommission - paid }</strong></p>
               </div>
               <div className='col-2 card px-2 py-4 d-flex justify-content-center align-items-center bg-info'>
                 <h5 className='text-uppercase fw-bolder mt-4'>Orders</h5>
