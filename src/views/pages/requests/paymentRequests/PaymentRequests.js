@@ -219,7 +219,7 @@ const PaymentRequests = () => {
         reason: verificationData?.reason,
         status: verificationData?.status
       })
-      AxiosInstance.put(`https://api.sehrapp.com/api/shop/${verificationData?.sehrCode}/payment/${verificationData?.id}`, config).then((result) => {
+      AxiosInstance.put(`api/shop/payments/${verificationData?.id}`, config).then((result) => {
         Swal.fire({
           title: 'Changes are made successfully',
           icon: 'success',
