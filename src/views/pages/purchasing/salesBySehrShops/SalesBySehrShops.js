@@ -6,14 +6,11 @@ import Swal from 'sweetalert2'
 import AxiosInstance from 'src/utils/axiosInstance'
 import Loader from '../../../../components/Loader'
 // import Swal from 'sweetalert2'
-const PurchasingBySehrShops = () => {
+const SalesBySehrShops = () => {
   const [title, setTitle] = useState([])
   const [shopTitle] = useState(['#', 'shop name', "sehrcode", 'payment', "status","commission", 'transaction date'])
-  const [paymentTitle] = useState(['#', 'shop name', "sehrcode", 'payment', "status","transaction id", 'transaction date'])
   const [orderList, setOrderList] = useState([])
   const [data, setData] = useState([])
-  const [paymentdata, setPaymentData] = useState([])
-  const [paymentList, setPaymentList] = useState([])
   const [spentAmount, setSpentAmount] = useState(0)
   const [totalCommission, setTotalCommission] = useState(0)
   // const [categoryList, setCategoryList] = useState([])
@@ -22,12 +19,9 @@ const PurchasingBySehrShops = () => {
   const [searchValue, setSearchValue] = useState('')
   const [editModalVisible, setEditModalVisible] = useState(false)
   const [viewModalVisible, setViewModalVisible] = useState(false)
-  const [viewPaymentVisible, setViewPaymentVisible] = useState(false)
   const [editFormData, setEditFormData] = useState({});
   const [shopCurrentPage, setShopCurrentPage] = useState(1)
   const [shopPerPage, setShopPerPage] = useState(5)
-  const [paymentCurrentPage, setPaymentCurrentPage] = useState(1)
-  const [paymentPerPage, setPaymentPerPage] = useState(5)
   const [loader, setLoader] = useState(true);
 
 
@@ -113,7 +107,6 @@ const PurchasingBySehrShops = () => {
         : fetchedData
       setLoader(false)
       setData(filteredData)
-      setPaymentData(payments)
     } catch (error) {
       console.error(error)
     }
@@ -236,9 +229,7 @@ const PurchasingBySehrShops = () => {
             <button className="btn btn-info text-light" onClick={() => ViewModal({ ...item, action: 'view' })}>
               <CIcon icon={cilViewColumn} size="sm" /> View Orders
             </button>
-            <button className="btn btn-info text-light" onClick={() => PaymentModal({ ...item, action: 'view' })}>
-              <CIcon icon={cilViewColumn} size="sm" /> Payment Commission
-            </button>
+            
             {/* <button className="btn btn-success text-light" onClick={()=>EditModal({...item,action: 'edit'})}>
             <CIcon icon={cilPenAlt} size="sm" /> Update
           </button> */}
@@ -310,61 +301,6 @@ const PurchasingBySehrShops = () => {
   const totalShopPages = Math.ceil(orderList?.length / shopPerPage)
   // Generate an array of page numbers
   const shopPageNumbers = getPageNumbers(shopCurrentPage, totalShopPages)
-
-  const PaymentModal = async (item) => {
-    setPaymentList(paymentdata?.filter((payment)=> payment.business.id === item.id).filter((payment)=> payment.status !== 'pending'))
-    setEditFormData(item);
-    setViewPaymentVisible(true);
-  };
-
-  const getPaymentCurrentPageData = () => paymentList?.slice(paymentStartIndex, paymentEndIndex)
-  let paymentEndIndex = paymentCurrentPage * paymentPerPage
-  let paymentStartIndex = paymentEndIndex - paymentPerPage
-  let paymentDiff = paymentList?.length - paymentStartIndex
-  if (paymentDiff < paymentPerPage) {
-    paymentEndIndex = paymentStartIndex + paymentDiff
-  }
-
-  // Function to handle page changes for payment list
-  const handlePaymentPageChange = (pageNumber) => setPaymentCurrentPage(pageNumber)
-
-  const OnPaymentPageClick = (page) => {
-    setPaymentPerPage(page)
-    setPaymentCurrentPage(1)
-  }
-
-  // Function to handle previous page for payment list
-  const goToPaymentPreviousPage = () => {
-    if (paymentCurrentPage > 1) {
-      setPaymentCurrentPage(paymentCurrentPage - 1)
-    }
-  }
-
-  const goToPaymentNextPage = () => {
-    const totalPages = Math.ceil(paymentList?.length / paymentPerPage)
-    if (paymentCurrentPage < totalPages) {
-      setPaymentCurrentPage(paymentCurrentPage + 1)
-    }
-  }
-
-  const renderPaymentData = () => {
-    const currentPageData = getPaymentCurrentPageData()
-    return currentPageData.map((item, index) => (
-      <tr key={item.id}>
-        <td>{index + 1}</td>
-        <td>{editFormData.businessName}</td>
-        <td>{editFormData.sehrCode}</td>
-        <td>{item.amount}</td>
-        <td>{item.status}</td>
-        <td>{item.description}</td>
-        <td>{item.createdAt.slice(1, 10)}</td>
-      </tr>
-    ))
-  }
-
-  const totalPaymentPages = Math.ceil(paymentList?.length / paymentPerPage)
-  // Generate an array of page numbers
-  const paymentPageNumbers = getPageNumbers(paymentCurrentPage, totalPaymentPages)
 
   // Calculate total number of pages
   const totalPages = Math.ceil(data.length / perPage)
@@ -592,90 +528,9 @@ const PurchasingBySehrShops = () => {
           </div>}
         </CModalFooter>
       </CModal>
-      <CModal alignment="center" visible={viewPaymentVisible} size='xl' onClose={() => {
-        setViewPaymentVisible(false)
-        setEditFormData({})
-        setTotalCommission(0)
-        setSpentAmount(0)
-        }}>
-        <CModalHeader>
-          <CModalTitle>View payments Details</CModalTitle>
-        </CModalHeader>
-        <CModalBody>
-          {paymentList.length ? <div className="table-responsive">
-            <table className="table table-striped table-bordered">
-              <thead>
-                <tr>
-                  {paymentTitle.map((item, index) => {
-                    return (
-                      <th scope="col" className="text-uppercase" key={index}>
-                        {item}
-                      </th>
-                    )
-                  })}
-                </tr>
-              </thead>
-              <tbody>{renderPaymentData()}</tbody>
-            </table>
-          </div> : <div>
-            <h3>No payments yet</h3>
-          </div>
-          }
-        </CModalBody>
-        <CModalFooter>
-          {paymentList.length && <div className="card-footer d-flex justify-content-between flex-wrap w-100">
-            <div className="col-4">
-              <select
-                className="form-select form-select"
-                onChange={(e) => OnPaymentPageClick(e.target.value)}
-              >
-                <option value="5" defaultValue>
-                  5
-                </option>
-                <option value="10">10</option>
 
-                <option value="29">20</option>
-                <option value="30">30</option>
-                <option value="50">50</option>
-              </select>
-            </div>
-            <nav aria-label="...">
-              <ul className="pagination">
-                <li className={shopCurrentPage === 1 ? 'page-item disabled' : 'page-item'}>
-                  <button
-                    className="page-link"
-                    onClick={goToPaymentPreviousPage}
-                    disabled={shopCurrentPage === 1}
-                  >
-                    Previous
-                  </button>
-                </li>
-
-                {paymentPageNumbers.map((pageNumber, index) => {
-                  return (
-                    <li
-                      className={shopCurrentPage === pageNumber ? 'active page-item' : 'page-item'}
-                      aria-current="page"
-                      key={index}
-                    >
-                      <button className="page-link" onClick={() => handlePaymentPageChange(pageNumber)}>
-                        {pageNumber}
-                      </button>
-                    </li>
-                  )
-                })}
-                <li className={shopCurrentPage === totalPaymentPages ? 'page-item disabled' : 'page-item'}>
-                  <button className="page-link" onClick={goToPaymentNextPage}>
-                    Next
-                  </button>
-                </li>
-              </ul>
-            </nav>
-          </div>}
-        </CModalFooter>
-      </CModal>
       <div className="card">
-        <div className="card-header">Purchasing By SehrShops</div>
+        <div className="card-header">Sales By SehrShops</div>
         <div className="card-body">
           <div>
             <div className="d-flex my-2 justify-content-end">
@@ -763,4 +618,4 @@ const PurchasingBySehrShops = () => {
     </div>
   )
 }
-export default PurchasingBySehrShops
+export default SalesBySehrShops

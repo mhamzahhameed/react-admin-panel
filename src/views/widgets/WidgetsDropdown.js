@@ -14,7 +14,6 @@ import { cilOptions } from '@coreui/icons'
 import { CChartBar } from '@coreui/react-chartjs'
 
 const WidgetsDropdown = (props) => {
-  console.log('props : ', props);
   return (
     <CRow>
       <CCol sm={6} lg={3}>

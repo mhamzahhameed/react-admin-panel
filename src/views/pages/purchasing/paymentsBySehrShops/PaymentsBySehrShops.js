@@ -6,7 +6,7 @@ import Swal from 'sweetalert2'
 import AxiosInstance from 'src/utils/axiosInstance'
 import Loader from '../../../../components/Loader'
 // import Swal from 'sweetalert2'
-const PurchasingBySehrShops = () => {
+const PaymentsBySehrShops = () => {
   const [title, setTitle] = useState([])
   const [shopTitle] = useState(['#', 'shop name', "sehrcode", 'payment', "status","commission", 'transaction date'])
   const [paymentTitle] = useState(['#', 'shop name', "sehrcode", 'payment', "status","transaction id", 'transaction date'])
@@ -675,7 +675,7 @@ const PurchasingBySehrShops = () => {
         </CModalFooter>
       </CModal>
       <div className="card">
-        <div className="card-header">Purchasing By SehrShops</div>
+        <div className="card-header">Payments BySehr Shops</div>
         <div className="card-body">
           <div>
             <div className="d-flex my-2 justify-content-end">
@@ -763,4 +763,4 @@ const PurchasingBySehrShops = () => {
     </div>
   )
 }
-export default PurchasingBySehrShops
+export default PaymentsBySehrShops

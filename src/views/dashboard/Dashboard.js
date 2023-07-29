@@ -28,15 +28,20 @@ import {
   cibCcPaypal,
   cibCcStripe,
   cibCcVisa,
- 
+  cibGoogle,
+  cibFacebook,
+  cibLinkedin,
   cifBr,
   cifEs,
   cifFr,
   cifIn,
   cifPl,
   cifUs,
+  cibTwitter,
   cilCloudDownload,
   cilPeople,
+  cilUser,
+  cilUserFemale,
 } from '@coreui/icons'
 
 import avatar1 from 'src/assets/images/avatars/1.jpg'
@@ -46,32 +51,27 @@ import avatar4 from 'src/assets/images/avatars/4.jpg'
 import avatar5 from 'src/assets/images/avatars/5.jpg'
 import avatar6 from 'src/assets/images/avatars/6.jpg'
 
-// import WidgetsBrand from '../widgets/WidgetsBrand'
+import WidgetsBrand from '../widgets/WidgetsBrand'
 import WidgetsDropdown from '../widgets/WidgetsDropdown'
 import AxiosInstance from 'src/utils/axiosInstance'
 
 const Dashboard = () => {
-  const random = (min, max) => Math.floor(Math.random() * (max - min + 1) + min)
-  // eslint-disable-next-line
   const [loader, setLoader] = useState(true)
   const [userdata, setUserData] = useState([])
+  const [totalSehrData, setTotalSehrData] = useState([])
+  const [totalPaid, setTotalPaid] = useState(0)
+  const [totalPayment, setTotalPayment] = useState(0)
+  const [limitedCustomers, setLimitedCustomers] = useState([])
+  const [limitedSehrShops, setLimitedSehrShops] = useState([])
   const [customerdata, setCustomerData] = useState([])
   const [sehrdata, setSehrData] = useState([])
   const [shopdata, setShopData] = useState([])
-  // eslint-disable-next-line
   const [educationList, setEducationList] = useState([])
-  // eslint-disable-next-line
-  const [userListByEducation, setUserListByEducation] = useState([])
+  const [packageList, setPackageList] = useState([])
 
 
 
-  const progressExample = [
-    { title: 'SherShops', value: '29.703 Users', percent: 40, color: 'success' },
-    { title: 'Limited SehrShops', value: '24.093 Users', percent: 20, color: 'info' },
-    { title: 'Limited Customers', value: '78.706 Views', percent: 60, color: 'warning' },
-    { title: 'Commission', value: '22.123 Users', percent: 80, color: 'danger' },
-    { title: 'Paid', value: 'Average Rate', percent: 40.15, color: 'primary' },
-  ]
+
 
   // const progressGroupExample1 = [
   //   { title: 'Monday', value1: 34, value2: 78 },
@@ -83,138 +83,142 @@ const Dashboard = () => {
   //   { title: 'Sunday', value1: 9, value2: 69 },
   // ]
 
-  // const progressGroupExample2 = [
-  //   { title: 'Male', icon: cilUser, value: 53 },
-  //   { title: 'Female', icon: cilUserFemale, value: 43 },
+  // const tableExample = [
+  //   {
+  //     avatar: { src: avatar1, status: 'success' },
+  //     user: {
+  //       name: 'Yiorgos Avraamu',
+  //       new: true,
+  //       registered: 'Jan 1, 2021',
+  //     },
+  //     country: { name: 'USA', flag: cifUs },
+  //     usage: {
+  //       value: 50,
+  //       period: 'Jun 11, 2021 - Jul 10, 2021',
+  //       color: 'success',
+  //     },
+  //     payment: { name: 'Mastercard', icon: cibCcMastercard },
+  //     activity: '10 sec ago',
+  //   },
+  //   {
+  //     avatar: { src: avatar2, status: 'danger' },
+  //     user: {
+  //       name: 'Avram Tarasios',
+  //       new: false,
+  //       registered: 'Jan 1, 2021',
+  //     },
+  //     country: { name: 'Brazil', flag: cifBr },
+  //     usage: {
+  //       value: 22,
+  //       period: 'Jun 11, 2021 - Jul 10, 2021',
+  //       color: 'info',
+  //     },
+  //     payment: { name: 'Visa', icon: cibCcVisa },
+  //     activity: '5 minutes ago',
+  //   },
+  //   {
+  //     avatar: { src: avatar3, status: 'warning' },
+  //     user: { name: 'Quintin Ed', new: true, registered: 'Jan 1, 2021' },
+  //     country: { name: 'India', flag: cifIn },
+  //     usage: {
+  //       value: 74,
+  //       period: 'Jun 11, 2021 - Jul 10, 2021',
+  //       color: 'warning',
+  //     },
+  //     payment: { name: 'Stripe', icon: cibCcStripe },
+  //     activity: '1 hour ago',
+  //   },
+  //   {
+  //     avatar: { src: avatar4, status: 'secondary' },
+  //     user: { name: 'Enéas Kwadwo', new: true, registered: 'Jan 1, 2021' },
+  //     country: { name: 'France', flag: cifFr },
+  //     usage: {
+  //       value: 98,
+  //       period: 'Jun 11, 2021 - Jul 10, 2021',
+  //       color: 'danger',
+  //     },
+  //     payment: { name: 'PayPal', icon: cibCcPaypal },
+  //     activity: 'Last month',
+  //   },
+  //   {
+  //     avatar: { src: avatar5, status: 'success' },
+  //     user: {
+  //       name: 'Agapetus Tadeáš',
+  //       new: true,
+  //       registered: 'Jan 1, 2021',
+  //     },
+  //     country: { name: 'Spain', flag: cifEs },
+  //     usage: {
+  //       value: 22,
+  //       period: 'Jun 11, 2021 - Jul 10, 2021',
+  //       color: 'primary',
+  //     },
+  //     payment: { name: 'Google Wallet', icon: cibCcApplePay },
+  //     activity: 'Last week',
+  //   },
+  //   {
+  //     avatar: { src: avatar6, status: 'danger' },
+  //     user: {
+  //       name: 'Friderik Dávid',
+  //       new: true,
+  //       registered: 'Jan 1, 2021',
+  //     },
+  //     country: { name: 'Poland', flag: cifPl },
+  //     usage: {
+  //       value: 43,
+  //       period: 'Jun 11, 2021 - Jul 10, 2021',
+  //       color: 'success',
+  //     },
+  //     payment: { name: 'Amex', icon: cibCcAmex },
+  //     activity: 'Last week',
+  //   },
   // ]
-
-  // const progressGroupExample3 = [
-  //   { title: 'Organic Search', icon: cibGoogle, percent: 56, value: '191,235' },
-  //   { title: 'Facebook', icon: cibFacebook, percent: 15, value: '51,223' },
-  //   { title: 'Twitter', icon: cibTwitter, percent: 11, value: '37,564' },
-  //   { title: 'LinkedIn', icon: cibLinkedin, percent: 8, value: '27,319' },
-  // ]
-
-  const tableExample = [
-    {
-      avatar: { src: avatar1, status: 'success' },
-      user: {
-        name: 'Yiorgos Avraamu',
-        new: true,
-        registered: 'Jan 1, 2021',
-      },
-      country: { name: 'USA', flag: cifUs },
-      usage: {
-        value: 50,
-        period: 'Jun 11, 2021 - Jul 10, 2021',
-        color: 'success',
-      },
-      payment: { name: 'Mastercard', icon: cibCcMastercard },
-      activity: '10 sec ago',
-    },
-    {
-      avatar: { src: avatar2, status: 'danger' },
-      user: {
-        name: 'Avram Tarasios',
-        new: false,
-        registered: 'Jan 1, 2021',
-      },
-      country: { name: 'Brazil', flag: cifBr },
-      usage: {
-        value: 22,
-        period: 'Jun 11, 2021 - Jul 10, 2021',
-        color: 'info',
-      },
-      payment: { name: 'Visa', icon: cibCcVisa },
-      activity: '5 minutes ago',
-    },
-    {
-      avatar: { src: avatar3, status: 'warning' },
-      user: { name: 'Quintin Ed', new: true, registered: 'Jan 1, 2021' },
-      country: { name: 'India', flag: cifIn },
-      usage: {
-        value: 74,
-        period: 'Jun 11, 2021 - Jul 10, 2021',
-        color: 'warning',
-      },
-      payment: { name: 'Stripe', icon: cibCcStripe },
-      activity: '1 hour ago',
-    },
-    {
-      avatar: { src: avatar4, status: 'secondary' },
-      user: { name: 'Enéas Kwadwo', new: true, registered: 'Jan 1, 2021' },
-      country: { name: 'France', flag: cifFr },
-      usage: {
-        value: 98,
-        period: 'Jun 11, 2021 - Jul 10, 2021',
-        color: 'danger',
-      },
-      payment: { name: 'PayPal', icon: cibCcPaypal },
-      activity: 'Last month',
-    },
-    {
-      avatar: { src: avatar5, status: 'success' },
-      user: {
-        name: 'Agapetus Tadeáš',
-        new: true,
-        registered: 'Jan 1, 2021',
-      },
-      country: { name: 'Spain', flag: cifEs },
-      usage: {
-        value: 22,
-        period: 'Jun 11, 2021 - Jul 10, 2021',
-        color: 'primary',
-      },
-      payment: { name: 'Google Wallet', icon: cibCcApplePay },
-      activity: 'Last week',
-    },
-    {
-      avatar: { src: avatar6, status: 'danger' },
-      user: {
-        name: 'Friderik Dávid',
-        new: true,
-        registered: 'Jan 1, 2021',
-      },
-      country: { name: 'Poland', flag: cifPl },
-      usage: {
-        value: 43,
-        period: 'Jun 11, 2021 - Jul 10, 2021',
-        color: 'success',
-      },
-      payment: { name: 'Amex', icon: cibCcAmex },
-      activity: 'Last week',
-    },
-  ]
 
   useEffect(() => {
     fetchUserData()
     fetchBusinessData()
     fetchEducationList()
-  // eslint-disable-next-line
+    fetchPackageList()
+    // eslint-disable-next-line
   }, [])
 
-  const fetchEducationList = async() => {
-    try{
+  const fetchEducationList = async () => {
+    try {
       let list = await AxiosInstance.get('/api/education')
-        setEducationList(list.data.education)
+      setEducationList(list.data.education)
     }
     catch (error) {
       console.error(error)
     }
   }
+  const fetchPackageList = async () => {
+    try {
+      let response = await AxiosInstance.get('/api/Reward')
+      setPackageList(response.data?.reward)
+    }
+    catch (error) {
+      console.error(error)
+    }
+  }
+
+
+
   const fetchUserData = async () => {
     try {
-        let response = await AxiosInstance.get("/api/user?limit=0")
-        let data =    response.data.users;
-      let customer =   data.filter(obj => {
+      let response = await AxiosInstance.get("/api/user?limit=0")
+      let data = response.data.users;
+      let customer = data.filter(obj => {
         const userRole = obj.roles.find(roleObj => roleObj.role === 'user');
         return userRole && obj.roles.length === 1;
       });
-      customer = customer.filter((customer)=> customer.isLocked === false)
+      const limitedCustomer = customer.filter((customer) => customer.isLocked === true)
+      customer = customer.filter((customer) => customer.isLocked === false)
 
 
       setUserData(data)
       setCustomerData(customer)
+      setLimitedCustomers(limitedCustomer)
+
     } catch (error) {
       console.error(error)
     }
@@ -229,44 +233,57 @@ const Dashboard = () => {
       response = await response.data.users;
       let business = await AxiosInstance.get(`/api/business/all?limit=${businessCount}`)
       business = await business.data.businesses;
-      
+      let requestCount = await AxiosInstance.get('/api/shop/payments')
+      requestCount = await requestCount.data.total
+      let payments = await AxiosInstance.get(`/api/shop/payments?limit=${requestCount}`)
+      payments = await payments.data.payments
+      let totalPayment = 0
+       totalPayment = payments.reduce((acc, item) => acc + Number(item.amount), 0);
+      payments = payments.filter((payment) => payment.status === 'paid')
+      let totalPaid = 0
+      totalPaid = payments.reduce((acc, item) => acc + Number(item.amount), 0);
+      console.log('totalpayment :', totalPaid);
       for (const element of business) {
         const obj2 = element;
-        
+
         const obj1 = response.find((item) => item.id === obj2.userId);
-        if (obj2) {
+        if (obj1) {
           obj2["isLocked"] = obj1.isLocked
           obj2["reward"] = obj1.reward
-          
+
         }
       }
-      console.log('sehrshops :', business);
-      
-      // sehrShops = sehrShops.filter(obj => obj.hasOwnProperty("sehrCode"));
-      business = business.filter((customer)=> customer.isLocked === false)
+
       business.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-      business = business.map(obj => {
-        const updatedObj = {};
-        for (const [key, value] of Object.entries(obj)) {
-          updatedObj[key] = value ? value : 'not defined';
-        }
-        return updatedObj;
-      });
-      let sehrShops = business.filter(obj => obj.sehrCode !== null);
-      let shops = business.filter(obj => obj.sehrCode === null || obj.sehrCode === 'not defined');
-          shops = shops.filter((item)=> item?.reward.title === 'Small Business' || item.reward.title === 'Large Business'|| item.reward.title === 'Mega Business' || item.reward.title === 'SEHR CODED SHOP'  )
+      let SehrShops = business.filter(obj => obj.sehrCode !== null)
+      let limitedSehrShop = SehrShops.filter((customer) => customer.isLocked === true)
+      console.log('sehrshops :', limitedCustomers);
+      let sehrShops = SehrShops.filter((customer) => customer.isLocked === false);
+      sehrShops = sehrShops.filter(obj => obj.hasOwnProperty("sehrCode"));
+      let shops = business.filter(obj => (obj.sehrCode) === null);
+      shops = shops.filter((item) => item?.reward?.title === 'Small Business' || item?.reward?.title === 'Large Business' || item?.reward?.title === 'Mega Business' || item?.reward?.title === 'SEHR CODED SHOP')
 
       setSehrData(sehrShops)
       setShopData(shops)
+      setLimitedSehrShops(limitedSehrShop)
+      setTotalSehrData(business)
+      setTotalPayment(totalPayment)
+      setTotalPaid(totalPaid)
       setLoader(false)
     } catch (error) {
       console.error(error)
     }
   }
+  const progressExample = [
+    { title: 'SherShops', value: sehrdata?.length, percent: ((sehrdata.length / totalSehrData.length) * 100).toFixed(2), color: 'success' },
+    { title: 'Limited SehrShops', value: limitedSehrShops?.length, percent: limitedSehrShops?.length ? ((limitedSehrShops.length / sehrdata.length) * 100).toFixed(2) : 0, color: 'info' },
+    { title: 'Limited Customers', value: limitedCustomers?.length, percent: limitedCustomers?.length ? ((limitedCustomers.length / customerdata.length) * 100).toFixed(2) : 0, color: 'warning' },
+    { title: 'Paid', value:'Rs/- ' + totalPaid, percent: ((totalPaid / totalPayment) * 100).toFixed(2), color: 'primary' },
+  ]
 
   return (
     <>
-      <WidgetsDropdown users = {userdata} customers = {customerdata} shops = {shopdata} sehrShops = {sehrdata} />
+      <WidgetsDropdown users={userdata} customers={customerdata} shops={shopdata} sehrShops={sehrdata} />
       <CCard className="mb-4">
         <CCardBody>
           <CRow>
@@ -274,110 +291,9 @@ const Dashboard = () => {
               <h4 id="traffic" className="card-title mb-0">
                 Traffic
               </h4>
-              <div className="small text-medium-emphasis">January - July 2021</div>
-            </CCol>
-            <CCol sm={7} className="d-none d-md-block">
-              <CButton color="primary" className="float-end">
-                <CIcon icon={cilCloudDownload} />
-              </CButton>
-              <CButtonGroup className="float-end me-3">
-                {['Day', 'Month', 'Year'].map((value) => (
-                  <CButton
-                    color="outline-secondary"
-                    key={value}
-                    className="mx-0"
-                    active={value === 'Month'}
-                  >
-                    {value}
-                  </CButton>
-                ))}
-              </CButtonGroup>
+
             </CCol>
           </CRow>
-          <CChartLine
-            style={{ height: '300px', marginTop: '40px' }}
-            data={{
-              labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-              datasets: [
-                {
-                  label: 'My First dataset',
-                  backgroundColor: hexToRgba(getStyle('--cui-info'), 10),
-                  borderColor: getStyle('--cui-info'),
-                  pointHoverBackgroundColor: getStyle('--cui-info'),
-                  borderWidth: 2,
-                  data: [
-                    random(50, 200),
-                    random(50, 200),
-                    random(50, 200),
-                    random(50, 200),
-                    random(50, 200),
-                    random(50, 200),
-                    random(50, 200),
-                  ],
-                  fill: true,
-                },
-                {
-                  label: 'My Second dataset',
-                  backgroundColor: 'transparent',
-                  borderColor: getStyle('--cui-success'),
-                  pointHoverBackgroundColor: getStyle('--cui-success'),
-                  borderWidth: 2,
-                  data: [
-                    random(50, 200),
-                    random(50, 200),
-                    random(50, 200),
-                    random(50, 200),
-                    random(50, 200),
-                    random(50, 200),
-                    random(50, 200),
-                  ],
-                },
-                {
-                  label: 'My Third dataset',
-                  backgroundColor: 'transparent',
-                  borderColor: getStyle('--cui-danger'),
-                  pointHoverBackgroundColor: getStyle('--cui-danger'),
-                  borderWidth: 1,
-                  borderDash: [8, 5],
-                  data: [65, 65, 65, 65, 65, 65, 65],
-                },
-              ],
-            }}
-            options={{
-              maintainAspectRatio: false,
-              plugins: {
-                legend: {
-                  display: false,
-                },
-              },
-              scales: {
-                x: {
-                  grid: {
-                    drawOnChartArea: false,
-                  },
-                },
-                y: {
-                  ticks: {
-                    beginAtZero: true,
-                    maxTicksLimit: 5,
-                    stepSize: Math.ceil(250 / 5),
-                    max: 250,
-                  },
-                },
-              },
-              elements: {
-                line: {
-                  tension: 0.4,
-                },
-                point: {
-                  radius: 0,
-                  hitRadius: 10,
-                  hoverRadius: 4,
-                  hoverBorderWidth: 3,
-                },
-              },
-            }}
-          />
         </CCardBody>
         <CCardFooter>
           <CRow xs={{ cols: 1 }} md={{ cols: 5 }} className="text-center">
@@ -385,9 +301,9 @@ const Dashboard = () => {
               <CCol className="mb-sm-2 mb-0" key={index}>
                 <div className="text-medium-emphasis">{item.title}</div>
                 <strong>
-                  {item.value} ({item.percent}%)
+                  {item.value} ({parseFloat(item.percent).toFixed(2)}%)
                 </strong>
-                <CProgress thin className="mt-2" color={item.color} value={item.percent} />
+                <CProgress thin className="mt-2" color={item.color} value={parseFloat(item.percent)} />
               </CCol>
             ))}
           </CRow>
@@ -399,90 +315,36 @@ const Dashboard = () => {
       <CRow>
         <CCol xs>
           <CCard className="mb-4">
-            <CCardHeader>Traffic {' & '} Sales</CCardHeader>
+            <CCardHeader>Users by Education {' & '} Sehr Packages</CCardHeader>
             <CCardBody>
-              {/* <CRow>
+              <CRow>
                 <CCol xs={12} md={6} xl={6}>
-                  <CRow>
-                    <CCol sm={6}>
-                      <div className="border-start border-start-4 border-start-info py-1 px-3">
-                        <div className="text-medium-emphasis small">New Clients</div>
-                        <div className="fs-5 fw-semibold">9,123</div>
-                      </div>
-                    </CCol>
-                    <CCol sm={6}>
-                      <div className="border-start border-start-4 border-start-danger py-1 px-3 mb-3">
-                        <div className="text-medium-emphasis small">Recurring Clients</div>
-                        <div className="fs-5 fw-semibold">22,643</div>
-                      </div>
-                    </CCol>
-                  </CRow>
-
-                  <hr className="mt-0" />
-                  {progressGroupExample1.map((item, index) => (
+                  {educationList.map((item, index) => (
                     <div className="progress-group mb-4" key={index}>
                       <div className="progress-group-prepend">
                         <span className="text-medium-emphasis small">{item.title}</span>
                       </div>
                       <div className="progress-group-bars">
-                        <CProgress thin color="info" value={item.value1} />
-                        <CProgress thin color="danger" value={item.value2} />
+                        <CProgress thin color="danger" value={((userdata?.filter((user) => user?.education === item.title).length) / userdata?.length) * 100} />
                       </div>
                     </div>
                   ))}
                 </CCol>
 
                 <CCol xs={12} md={6} xl={6}>
-                  <CRow>
-                    <CCol sm={6}>
-                      <div className="border-start border-start-4 border-start-warning py-1 px-3 mb-3">
-                        <div className="text-medium-emphasis small">Pageviews</div>
-                        <div className="fs-5 fw-semibold">78,623</div>
-                      </div>
-                    </CCol>
-                    <CCol sm={6}>
-                      <div className="border-start border-start-4 border-start-success py-1 px-3 mb-3">
-                        <div className="text-medium-emphasis small">Organic</div>
-                        <div className="fs-5 fw-semibold">49,123</div>
-                      </div>
-                    </CCol>
-                  </CRow>
-
-                  <hr className="mt-0" />
-
-                  {progressGroupExample2.map((item, index) => (
+                  {packageList.map((item, index) => (
                     <div className="progress-group mb-4" key={index}>
-                      <div className="progress-group-header">
-                        <CIcon className="me-2" icon={item.icon} size="lg" />
-                        <span>{item.title}</span>
-                        <span className="ms-auto fw-semibold">{item.value}%</span>
+                      <div className="progress-group-prepend">
+                        <span className="text-medium-emphasis small">{item.title}</span>
                       </div>
                       <div className="progress-group-bars">
-                        <CProgress thin color="warning" value={item.value} />
-                      </div>
-                    </div>
-                  ))}
-
-                  <div className="mb-5"></div>
-
-                  {progressGroupExample3.map((item, index) => (
-                    <div className="progress-group" key={index}>
-                      <div className="progress-group-header">
-                        <CIcon className="me-2" icon={item.icon} size="lg" />
-                        <span>{item.title}</span>
-                        <span className="ms-auto fw-semibold">
-                          {item.value}{' '}
-                          <span className="text-medium-emphasis small">({item.percent}%)</span>
-                        </span>
-                      </div>
-                      <div className="progress-group-bars">
-                        <CProgress thin color="success" value={item.percent} />
+                        <CProgress thin color="info" value={((userdata?.filter((user) => user?.reward?.title === item.title).length) / userdata?.length) * 100} />
                       </div>
                     </div>
                   ))}
                 </CCol>
-              </CRow> */}
-
+              </CRow>
+              {/* <br />
               <CTable align="middle" className="mb-0 border" hover responsive>
                 <CTableHead color="light">
                   <CTableRow>
@@ -533,7 +395,7 @@ const Dashboard = () => {
                     </CTableRow>
                   ))}
                 </CTableBody>
-              </CTable>
+              </CTable> */}
             </CCardBody>
           </CCard>
         </CCol>
@@ -543,3 +405,4 @@ const Dashboard = () => {
 }
 
 export default Dashboard
+
