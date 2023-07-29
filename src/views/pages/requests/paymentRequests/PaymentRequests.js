@@ -385,7 +385,7 @@ const PaymentRequests = () => {
         </CModalFooter>
       </CModal>
       <div className="card">
-        <div className="card-header">Sehr Shops</div>
+        <div className="card-header">Sehr Payments</div>
         <div className="card-body">
           <div>
             <div className="d-flex my-2 justify-content-end">
