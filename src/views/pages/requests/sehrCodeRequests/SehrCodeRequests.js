@@ -181,15 +181,17 @@ const SehrCodeRequests = () => {
   //   });
   // }
   const generateCode = async(province,division,district,tehsil,id,rewardId,userId)=>{
-    console.log(rewardId);
+    
     setLoader(true)
     let checkKYC = await AxiosInstance.get(`/api/business/kyc/${id}`)
     checkKYC = checkKYC.data;
     let startingCode = ''
     let newCode = '';
-    if(checkKYC.length > 0)
+    let noKYCFlag = false;
+    if(checkKYC.length < 1)
     {
-      
+      noKYCFlag = true;
+    }
     // tehsil = 'rawalpindi';
     // eslint-disable-next-line 
    addressCode.map((item)=>{
@@ -255,87 +257,130 @@ num = String(num).padStart(lastdigits.length, '0');
            newCode = startingCode+"0001";
           }
           // console.log(id);
-          Swal.fire({
-            title: 'KYC Details',
-            icon: 'info',
-            html:
-              `<p>Document Type: <b style="text-transform: uppercase">${checkKYC[0].documentType}</b><p> ` +
-              `<div style="object-fit: fill"><img src="${checkKYC[0].filePath}" style="width:100%;height:100%;object-fit: fill;"/></div>` +
-              `<p>Status: <b style="text-transform: uppercase;color:red">${checkKYC[0].status}</b><p> `+
-              `<p>Sehr Code to be assigned: <b style="text-transform: uppercase">${newCode}</b><p> `
-              ,
-            showCancelButton: true,
-            focusConfirm: false,
-            reverseButtons: true,
-            cancelButtonText:
-            'Reject!',
-            confirmButtonText:
-              'Confirm!'
-          }).then(async(result) => {
-                if (result.isConfirmed) {
-                  let putData = JSON.stringify({
-                    "sehrCode": newCode,
-                    "grade": 1
-                  })
-                  try {
-                    let getPackages = await AxiosInstance.get(`/api/Reward/${parseInt(rewardId)}/users?limit=0`)
-                    getPackages = getPackages.data;
-                    // console.log(getPackages);
-                    // console.log(userId);
-                    const alreadySubscribedData = getPackages.filter(item => item.id === userId);
-                    console.log(alreadySubscribedData);
-                    if(alreadySubscribedData.length < 1)
-                    {
-                      await AxiosInstance.post(`/api/Reward/${Number(rewardId)}/subscribe/${Number(userId)}`);
-                      AxiosInstance.put(`/api/business/verify/${id}`,putData).then((res)=>{
-                        Swal.fire({
-                          title: `Sehr Code has been created!`,
-                          icon: 'success'
+          if(noKYCFlag)
+          {
+            Swal.fire({
+              title: 'KYC Details',
+              icon: 'info',
+             text: 'There is no KYC submitted by ShopKeeper!',
+              showCancelButton: true,
+              focusConfirm: false,
+              reverseButtons: true,
+              cancelButtonText:
+              'Reject!',
+              confirmButtonText:
+                'Confirm!'
+            }).then(async(result) => {
+                  if (result.isConfirmed) {
+                    let putData = JSON.stringify({
+                      "sehrCode": newCode,
+                      "grade": 1
+                    })
+                  
+                  
+                        AxiosInstance.post(`/api/Reward/${Number(rewardId)}/subscribe/${Number(userId)}`).then((rewardRes)=>{
+                               AxiosInstance.put(`/api/business/verify/${id}`,putData).then((res)=>{
+                          Swal.fire({
+                            title: `Sehr Code has been created!`,
+                            icon: 'success'
+                          });
+                       
+                        }).catch((error)=>{
+                          Swal.fire({
+                            title: `Sehr code is not submitted!`,
+                            icon: 'error'
+                          });
                         });
-                     
-                      }).catch((error)=>{
-                        Swal.fire({
-                          title: `Sehr code is not submitted!`,
-                          icon: 'error'
+                        }).catch((err)=>{
+                          console.log(err.response.data.message)
+                          if(err.response.data.message === 'Already subscribed to this reward.')
+                          {
+                                 Swal.fire({
+                            title: `Sehr Code has been created!`,
+                            icon: 'success'
+                          });
+                          }else{
+                                   Swal.fire({
+                            title: `Sehr code is not submitted!`,
+                            icon: 'error'
+                          });
+                          }
                         });
-                      });
-                    }else{
-                      AxiosInstance.put(`/api/business/verify/${id}`,putData).then((res)=>{
-                        Swal.fire({
-                          title: `Sehr Code has been created!`,
-                          icon: 'success'
-                        });
-                     
-                      }).catch((error)=>{
-                        Swal.fire({
-                          title: `Sehr code is not submitted!`,
-                          icon: 'error'
-                        });
-                      });
-                    }
-                  } catch (error) {
-                    Swal.fire({
-                      title: `Sehr code is not submitted!`,
-                      icon: 'error'
-                    });
-                  }
                    
-                     fetchData()
-                }
-              });
+                     
+                  
+                     
+                       fetchData()
+                  }
+                });
+          }else{
+            Swal.fire({
+              title: 'KYC Details',
+              icon: 'info',
+              html:
+                `<p>Document Type: <b style="text-transform: uppercase">${checkKYC[0]?.documentType ?? 'No document'}</b><p> ` +
+                `<div style="object-fit: fill"><img src="${checkKYC[0]?.filePath}" style="width:100%;height:100%;object-fit: fill;"/></div>` +
+                `<p>Status: <b style="text-transform: uppercase;color:red">${checkKYC[0]?.status ?? 'Pending'}</b><p> `+
+                `<p>Sehr Code to be assigned: <b style="text-transform: uppercase">${newCode}</b><p> `
+                ,
+              showCancelButton: true,
+              focusConfirm: false,
+              reverseButtons: true,
+              cancelButtonText:
+              'Reject!',
+              confirmButtonText:
+                'Confirm!'
+            }).then(async(result) => {
+                  if (result.isConfirmed) {
+                    let putData = JSON.stringify({
+                      "sehrCode": newCode,
+                      "grade": 1
+                    })
+                  
+                  
+                        AxiosInstance.post(`/api/Reward/${Number(rewardId)}/subscribe/${Number(userId)}`).then((rewardRes)=>{
+                               AxiosInstance.put(`/api/business/verify/${id}`,putData).then((res)=>{
+                          Swal.fire({
+                            title: `Sehr Code has been created!`,
+                            icon: 'success'
+                          });
+                       
+                        }).catch((error)=>{
+                          Swal.fire({
+                            title: `Sehr code is not submitted!`,
+                            icon: 'error'
+                          });
+                        });
+                        }).catch((err)=>{
+                          console.log(err.response.data.message)
+                          if(err.response.data.message === 'Already subscribed to this reward.')
+                          {
+                                 Swal.fire({
+                            title: `Sehr Code has been created!`,
+                            icon: 'success'
+                          });
+                          }else{
+                                   Swal.fire({
+                            title: `Sehr code is not submitted!`,
+                            icon: 'error'
+                          });
+                          }
+                        });
+                   
+                     
+                  
+                     
+                       fetchData()
+                  }
+                });
+          }
     }else{
       Swal.fire({
         title: `Not a single code is matched to this Tehsil`,
         icon: 'error'
       });
     }
-  }else
-  {
-            Swal.fire({
-              title: `No KYC data is submitted by this User!`,
-              icon: 'error'
-            });
-  }
+  
    
   //             Swal.fire({
   //     title: `Confirm to assign ${newCode} to this user!`,
@@ -750,7 +795,7 @@ setLoader(false)
       </CModalBody>
     </CModal>
       <div className="card">
-        <div className="card-header">Sehr Code Requests</div>
+        <div className="card-header">SehrCode Requests</div>
         <div className="card-body">
           <div>
             <div className="d-flex my-2 justify-content-end">
