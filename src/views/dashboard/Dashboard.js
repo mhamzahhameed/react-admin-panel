@@ -183,6 +183,7 @@ const Dashboard = () => {
                       </div>
                       <div className="progress-group-bars">
                         <CProgress thin color="danger" value={((userdata?.filter((user) => user?.education === item.title).length) / userdata?.length) * 100} />
+                      <span>{userdata?.filter((user) => user?.education === item.title).length}</span>
                       </div>
                     </div>
                   ))}
@@ -196,6 +197,7 @@ const Dashboard = () => {
                       </div>
                       <div className="progress-group-bars">
                         <CProgress thin color="info" value={((userdata?.filter((user) => user?.reward?.title === item.title).length) / userdata?.length) * 100} />
+                      <span>{userdata?.filter((user) => user?.reward?.title === item.title).length}</span>
                       </div>
                     </div>
                   ))}
