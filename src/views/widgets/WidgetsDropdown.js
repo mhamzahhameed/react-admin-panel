@@ -1,378 +1,82 @@
 /* eslint-disable react/prop-types */
 import React from 'react'
+import {useNavigate} from "react-router-dom"
 import {
   CRow,
   CCol,
-  CDropdown,
-  CDropdownMenu,
-  CDropdownItem,
-  CDropdownToggle,
-  CWidgetStatsA,
+  
+  CCard,
+  CCardBody
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
-import { cilOptions } from '@coreui/icons'
-import { CChartBar } from '@coreui/react-chartjs'
+import { cilBuilding, cilCheckCircle, cilGroup, cilUserPlus } from '@coreui/icons'
 
 const WidgetsDropdown = (props) => {
+  const navigate = useNavigate();
+  const cardStyle = {
+    cursor: 'pointer'
+  };
   return (
     <CRow>
       <CCol sm={6} lg={3}>
-        <CWidgetStatsA
-          className="mb-4"
-          color="primary"
-          value={
-            <>
-              { props?.users?.length }
-              
-            </>
-          }
-          title="Users"
-          action={
-            <CDropdown alignment="end">
-              <CDropdownToggle color="transparent" caret={false} className="p-0">
-                <CIcon icon={cilOptions} className="text-high-emphasis-inverse" />
-              </CDropdownToggle>
-              <CDropdownMenu>
-                <CDropdownItem>Action</CDropdownItem>
-                <CDropdownItem>Another action</CDropdownItem>
-                <CDropdownItem>Something else here...</CDropdownItem>
-                <CDropdownItem disabled>Disabled action</CDropdownItem>
-              </CDropdownMenu>
-            </CDropdown>
-          }
-          chart={
-            <CChartBar
-              className="mt-3 mx-3"
-              style={{ height: '70px' }}
-              data={{
-                labels: [
-                  'January',
-                  'February',
-                  'March',
-                  'April',
-                  'May',
-                  'June',
-                  'July',
-                  'August',
-                  'September',
-                  'October',
-                  'November',
-                  'December',
-                  'January',
-                  'February',
-                  'March',
-                  'April',
-                ],
-                datasets: [
-                  {
-                    label: 'My First dataset',
-                    backgroundColor: 'rgba(255,255,255,.2)',
-                    borderColor: 'rgba(255,255,255,.55)',
-                    data: [78, 81, 80, 45, 34, 12, 40, 85, 65, 23, 12, 98, 34, 84, 67, 82],
-                    barPercentage: 0.6,
-                  },
-                ],
-              }}
-              options={{
-                maintainAspectRatio: false,
-                plugins: {
-                  legend: {
-                    display: false,
-                  },
-                },
-                scales: {
-                  x: {
-                    grid: {
-                      display: false,
-                      drawTicks: false,
-                    },
-                    ticks: {
-                      display: false,
-                    },
-                  },
-                  y: {
-                    grid: {
-                      display: false,
-                      drawBorder: false,
-                      drawTicks: false,
-                    },
-                    ticks: {
-                      display: false,
-                    },
-                  },
-                },
-              }}
-            />
-          }
-        />
+      <CCard className="mb-4 bg-warning" style={cardStyle} onClick={()=>navigate("/users/customers")}>
+      <CCardBody>
+        <div className="d-flex justify-content-between align-items-center">
+          <div>
+            <div className="h4 mb-0 text-white">{props.users?.length}</div>
+            <div className="text-white">Users</div>
+          </div>
+          <div className="h1 text-white">
+          <CIcon icon={cilGroup} size="lg" customClasses="fw-bold"/>
+          </div>
+        </div>
+      </CCardBody>
+    </CCard>
       </CCol>
       <CCol sm={6} lg={3}>
-        <CWidgetStatsA
-          className="mb-4"
-          color="info"
-          value={
-            <>
-              {props.customers?.length}
-              
-            </>
-          }
-          title="Customers"
-          action={
-            <CDropdown alignment="end">
-              <CDropdownToggle color="transparent" caret={false} className="p-0">
-                <CIcon icon={cilOptions} className="text-high-emphasis-inverse" />
-              </CDropdownToggle>
-              <CDropdownMenu>
-                <CDropdownItem>Action</CDropdownItem>
-                <CDropdownItem>Another action</CDropdownItem>
-                <CDropdownItem>Something else here...</CDropdownItem>
-                <CDropdownItem disabled>Disabled action</CDropdownItem>
-              </CDropdownMenu>
-            </CDropdown>
-          }
-          chart={
-            <CChartBar
-              className="mt-3 mx-3"
-              style={{ height: '70px' }}
-              data={{
-                labels: [
-                  'January',
-                  'February',
-                  'March',
-                  'April',
-                  'May',
-                  'June',
-                  'July',
-                  'August',
-                  'September',
-                  'October',
-                  'November',
-                  'December',
-                  'January',
-                  'February',
-                  'March',
-                  'April',
-                ],
-                datasets: [
-                  {
-                    label: 'My First dataset',
-                    backgroundColor: 'rgba(255,255,255,.2)',
-                    borderColor: 'rgba(255,255,255,.55)',
-                    data: [78, 81, 80, 45, 34, 12, 40, 85, 65, 23, 12, 98, 34, 84, 67, 82],
-                    barPercentage: 0.6,
-                  },
-                ],
-              }}
-              options={{
-                maintainAspectRatio: false,
-                plugins: {
-                  legend: {
-                    display: false,
-                  },
-                },
-                scales: {
-                  x: {
-                    grid: {
-                      display: false,
-                      drawTicks: false,
-                    },
-                    ticks: {
-                      display: false,
-                    },
-                  },
-                  y: {
-                    grid: {
-                      display: false,
-                      drawBorder: false,
-                      drawTicks: false,
-                    },
-                    ticks: {
-                      display: false,
-                    },
-                  },
-                },
-              }}
-            />
-          }
-        />
+      <CCard className="mb-4 bg-primary" style={cardStyle} onClick={()=>navigate("/users/customers")}>
+      <CCardBody>
+        <div className="d-flex justify-content-between align-items-center">
+          <div>
+            <div className="h4 mb-0 text-white">{props.customers?.length}</div>
+            <div className="text-white">Customers</div>
+          </div>
+          <div className="h1 text-white">
+          <CIcon icon={cilUserPlus} size="lg" customClasses="fw-bold"/>
+          </div>
+        </div>
+      </CCardBody>
+    </CCard>
       </CCol>
       <CCol sm={6} lg={3}>
-        <CWidgetStatsA
-          className="mb-4"
-          color="danger"
-          value={
-            <>
-              {props.shops?.length}
-            </>
-          }
-          title="Shops"
-          action={
-            <CDropdown alignment="end">
-              <CDropdownToggle color="transparent" caret={false} className="p-0">
-                <CIcon icon={cilOptions} className="text-high-emphasis-inverse" />
-              </CDropdownToggle>
-              <CDropdownMenu>
-                <CDropdownItem>Action</CDropdownItem>
-                <CDropdownItem>Another action</CDropdownItem>
-                <CDropdownItem>Something else here...</CDropdownItem>
-                <CDropdownItem disabled>Disabled action</CDropdownItem>
-              </CDropdownMenu>
-            </CDropdown>
-          }
-          chart={
-            <CChartBar
-              className="mt-3 mx-3"
-              style={{ height: '70px' }}
-              data={{
-                labels: [
-                  'January',
-                  'February',
-                  'March',
-                  'April',
-                  'May',
-                  'June',
-                  'July',
-                  'August',
-                  'September',
-                  'October',
-                  'November',
-                  'December',
-                  'January',
-                  'February',
-                  'March',
-                  'April',
-                ],
-                datasets: [
-                  {
-                    label: 'My First dataset',
-                    backgroundColor: 'rgba(255,255,255,.2)',
-                    borderColor: 'rgba(255,255,255,.55)',
-                    data: [78, 81, 80, 45, 34, 12, 40, 85, 65, 23, 12, 98, 34, 84, 67, 82],
-                    barPercentage: 0.6,
-                  },
-                ],
-              }}
-              options={{
-                maintainAspectRatio: false,
-                plugins: {
-                  legend: {
-                    display: false,
-                  },
-                },
-                scales: {
-                  x: {
-                    grid: {
-                      display: false,
-                      drawTicks: false,
-                    },
-                    ticks: {
-                      display: false,
-                    },
-                  },
-                  y: {
-                    grid: {
-                      display: false,
-                      drawBorder: false,
-                      drawTicks: false,
-                    },
-                    ticks: {
-                      display: false,
-                    },
-                  },
-                },
-              }}
-            />
-          }
-        />
+      <CCard className="mb-4 bg-danger" style={cardStyle} onClick={()=>navigate("/users/sehr-shop")}>
+      <CCardBody>
+        <div className="d-flex justify-content-between align-items-center">
+          <div>
+            <div className="h4 mb-0 text-white">{props.shops?.length}</div>
+            <div className="text-white">Shops</div>
+          </div>
+          <div className="h1 text-white">
+          <CIcon icon={cilBuilding} size="lg" customClasses="fw-bold"/>
+          </div>
+        </div>
+      </CCardBody>
+    </CCard>
       </CCol>
       <CCol sm={6} lg={3}>
-        <CWidgetStatsA
-          className="mb-4"
-          color="success"
-          value={
-            <>
-              {props.sehrShops?.length}
-            </>
-          }
-          title="SehrSHops"
-          action={
-            <CDropdown alignment="end">
-              <CDropdownToggle color="transparent" caret={false} className="p-0">
-                <CIcon icon={cilOptions} className="text-high-emphasis-inverse" />
-              </CDropdownToggle>
-              <CDropdownMenu>
-                <CDropdownItem>Action</CDropdownItem>
-                <CDropdownItem>Another action</CDropdownItem>
-                <CDropdownItem>Something else here...</CDropdownItem>
-                <CDropdownItem disabled>Disabled action</CDropdownItem>
-              </CDropdownMenu>
-            </CDropdown>
-          }
-          chart={
-            <CChartBar
-              className="mt-3 mx-3"
-              style={{ height: '70px' }}
-              data={{
-                labels: [
-                  'January',
-                  'February',
-                  'March',
-                  'April',
-                  'May',
-                  'June',
-                  'July',
-                  'August',
-                  'September',
-                  'October',
-                  'November',
-                  'December',
-                  'January',
-                  'February',
-                  'March',
-                  'April',
-                ],
-                datasets: [
-                  {
-                    label: 'My First dataset',
-                    backgroundColor: 'rgba(255,255,255,.2)',
-                    borderColor: 'rgba(255,255,255,.55)',
-                    data: [78, 81, 80, 45, 34, 12, 40, 85, 65, 23, 12, 98, 34, 84, 67, 82],
-                    barPercentage: 0.6,
-                  },
-                ],
-              }}
-              options={{
-                maintainAspectRatio: false,
-                plugins: {
-                  legend: {
-                    display: false,
-                  },
-                },
-                scales: {
-                  x: {
-                    grid: {
-                      display: false,
-                      drawTicks: false,
-                    },
-                    ticks: {
-                      display: false,
-                    },
-                  },
-                  y: {
-                    grid: {
-                      display: false,
-                      drawBorder: false,
-                      drawTicks: false,
-                    },
-                    ticks: {
-                      display: false,
-                    },
-                  },
-                },
-              }}
-            />
-          }
-        />
+        <CCard className="mb-4 bg-info" style={cardStyle} onClick={()=>navigate("/users/sehr-shop")}>
+      <CCardBody>
+        <div className="d-flex justify-content-between align-items-center">
+          <div>
+            <div className="h4 mb-0 text-white">{props.sehrShops?.length}</div>
+            <div className="text-white">Sehr Shops</div>
+          </div>
+          <div className="h1 text-white">
+          <CIcon icon={cilCheckCircle} size="lg" customClasses="fw-bold"/>
+          </div>
+        </div>
+      </CCardBody>
+    </CCard>
       </CCol>
     </CRow>
   )
