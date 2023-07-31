@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-
+import {useNavigate} from "react-router-dom"
 import {
   
   CCard,
@@ -18,6 +18,7 @@ import PaymentRequests from '../pages/requests/paymentRequests/PaymentRequests'
 import SehrCodeRequests from '../pages/requests/sehrCodeRequests/SehrCodeRequests'
 
 const Dashboard = () => {
+  
   // const [loader, setLoader] = useState(true)
   const [userdata, setUserData] = useState([])
   const [totalSehrData, setTotalSehrData] = useState([])
@@ -30,7 +31,10 @@ const Dashboard = () => {
   const [shopdata, setShopData] = useState([])
   const [educationList, setEducationList] = useState([])
   const [packageList, setPackageList] = useState([])
-
+  const navigate = useNavigate();
+  const cardStyle = {
+    cursor: 'pointer'
+  };
   useEffect(() => {
     fetchUserData()
     fetchBusinessData()
@@ -132,9 +136,9 @@ const Dashboard = () => {
     }
   }
   const progressExample = [
-    { title: 'SherShops', value: sehrdata?.length, percent: ((sehrdata.length / totalSehrData.length) * 100).toFixed(2), color: 'success' },
-    { title: 'Limited SehrShops', value: limitedSehrShops?.length, percent: limitedSehrShops?.length ? ((limitedSehrShops.length / sehrdata.length) * 100).toFixed(2) : 0, color: 'info' },
-    { title: 'Limited Customers', value: limitedCustomers?.length, percent: limitedCustomers?.length ? ((limitedCustomers.length / customerdata.length) * 100).toFixed(2) : 0, color: 'warning' },
+    { title: 'SherShops', value: sehrdata?.length, percent: ((sehrdata.length / totalSehrData.length) * 100).toFixed(2), color: 'success',navigation: '/users/sehr-shop' },
+    { title: 'Limited SehrShops', value: limitedSehrShops?.length, percent: limitedSehrShops?.length ? ((limitedSehrShops.length / sehrdata.length) * 100).toFixed(2) : 0, color: 'info',navigation: '/limited-users/sehr-shops' },
+    { title: 'Limited Customers', value: limitedCustomers?.length, percent: limitedCustomers?.length ? ((limitedCustomers.length / customerdata.length) * 100).toFixed(2) : 0, color: 'warning',navigation: '/limited-users/customers' },
     { title: 'Paid', value:'Rs/- ' + totalPaid, percent: ((totalPaid / totalPayment) * 100).toFixed(2), color: 'primary' },
   ]
 
@@ -155,7 +159,7 @@ const Dashboard = () => {
         <CCardFooter>
           <CRow xs={{ cols: 1 }} md={{ cols: 5 }} className="text-center">
             {progressExample.map((item, index) => (
-              <CCol className="mb-sm-2 mb-0" key={index}>
+              <CCol className="mb-sm-2 mb-0" key={index} style={cardStyle} onClick={()=> progressExample.length !== index ? navigate(item.navigation) : console.log('no redirection!')}>
                 <div className="text-medium-emphasis">{item.title}</div>
                 <strong>
                   {item.value} ({parseFloat(item.percent).toFixed(2)}%)
@@ -171,7 +175,7 @@ const Dashboard = () => {
 
       <CRow>
         <CCol xs>
-          <CCard className="mb-4">
+          <CCard className="mb-4" onClick={()=> navigate('/education/user-by-education')} style={cardStyle}>
             <CCardHeader>Users by Education {' & '} Sehr Packages</CCardHeader>
             <CCardBody>
               <CRow>
@@ -208,8 +212,8 @@ const Dashboard = () => {
         </CCol>
       </CRow>
       <CRow>
-        <CCol xs>
-          <CCard className="mb-4">
+        <CCol xs style={cardStyle} onClick={()=> navigate('/request/sehr-code-request')}>
+          <CCard className="mb-4" >
             <CCardHeader>Requests</CCardHeader>
             <CCardBody>
               <CRow>
@@ -217,7 +221,7 @@ const Dashboard = () => {
                   <SehrCodeRequests />
                 </CCol>
 
-                <CCol xs={12} md={6} xl={6}>
+                <CCol xs={12} md={6} xl={6} style={cardStyle} onClick={()=> navigate('/request/payment-request')} >
                   <PaymentRequests />
                 </CCol>
               </CRow>
