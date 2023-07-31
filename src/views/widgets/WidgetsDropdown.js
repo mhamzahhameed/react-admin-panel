@@ -49,7 +49,7 @@ const WidgetsDropdown = (props) => {
     </CCard>
       </CCol>
       <CCol sm={6} lg={3}>
-      <CCard className="mb-4 bg-danger" style={cardStyle} onClick={()=>navigate("/users/sehr-shop")}>
+      <CCard className="mb-4 bg-danger" style={cardStyle} onClick={()=>navigate("/users/shopkeepers")}>
       <CCardBody>
         <div className="d-flex justify-content-between align-items-center">
           <div>
