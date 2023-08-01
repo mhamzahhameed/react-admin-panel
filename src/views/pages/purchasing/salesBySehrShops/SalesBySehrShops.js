@@ -237,8 +237,8 @@ const SalesBySehrShops = () => {
         <td>{index + 1}</td>
         <td>{editFormData.businessName}</td>
         <td>{editFormData.sehrCode}</td>
-        <td>{item.amount}</td>
         <td>{item.customer.firstName + " " + item.customer.lastName}</td>
+        <td>{item.amount}</td>
         <td>{item.status}</td>
         <td>{item.commission}</td>
         <td>{item.date.slice(1, 10)}</td>

@@ -60,7 +60,6 @@ const LimitedCustomers = () => {
           item.cnic.toLowerCase().includes(searchValue) ||
           item.tehsil.toLowerCase().includes(searchValue) ||
           item.district.toLowerCase().includes(searchValue) ||
-          item.lastRewardPaidAt.toLowerCase().includes(searchValue) ||
           item.division.toLowerCase().includes(searchValue)
         })
         : fetchedData
@@ -177,7 +176,7 @@ const LimitedCustomers = () => {
         <td>{item.firstName+" "+item.lastName}</td>
         <td>{item.mobile}</td>
         <td>{item.cnic}</td>
-        <td>{item?.reward?.title}</td>
+        <td>{item.reward.title? item.reward.title : 'not subscribed yet'}</td>
         <td>{item.province}</td>
         <td>{item.division}</td>
         <td>{item.district}</td>

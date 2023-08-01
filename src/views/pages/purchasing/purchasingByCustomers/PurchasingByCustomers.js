@@ -61,12 +61,11 @@ const PurchasingByCustomers = () => {
         ? fetchedData.filter((item) => {
           const name = item.firstName + " " + item.lastName;
           return name.toLowerCase().includes(searchValue) ||
+            item.reward.title.toLowerCase().includes(searchValue) ||
             item.mobile.toLowerCase().includes(searchValue) ||
-            item.cnic.toLowerCase().includes(searchValue) ||
-            item.tehsil.toLowerCase().includes(searchValue) ||
-            item.district.toLowerCase().includes(searchValue) ||
-            item.lastRewardPaidAt.toLowerCase().includes(searchValue) ||
-            item.division.toLowerCase().includes(searchValue)
+            item.reward.salesTarget.toLowerCase().includes(searchValue)
+            // item.verifiedAt?.slice(0, 10).includes(searchValue)
+            // item.item.isLocked === true ? "limited" : "active".toLowerCase().includes(searchValue)
         })
         : fetchedData
       setLoader(false)
@@ -155,40 +154,7 @@ const PurchasingByCustomers = () => {
     }
   }, [OrderList, viewModalVisible]);
 
-  // const handleDelete = (item)=>{
-  //   Swal.fire({
-  //     title: 'Are you sure you want to delete this user?',
-  //     text: 'You won\'t be able to revert this!',
-  //     icon: 'warning',
-  //     showCancelButton: true,
-  //     confirmButtonText: 'Confirm',
-  //     cancelButtonText: 'Cancel',
-  //     reverseButtons: true,
-  //   }).then(async(result) => {
-  //     if (result.isConfirmed) {
-  //       await AxiosInstance.delete(`/api/user/${item?.id}/delete`)
-  //       await fetchData()
-  //     }
-  //   });
-  // }
-
-  // Function to set the user as limited
-  // const handleLimit = (item)=>{
-  //   Swal.fire({
-  //     title: 'Are you sure you want to limit this user?',
-  //     text: 'You would be able to revert this!',
-  //     icon: 'warning',
-  //     showCancelButton: true,
-  //     confirmButtonText: 'Confirm',
-  //     cancelButtonText: 'Cancel',
-  //     reverseButtons: true,
-  //   }).then(async(result) => {
-  //     if (result.isConfirmed) {
-  //       await AxiosInstance.post(`/api/user/${item?.id}/lock`)
-  //       await fetchData()
-  //     }
-  //   });
-  // }
+  
 
   // Handle Save Changes button onclicking
   const handleSaveChanges = async () => {

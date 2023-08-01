@@ -65,7 +65,6 @@ const Customers = () => {
           item.cnic.toLowerCase().includes(searchValue) ||
           item.tehsil.toLowerCase().includes(searchValue) ||
           item.district.toLowerCase().includes(searchValue) ||
-          item.lastRewardPaidAt.toLowerCase().includes(searchValue) ||
           item.division.toLowerCase().includes(searchValue)
         })
         : fetchedData
