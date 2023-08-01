@@ -193,180 +193,191 @@ const SehrCodeRequests = () => {
     }
     // tehsil = 'rawalpindi';
     // eslint-disable-next-line 
-    addressCode.map((item) => {
-
-      if (Object.keys(item)[0].toLowerCase() === tehsil.toLowerCase()) {
-        startingCode = item[Object.keys(item)[0]];
-      }
-    })
-    if (startingCode && startingCode !== '') {
-      startingCode = startingCode.toString();
-      let count = await AxiosInstance.get(`/api/user`)
-      let businessCount = await AxiosInstance.get(`/api/business/all`)
-      count = count.data.total;
-      businessCount = businessCount.data.total;
-      let response = await AxiosInstance.get(`/api/user?limit=${count}`)
-      response = response.data.users;
-      let business = await AxiosInstance.get(`/api/business/all?limit=${businessCount}`)
-      business = business.data.businesses;
-      let shopKeepers = response.filter(item => {
-        return item.roles.some(role => role.role === 'shopKeeper');
-      });
-      let shopKeeper = shopKeepers;
-      for (const element of shopKeeper) {
-        const obj1 = element;
-
-        const obj2 = business.find((item) => item.userId === obj1.id);
-        if (obj2) {
-          obj1.category = obj2.district;
-          obj1.businessName = obj2.businessName;
-          obj1.ownerName = obj2.ownerName;
-          obj1.sehrCode = obj2.sehrCode ? obj2.sehrCode : null;
-          obj1.businessId = obj2.id;
-        }
-      }
-      shopKeeper = shopKeeper.filter(obj => obj.hasOwnProperty("sehrCode"));
-      let filterSehrCode = shopKeeper.filter(obj => obj.sehrCode !== 'string' && obj.sehrCode !== null && obj.sehrCode.substring(0, 4) === startingCode);
-      // if(filterSehrCode.length !== 0)
-      // {
-      //   filterSehrCode = filterSehrCode.filter(obj => obj.sehrCode.substring(0, 4) === startingCode)
-      // }
-      // let filterSehrCode = [{businessId:1, sehrCode: '11110999'}]
-      if (filterSehrCode.length !== 0) {
-        filterSehrCode.sort((a, b) => {
-          const lastFourDigitsA = a.sehrCode.slice(-4);
-          const lastFourDigitsB = b.sehrCode.slice(-4);
-
-          return lastFourDigitsA.localeCompare(lastFourDigitsB);
-        });
-        console.log(filterSehrCode);
-        let getLastCode = filterSehrCode[filterSehrCode.length - 1].sehrCode;
-        let lastdigits = getLastCode.substring(getLastCode.length - 4);
-
-        let num = Number(lastdigits); // Convert string to number
-        num++; // Increment the number
-        num = String(num).padStart(lastdigits.length, '0');
-        newCode = startingCode + num;
-
-      } else {
-        newCode = startingCode + "0001";
-      }
-      // console.log(id);
-      if (noKYCFlag) {
-        Swal.fire({
-          title: 'KYC Details',
-          icon: 'info',
-          text: 'There is no KYC submitted by ShopKeeper!',
-          showCancelButton: true,
-          focusConfirm: false,
-          reverseButtons: true,
-          cancelButtonText:
-            'Reject!',
-          confirmButtonText:
-            'Confirm!'
-        }).then(async (result) => {
-          if (result.isConfirmed) {
-            let putData = JSON.stringify({
-              "sehrCode": newCode,
-              "grade": 1
-            })
-
-
-            AxiosInstance.post(`/api/Reward/${Number(rewardId)}/subscribe/${Number(userId)}`).then((rewardRes) => {
-              AxiosInstance.put(`/api/business/verify/${id}`, putData).then((res) => {
-                Swal.fire({
-                  title: `Sehr Code has been created!`,
-                  icon: 'success'
-                });
-
-              }).catch((error) => {
-                Swal.fire({
-                  title: `Sehr code is not submitted!`,
-                  icon: 'error'
-                });
-              });
-            }).catch((err) => {
-              console.log(err.response.data.message)
-              if (err.response.data.message === 'Already subscribed to this reward.') {
-                Swal.fire({
-                  title: `Sehr Code has been created!`,
-                  icon: 'success'
-                });
-              } else {
-                Swal.fire({
-                  title: `Sehr code is not submitted!`,
-                  icon: 'error'
-                });
-              }
+   addressCode.map((item)=>{
+    
+    if(Object.keys(item)[0].toLowerCase() === tehsil.toLowerCase())
+    {
+      startingCode = item[Object.keys(item)[0]];
+    }
+   })
+   if(startingCode && startingCode !== '')
+   {
+    startingCode = startingCode.toString();
+    let count = await AxiosInstance.get(`/api/user`)
+          let businessCount = await AxiosInstance.get(`/api/business/all`)
+          count = count.data.total;
+          businessCount = businessCount.data.total;
+            let response = await AxiosInstance.get(`/api/user?limit=${count}`)
+            response = response.data.users;
+            let business = await AxiosInstance.get(`/api/business/all?limit=${businessCount}`)
+            business = business.data.businesses;
+            let shopKeepers =  response.filter(item => {
+              return item.roles.some(role => role.role === 'shopKeeper');
             });
-
-
-
-
-            fetchData()
+          let shopKeeper = shopKeepers;
+          for (const element of shopKeeper) {
+            const obj1 = element;
+    
+            const obj2 = business.find((item) => item.userId === obj1.id);
+            if (obj2) {
+              obj1.category = obj2.district;
+              obj1.businessName = obj2.businessName;
+              obj1.ownerName = obj2.ownerName;
+              obj1.sehrCode = obj2.sehrCode ? obj2.sehrCode : null;
+              obj1.businessId = obj2.id;
+            }
           }
-        });
-      } else {
-        Swal.fire({
-          title: 'KYC Details',
-          icon: 'info',
-          html:
-            `<p>Document Type: <b style="text-transform: uppercase">${checkKYC[0]?.documentType ?? 'No document'}</b><p> ` +
-            `<div style="object-fit: fill"><img src="${checkKYC[0]?.filePath}" style="width:100%;height:100%;object-fit: fill;"/></div>` +
-            `<p>Status: <b style="text-transform: uppercase;color:red">${checkKYC[0]?.status ?? 'Pending'}</b><p> ` +
-            `<p>Sehr Code to be assigned: <b style="text-transform: uppercase">${newCode}</b><p> `
-          ,
-          showCancelButton: true,
-          focusConfirm: false,
-          reverseButtons: true,
-          cancelButtonText:
-            'Reject!',
-          confirmButtonText:
-            'Confirm!'
-        }).then(async (result) => {
-          if (result.isConfirmed) {
-            let putData = JSON.stringify({
-              "sehrCode": newCode,
-              "grade": 1
-            })
-
-
-            AxiosInstance.post(`/api/Reward/${Number(rewardId)}/subscribe/${Number(userId)}`).then((rewardRes) => {
-              AxiosInstance.put(`/api/business/verify/${id}`, putData).then((res) => {
-                Swal.fire({
-                  title: `Sehr Code has been created!`,
-                  icon: 'success'
-                });
-
-              }).catch((error) => {
-                Swal.fire({
-                  title: `Sehr code is not submitted!`,
-                  icon: 'error'
-                });
-              });
-            }).catch((err) => {
-              console.log(err.response.data.message)
-              if (err.response.data.message === 'Already subscribed to this reward.') {
-                Swal.fire({
-                  title: `Sehr Code has been created!`,
-                  icon: 'success'
-                });
-              } else {
-                Swal.fire({
-                  title: `Sehr code is not submitted!`,
-                  icon: 'error'
-                });
-              }
+          shopKeeper = shopKeeper.filter(obj => obj.hasOwnProperty("sehrCode"));
+            let filterSehrCode = shopKeeper.filter(obj => obj.sehrCode !== 'string' && obj.sehrCode !== null && obj.sehrCode.substring(0, 4) === startingCode );
+            // if(filterSehrCode.length !== 0)
+            // {
+            //   filterSehrCode = filterSehrCode.filter(obj => obj.sehrCode.substring(0, 4) === startingCode)
+            // }
+            // let filterSehrCode = [{businessId:1, sehrCode: '11110999'}]
+           if(filterSehrCode.length !== 0)
+           {
+             filterSehrCode.sort((a, b) => {
+              const lastFourDigitsA = a.sehrCode.slice(-4);
+              const lastFourDigitsB = b.sehrCode.slice(-4);
+            
+              return lastFourDigitsA.localeCompare(lastFourDigitsB);
             });
-
-
-
-
-            fetchData()
+            console.log(filterSehrCode);
+            let getLastCode = filterSehrCode[filterSehrCode.length-1].sehrCode;
+            let lastdigits = getLastCode.substring(getLastCode.length - 4);
+            
+            let num = Number(lastdigits); // Convert string to number
+num++; // Increment the number
+num = String(num).padStart(lastdigits.length, '0');
+              newCode = startingCode+num;
+            
+   }else
+          {
+           newCode = startingCode+"0001";
           }
-        });
-      }
-    } else {
+          // console.log(id);
+          if(noKYCFlag)
+          {
+            Swal.fire({
+              title: 'KYC Details',
+              icon: 'info',
+             text: 'There is no KYC submitted by ShopKeeper!',
+              showCancelButton: true,
+              focusConfirm: false,
+              reverseButtons: true,
+              cancelButtonText:
+              'Reject!',
+              confirmButtonText:
+                'Confirm!'
+            }).then(async(result) => {
+                  if (result.isConfirmed) {
+                    let putData = JSON.stringify({
+                      "sehrCode": newCode,
+                      "grade": 1
+                    })
+                  
+                  
+                        AxiosInstance.post(`/api/Reward/${Number(rewardId)}/subscribe/${Number(userId)}`).then((rewardRes)=>{
+                               AxiosInstance.put(`/api/business/verify/${id}`,putData).then((res)=>{
+                          Swal.fire({
+                            title: `Sehr Code has been created!`,
+                            icon: 'success'
+                          });
+                       
+                        }).catch((error)=>{
+                          Swal.fire({
+                            title: `Sehr code is not submitted!`,
+                            icon: 'error'
+                          });
+                        });
+                        }).catch((err)=>{
+                          console.log(err.response.data.message)
+                          if(err.response.data.message === 'Already subscribed to this reward.')
+                          {
+                            AxiosInstance.put(`/api/business/verify/${id}`,putData).then((res)=>{
+                              
+                              Swal.fire({
+                                title: `Sehr Code has been created!`,
+                                icon: 'success'
+                              });
+                           
+                            }).catch((error)=>{
+                              Swal.fire({
+                                title: `Sehr code is not submitted!`,
+                                icon: 'error'
+                              });
+                            });
+                          }
+                        });
+                   
+                     
+                  
+                     
+                       fetchData()
+                  }
+                });
+          }else{
+            Swal.fire({
+              title: 'KYC Details',
+              icon: 'info',
+              html:
+                `<p>Document Type: <b style="text-transform: uppercase">${checkKYC[0]?.documentType ?? 'No document'}</b><p> ` +
+                `<div style="object-fit: fill"><img src="${checkKYC[0]?.filePath}" style="width:100%;height:100%;object-fit: fill;"/></div>` +
+                `<p>Status: <b style="text-transform: uppercase;color:red">${checkKYC[0]?.status ?? 'Pending'}</b><p> `+
+                `<p>Sehr Code to be assigned: <b style="text-transform: uppercase">${newCode}</b><p> `
+                ,
+              showCancelButton: true,
+              focusConfirm: false,
+              reverseButtons: true,
+              cancelButtonText:
+              'Reject!',
+              confirmButtonText:
+                'Confirm!'
+            }).then(async(result) => {
+                  if (result.isConfirmed) {
+                    let putData = JSON.stringify({
+                      "sehrCode": newCode,
+                      "grade": 1
+                    })
+                  
+                  
+                        AxiosInstance.post(`/api/Reward/${Number(rewardId)}/subscribe/${Number(userId)}`).then((rewardRes)=>{
+                               AxiosInstance.put(`/api/business/verify/${id}`,putData).then((res)=>{
+                          Swal.fire({
+                            title: `Sehr Code has been created!`,
+                            icon: 'success'
+                          });
+                       
+                        }).catch((error)=>{
+                          Swal.fire({
+                            title: `Sehr code is not submitted!`,
+                            icon: 'error'
+                          });
+                        });
+                        }).catch((err)=>{
+                          console.log(err.response.data.message)
+                          if(err.response.data.message === 'Already subscribed to this reward.')
+                          {
+                                 Swal.fire({
+                            title: `Sehr Code has been created!`,
+                            icon: 'success'
+                          });
+                          }else{
+                                   Swal.fire({
+                            title: `Sehr code is not submitted!`,
+                            icon: 'error'
+                          });
+                          }
+                        });
+                   
+                     
+                  
+                     
+                       fetchData()
+                  }
+                });
+          }
+    }else{
       Swal.fire({
         title: `Not a single code is matched to this Tehsil`,
         icon: 'error'
@@ -743,86 +754,86 @@ const SehrCodeRequests = () => {
               value={editFormData.cnic || ''}
               disabled
         /> */}
-              <CFormInput
-                type="text"
-                id="tehsil"
-                label="Tehsil"
-                aria-describedby="name"
-                value={editFormData.tehsil || ''}
-                disabled
-              />
-              <CFormInput
-                type="text"
-                id="district"
-                label="District"
-                aria-describedby="name"
-                value={editFormData.district || ''}
-                disabled
-              />
-              <CFormInput
-                type="text"
-                id="division"
-                label="Division"
-                aria-describedby="name"
-                value={(editFormData.division ? editFormData.division : 'Not defined') || ""}
-                disabled
-              />
-              <CFormInput
-                type="text"
-                id="province"
-                label="Province"
-                aria-describedby="name"
-                value={editFormData.province || ''}
-                disabled
-              />
-              <CFormInput
-                type="text"
-                id="createdAt"
-                label="Created At"
-                aria-describedby="name"
-                value={editFormData?.createdAt?.slice(0, 10) || ''}
-                disabled
-              />
-            </CForm>
-          </CModalBody>
-        </CModal>
-        <div className="card">
-          <div className="card-header">SehrCode Requests</div>
-          <div className="card-body">
-            <div>
-              <div className="d-flex my-2 justify-content-end">
-                <div className="col-lg-4 col-md-6 col-sm-6">
-                  <input
-                    type="text"
-                    className="form-control"
-                    placeholder="Search"
-                    value={searchValue}
-                    onChange={(e) => setSearchValue(e.target.value)}
-                  />
-
-                </div>
-                <button className="btn btn-primary ms-2" onClick={() => setSearchValue('')}>
-                  Clear
-                </button>
+        <CFormInput
+              type="text"
+              id="tehsil"
+              label="Tehsil"
+              aria-describedby="name"
+              value={editFormData.tehsil || ''}
+              disabled
+        />
+        <CFormInput
+              type="text"
+              id="district"
+              label="District"
+              aria-describedby="name"
+              value={editFormData.district || ''}
+              disabled
+        />
+        <CFormInput
+              type="text"
+              id="division"
+              label="Division"
+              aria-describedby="name"
+              value={(editFormData.division? editFormData.division: 'Not defined') || ""}
+              disabled
+        />
+        <CFormInput
+              type="text"
+              id="province"
+              label="Province"
+              aria-describedby="name"
+              value={editFormData.province || ''}
+              disabled
+        />
+        <CFormInput
+              type="text"
+              id="createdAt"
+              label="Created At"
+              aria-describedby="name"
+              value={editFormData?.createdAt?.slice(0, 10) || ''}
+              disabled
+        />
+        </CForm>
+      </CModalBody>
+    </CModal>
+      <div className="card">
+        <div className="card-header">SehrCode Requests</div>
+        <div className="card-body">
+          <div>
+            <div className="d-flex my-2 justify-content-end">
+              <div className="col-lg-4 col-md-6 col-sm-6">
+                <input
+                  type="text"
+                  className="form-control"
+                  placeholder="Search"
+                  value={searchValue}
+                  onChange={(e) => setSearchValue(e.target.value)}
+                />
+                
               </div>
-            </div>
-            <div className="table-responsive">
-              <table className="table table-striped table-bordered">
-                <thead>
-                  <tr>
-                    {title.map((item, index) => {
-                      return (
-                        <th scope="col" className="text-uppercase" key={index}>
-                          {item}
-                        </th>
-                      )
-                    })}
-                  </tr>
-                </thead>
-                <tbody>{renderData()}</tbody>
-              </table>
+              <button className="btn btn-primary ms-2" onClick={() => setSearchValue('')}>
+                Clear
+              </button>
             </div>
           </div>
+          <div className="table-responsive">
+            <table className="table table-striped table-bordered">
+              <thead>
+                <tr>
+                  {title.map((item, index) => {
+                    return (
+                      <th scope="col" className="text-uppercase" key={index}>
+                        {item}
+                      </th>
+                    )
+                  })}
+                </tr>
+              </thead>
+              <tbody>{renderData()}</tbody>
+            </table>
+          </div>
+        </div>
 
           <div className="card-footer d-flex justify-content-between flex-wrap">
             <div className="col-4">
