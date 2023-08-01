@@ -139,7 +139,7 @@ const Dashboard = () => {
     { title: 'SherShops', value: sehrdata?.length, percent: ((sehrdata.length / totalSehrData.length) * 100).toFixed(2), color: 'success',navigation: '/users/sehr-shop' },
     { title: 'Limited SehrShops', value: limitedSehrShops?.length, percent: limitedSehrShops?.length ? ((limitedSehrShops.length / sehrdata.length) * 100).toFixed(2) : 0, color: 'info',navigation: '/limited-users/sehr-shops' },
     { title: 'Limited Customers', value: limitedCustomers?.length, percent: limitedCustomers?.length ? ((limitedCustomers.length / customerdata.length) * 100).toFixed(2) : 0, color: 'warning',navigation: '/limited-users/customers' },
-    { title: 'Paid', value:'Rs/- ' + totalPaid, percent: ((totalPaid / totalPayment) * 100).toFixed(2), color: 'primary' },
+    { title: 'Paid', value:'Rs/- ' + totalPaid, percent: ((totalPaid / totalPayment) * 100).toFixed(2), color: 'primary'},
   ]
 
   return (
@@ -164,7 +164,7 @@ const Dashboard = () => {
                 <strong>
                   {item.value} ({parseFloat(item.percent).toFixed(2)}%)
                 </strong>
-                <CProgress thin className="mt-2" color={item.color} value={parseFloat(item.percent)} />
+                <CProgress thin className="mt-2" color={item.color} value={parseFloat(item.percent)}/>
               </CCol>
             ))}
           </CRow>
@@ -175,11 +175,11 @@ const Dashboard = () => {
 
       <CRow>
         <CCol xs>
-          <CCard className="mb-4" onClick={()=> navigate('/education/user-by-education')} style={cardStyle}>
+          <CCard className="mb-4" style={cardStyle}>
             <CCardHeader>Users by Education {' & '} Sehr Packages</CCardHeader>
             <CCardBody>
               <CRow>
-                <CCol xs={12} md={6} xl={6}>
+                <CCol xs={12} md={6} xl={6} onClick={()=> navigate('/education/user-by-education')}>
                   {educationList.map((item, index) => (
                     <div className="progress-group mb-4" key={index}>
                       <div className="progress-group-prepend">
@@ -193,7 +193,7 @@ const Dashboard = () => {
                   ))}
                 </CCol>
 
-                <CCol xs={12} md={6} xl={6}>
+                <CCol xs={12} md={6} xl={6} onClick={()=> navigate('/packages/user-list')}>
                   {packageList.map((item, index) => (
                     <div className="progress-group mb-4" key={index}>
                       <div className="progress-group-prepend">
