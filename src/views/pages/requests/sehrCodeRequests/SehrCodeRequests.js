@@ -278,7 +278,7 @@ num = String(num).padStart(lastdigits.length, '0');
                     })
                   
                   
-                        AxiosInstance.post(`/api/Reward/${Number(rewardId)}/subscribe/${Number(userId)}`).then((rewardRes)=>{
+                        AxiosInstance.post(`/api/Reward/${52}/subscribe/${Number(userId)}`).then((rewardRes)=>{
                                AxiosInstance.put(`/api/business/verify/${id}`,putData).then((res)=>{
                           Swal.fire({
                             title: `Sehr Code has been created!`,
