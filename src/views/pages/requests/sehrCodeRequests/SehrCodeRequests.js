@@ -295,15 +295,19 @@ num = String(num).padStart(lastdigits.length, '0');
                           console.log(err.response.data.message)
                           if(err.response.data.message === 'Already subscribed to this reward.')
                           {
-                                 Swal.fire({
-                            title: `Sehr Code has been created!`,
-                            icon: 'success'
-                          });
-                          }else{
-                                   Swal.fire({
-                            title: `Sehr code is not submitted!`,
-                            icon: 'error'
-                          });
+                            AxiosInstance.put(`/api/business/verify/${id}`,putData).then((res)=>{
+                              
+                              Swal.fire({
+                                title: `Sehr Code has been created!`,
+                                icon: 'success'
+                              });
+                           
+                            }).catch((error)=>{
+                              Swal.fire({
+                                title: `Sehr code is not submitted!`,
+                                icon: 'error'
+                              });
+                            });
                           }
                         });
                    
@@ -795,7 +799,7 @@ setLoader(false)
       </CModalBody>
     </CModal>
       <div className="card">
-        <div className="card-header">SehrCode Requests</div>
+        <div className="card-header">Shopkeepers</div>
         <div className="card-body">
           <div>
             <div className="d-flex my-2 justify-content-end">
