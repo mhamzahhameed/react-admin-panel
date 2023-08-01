@@ -295,8 +295,9 @@ num = String(num).padStart(lastdigits.length, '0');
                           console.log(err.response.data.message)
                           if(err.response.data.message === 'Already subscribed to this reward.')
                           {
-                            AxiosInstance.put(`/api/business/verify/${id}`,putData).then((res)=>{
-                              
+
+                            AxiosInstance.put(`/api/business/verify/${id}`,putData).then((res2)=>{
+                              console.log(res2);
                               Swal.fire({
                                 title: `Sehr Code has been created!`,
                                 icon: 'success'
@@ -335,15 +336,33 @@ num = String(num).padStart(lastdigits.length, '0');
               confirmButtonText:
                 'Confirm!'
             }).then(async(result) => {
-                  if (result.isConfirmed) {
-                    let putData = JSON.stringify({
-                      "sehrCode": newCode,
-                      "grade": 1
-                    })
-                  
-                  
-                        AxiosInstance.post(`/api/Reward/${Number(rewardId)}/subscribe/${Number(userId)}`).then((rewardRes)=>{
-                               AxiosInstance.put(`/api/business/verify/${id}`,putData).then((res)=>{
+              if (result.isConfirmed) {
+                let putData = JSON.stringify({
+                  "sehrCode": newCode,
+                  "grade": 1
+                })
+              
+              
+                    AxiosInstance.post(`/api/Reward/${52}/subscribe/${Number(userId)}`).then((rewardRes)=>{
+                           AxiosInstance.put(`/api/business/verify/${id}`,putData).then((res)=>{
+                      Swal.fire({
+                        title: `Sehr Code has been created!`,
+                        icon: 'success'
+                      });
+                   
+                    }).catch((error)=>{
+                      Swal.fire({
+                        title: `Sehr code is not submitted!`,
+                        icon: 'error'
+                      });
+                    });
+                    }).catch((err)=>{
+                      console.log(err.response.data.message)
+                      if(err.response.data.message === 'Already subscribed to this reward.')
+                      {
+
+                        AxiosInstance.put(`/api/business/verify/${id}`,putData).then((res2)=>{
+                          console.log(res2);
                           Swal.fire({
                             title: `Sehr Code has been created!`,
                             icon: 'success'
@@ -355,28 +374,15 @@ num = String(num).padStart(lastdigits.length, '0');
                             icon: 'error'
                           });
                         });
-                        }).catch((err)=>{
-                          console.log(err.response.data.message)
-                          if(err.response.data.message === 'Already subscribed to this reward.')
-                          {
-                                 Swal.fire({
-                            title: `Sehr Code has been created!`,
-                            icon: 'success'
-                          });
-                          }else{
-                                   Swal.fire({
-                            title: `Sehr code is not submitted!`,
-                            icon: 'error'
-                          });
-                          }
-                        });
-                   
-                     
-                  
-                     
-                       fetchData()
-                  }
-                });
+                      }
+                    });
+               
+                 
+              
+                 
+                   fetchData()
+              }
+            });
           }
     }else{
       Swal.fire({
