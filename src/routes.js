@@ -22,6 +22,7 @@ import PurchasingBySehrShops from './views/pages/purchasing/purchasingBySehrShop
 import PurchasingByShops from './views/pages/purchasing/purchasingByShops/PurchasingByShops'
 import PaymentsBySehrShops from './views/pages/purchasing/paymentsBySehrShops/PaymentsBySehrShops'
 import SalesBySehrShops from './views/pages/purchasing/salesBySehrShops/SalesBySehrShops'
+import UnverifiedUsers from './views/pages/users/unVerifiedUsers/UnVerifiedUsers'
 const Dashboard = React.lazy(() => import('./views/dashboard/Dashboard'))
 const Colors = React.lazy(() => import('./views/theme/colors/Colors'))
 const Typography = React.lazy(() => import('./views/theme/typography/Typography'))
@@ -75,6 +76,7 @@ const routes = [
   { path: '/', exact: true, name: 'Home' },
   { path: '/dashboard', name: 'Dashboard', element: Dashboard },
   { path: '/dashboard', name: 'Dashboard', element: Dashboard },
+  { path: '/users/unverified-users', name: 'Unverified Users', element: UnverifiedUsers, exact: true },
   { path: '/users/customers', name: 'Customers', element: Customers, exact: true },
   { path: '/users/shopkeepers', name: 'Shopkeepers', element: Shopkeepers, exact: true },
   { path: '/users/sehr-shop', name: 'SEHR Shops', element: SehrShops, exact: true },

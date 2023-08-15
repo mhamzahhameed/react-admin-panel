@@ -27,6 +27,11 @@ const _nav = [
   },
   {
     component: CNavItem,
+    name: 'Unverified Users',
+    to: '/users/unverified-users',
+    icon: <CIcon icon={cilUser} customClassName="nav-icon" />,
+  },{
+    component: CNavItem,
     name: 'Customers',
     to: '/users/customers',
     icon: <CIcon icon={cilUser} customClassName="nav-icon" />,
