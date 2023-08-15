@@ -24,6 +24,9 @@ const Dashboard = () => {
   const [totalSehrData, setTotalSehrData] = useState([])
   const [totalPaid, setTotalPaid] = useState(0)
   const [totalPayment, setTotalPayment] = useState(0)
+  const [totalSales, setTotalSales] = useState(0)
+  const [totalOrders, setTotalOrders] = useState(0)
+  const [totalCommission, setTotalCommission] = useState(0)
   const [limitedCustomers, setLimitedCustomers] = useState([])
   const [limitedSehrShops, setLimitedSehrShops] = useState([])
   const [customerdata, setCustomerData] = useState([])
@@ -94,6 +97,8 @@ const Dashboard = () => {
       response = await response.data.users;
       let business = await AxiosInstance.get(`/api/business/all?limit=${businessCount}`)
       business = await business.data.businesses;
+      let salesReport = await AxiosInstance.get(`/api/shop/all-sales-report`)
+      salesReport = await salesReport.data
       let requestCount = await AxiosInstance.get('/api/shop/payments')
       requestCount = await requestCount.data.total
       let payments = await AxiosInstance.get(`/api/shop/payments?limit=${requestCount}`)
@@ -130,6 +135,9 @@ const Dashboard = () => {
       setTotalSehrData(business)
       setTotalPayment(totalPayment)
       setTotalPaid(totalPaid)
+      setTotalOrders(salesReport?.totalOrders)
+      setTotalCommission(salesReport?.totalCommission)
+      setTotalSales(salesReport?.totalAmount)
       // setLoader(false)
     } catch (error) {
       console.error(error)
@@ -144,7 +152,7 @@ const Dashboard = () => {
 
   return (
     <>
-      <WidgetsDropdown users={userdata} customers={customerdata} shops={shopdata} sehrShops={sehrdata} />
+      <WidgetsDropdown users={userdata} customers={customerdata} shops={shopdata} sehrShops={sehrdata} totalSales = {totalSales} totalCommission = {totalCommission} totalOrders = {totalOrders} totalPaid = {totalPaid} />
       <CCard className="mb-4">
         <CCardBody>
           <CRow>

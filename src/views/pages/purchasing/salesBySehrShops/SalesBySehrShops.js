@@ -1,19 +1,24 @@
-import { cilViewColumn } from '@coreui/icons'
+import { cilCash, cilViewColumn } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
-import { CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle } from '@coreui/react'
+import { CCard, CCardBody, CCol, CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle, CRow } from '@coreui/react'
 import React, { useEffect, useState } from 'react'
 import AxiosInstance from 'src/utils/axiosInstance'
 import Loader from '../../../../components/Loader'
 // import Swal from 'sweetalert2'
 const SalesBySehrShops = () => {
   const [title, setTitle] = useState([])
-  const [shopTitle] = useState(['#', 'shop name', "sehrcode",'customer', 'payment', "status","commission", 'transaction date'])
+  const [shopTitle] = useState(['#', 'shop name', "sehrcode", 'customer', 'payment', "status", "commission", 'transaction date'])
   const [orderList, setOrderList] = useState([])
   const [data, setData] = useState([])
   const [paymentList, setPaymentList] = useState([])
   const [paymentData, setPaymentData] = useState([])
   const [spentAmount, setSpentAmount] = useState(0)
   const [paid, setPaid] = useState(0)
+  const [totalSales, setTotalSales] = useState(0)
+  const [totalOrders, setTotalOrders] = useState(0)
+  const [commission, setCommission] = useState(0)
+  const [totalPaid, setTotalPaid] = useState(0)
+
   const [totalCommission, setTotalCommission] = useState(0)
   // const [categoryList, setCategoryList] = useState([])
   const [currentPage, setCurrentPage] = useState(1)
@@ -55,6 +60,11 @@ const SalesBySehrShops = () => {
       requestCount = await requestCount.data.total
       let payments = await AxiosInstance.get(`/api/shop/payments?limit=${requestCount}`)
       payments = await payments.data.payments
+      payments = payments.filter((payment) => payment.status === 'paid')
+      let totalPaid = 0
+      totalPaid = payments.reduce((acc, item) => acc + Number(item.amount), 0);
+      let salesReport = await AxiosInstance.get(`/api/shop/all-sales-report`)
+      salesReport = await salesReport.data
 
       for (const element of sehrShops) {
         const obj2 = element;
@@ -108,7 +118,11 @@ const SalesBySehrShops = () => {
         : fetchedData
       setLoader(false)
       setData(filteredData)
-    setPaymentData(payments)
+      setTotalPaid(totalPaid)
+      setTotalOrders(salesReport?.totalOrders)
+      setCommission(salesReport?.totalCommission)
+      setTotalSales(salesReport?.totalAmount)     
+      setPaymentData(payments)
     } catch (error) {
       console.error(error)
     }
@@ -190,13 +204,13 @@ const SalesBySehrShops = () => {
       </tr>
     ))
   }
-  
+
 
   const ViewModal = async (item) => {
     let orderData = await AxiosInstance.get(`/api/shop/orders/${item.sehrCode}`);
     setOrderList(orderData.data.orders);
     setEditFormData(item);
-    setPaymentList(paymentData?.filter((payment)=> payment.business.id === item.id).filter((payment)=> payment.status === 'paid'))
+    setPaymentList(paymentData?.filter((payment) => payment.business.id === item.id).filter((payment) => payment.status === 'paid'))
     setViewModalVisible(true);
   };
 
@@ -260,22 +274,22 @@ const SalesBySehrShops = () => {
       let amount = 0;
       let commission = 0;
 
-     ( orderList.length &&
+      (orderList.length &&
         orderList.forEach((item) => {
-          if (item.status !== 'rejected'){
+          if (item.status !== 'rejected') {
             amount += Number(item.amount);
             commission += Number(item.commission);
           }
         })
-        )
-        
-      
+      )
+
+
 
       setTotalCommission(commission !== 0 ? commission : 0);
-      setSpentAmount(amount !== 0 ?amount : 0);
+      setSpentAmount(amount !== 0 ? amount : 0);
     };
 
-    
+
 
     if (viewModalVisible) {
       // Calculate spentAmount and totalCommission when the modal is visible
@@ -283,36 +297,97 @@ const SalesBySehrShops = () => {
     }
   }, [orderList, viewModalVisible]);
 
-  useEffect (() => {
-    const calculatePiad = ()=>{
-    let paidCommission = 0
-    paymentList.length && 
-      paymentList.forEach((item)=>{
-        paidCommission += Number(item.amount)
-      })
+  useEffect(() => {
+    const calculatePiad = () => {
+      let paidCommission = 0
+      paymentList.length &&
+        paymentList.forEach((item) => {
+          paidCommission += Number(item.amount)
+        })
       setPaid(paidCommission)
     }
     if (viewModalVisible) {
       // Calculate Paid commission when the modal is visible
       calculatePiad();
     }
-  },[paymentList, viewModalVisible])
+  }, [paymentList, viewModalVisible])
 
 
   return (
     loader ? <Loader /> : <div className="container">
-
+      <CRow>
+      <CCol sm={6} lg={3}>
+      <CCard className="mb-4 bg-warning">
+      <CCardBody>
+        <div className="d-flex justify-content-between align-items-center">
+          <div>
+            <div className="h4 mb-0 text-white">{totalOrders}</div>
+            <div className="text-white">Total Orders</div>
+          </div>
+          <div className="h1 text-white">
+          <CIcon icon={cilCash} size="lg" customClasses="fw-bold"/>
+          </div>
+        </div>
+      </CCardBody>
+    </CCard>
+      </CCol>
+        <CCol sm={6} lg={3}>
+          <CCard className="mb-4 bg-primary">
+            <CCardBody>
+              <div className="d-flex justify-content-between align-items-center">
+                <div>
+                  <div className="h4 mb-0 text-white"><strong>Rs/- </strong>{totalSales}</div>
+                  <div className="text-white">Total Sales</div>
+                </div>
+                <div className="h1 text-white">
+                  <CIcon icon={cilCash} size="lg" customClasses="fw-bold" />
+                </div>
+              </div>
+            </CCardBody>
+          </CCard>
+        </CCol>
+        <CCol sm={6} lg={3}>
+      <CCard className="mb-4 bg-danger">
+      <CCardBody>
+        <div className="d-flex justify-content-between align-items-center">
+          <div>
+            <div className="h4 mb-0 text-white"><strong>Rs/- </strong>{commission}</div>
+            <div className="text-white">Total Commission</div>
+          </div>
+          <div className="h1 text-white">
+          <CIcon icon={cilCash} size="lg" customClasses="fw-bold"/>
+          </div>
+        </div>
+      </CCardBody>
+    </CCard>
+      </CCol>
+      <CCol sm={6} lg={3}>
+        <CCard className="mb-4 bg-success">
+      <CCardBody>
+        <div className="d-flex justify-content-between align-items-center">
+          <div>
+            <div className="h4 mb-0 text-white"><strong>Rs/- </strong>{totalPaid}</div>
+            <div className="text-white">Paid Commission</div>
+          </div>
+          <div className="h1 text-white">
+          <CIcon icon={cilCash} size="lg" customClasses="fw-bold"/>
+          </div>
+        </div>
+      </CCardBody>
+    </CCard>
+      </CCol>
+      </CRow>
       <CModal alignment="center" visible={viewModalVisible} size='xl' onClose={() => {
         setViewModalVisible(false)
         setEditFormData({})
         setTotalCommission(0)
         setSpentAmount(0)
-        }}>
+      }}>
         <CModalHeader>
           <CModalTitle>Sales Detail</CModalTitle>
         </CModalHeader>
         <CModalBody>
-          {spentAmount && 
+          {spentAmount &&
             <div className='Cotainer d-flex justify-content-between my-5 mx-2'>
               <div className='col-2 card px-2 py-4 d-flex justify-content-center align-items-center bg-info'>
                 <h5 className='text-uppercase fw-bolder mt-4'>Sale</h5>
@@ -328,13 +403,13 @@ const SalesBySehrShops = () => {
               </div>
               <div className='col-2 card px-2 py-4 d-flex justify-content-center align-items-center bg-danger'>
                 <h5 className='text-uppercase fw-bolder mt-4'>Remaining</h5>
-                <p className='text-uppercase fw-bolder'><strong>Rs-/ {totalCommission - paid }</strong></p>
+                <p className='text-uppercase fw-bolder'><strong>Rs-/ {totalCommission - paid}</strong></p>
               </div>
               <div className='col-2 card px-2 py-4 d-flex justify-content-center align-items-center bg-info'>
                 <h5 className='text-uppercase fw-bolder mt-4'>Orders</h5>
                 <p className='text-uppercase fw-bolder'><strong>{orderList?.length} </strong></p>
               </div>
-          </div>}
+            </div>}
           {orderList.length ? <div className="table-responsive">
             <table className="table table-striped table-bordered">
               <thead>
