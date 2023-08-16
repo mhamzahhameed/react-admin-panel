@@ -44,7 +44,7 @@ const Customers = () => {
         "action"
     ])
       customer = customer?.filter(item => item.isLocked === false)
-      console.log('customers unlocked :', customer);
+      customer = customer.filter((customer) => customer.verifiedAt !== null)
       customer.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
 
 

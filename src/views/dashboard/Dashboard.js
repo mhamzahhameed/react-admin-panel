@@ -77,6 +77,8 @@ const Dashboard = () => {
       });
       const limitedCustomer = customer.filter((customer) => customer.isLocked === true)
       customer = customer.filter((customer) => customer.isLocked === false)
+      customer = customer.filter((customer) => customer.verifiedAt !== null)
+
 
 
       setUserData(data)

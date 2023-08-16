@@ -40,7 +40,7 @@ const UnverifiedUsers = () => {
                 "action"
             ])
             let user = response?.filter(item => item.verifiedAt === null)
-            user = user.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+            user.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
             console.log('unverified users :', user);
 
 
