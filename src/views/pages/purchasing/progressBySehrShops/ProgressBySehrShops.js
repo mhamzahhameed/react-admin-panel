@@ -1,6 +1,6 @@
-import { cilViewColumn } from '@coreui/icons'
+import { cilGroup, cilViewColumn } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
-import { CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle } from '@coreui/react'
+import { CCard, CCardBody, CCol, CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle, CRow } from '@coreui/react'
 import React, { useEffect, useState } from 'react'
 import AxiosInstance from 'src/utils/axiosInstance'
 import Loader from '../../../../components/Loader'
@@ -304,21 +304,53 @@ const ProgressBySehrShops = () => {
         </CModalHeader>
         <CModalBody>
           {spentAmount &&
-            <div className='Cotainer d-flex justify-content-between my-5 mx-2'>
-              <div className='col-3 card px-2 py-4 d-flex justify-content-center align-items-center bg-info'>
-                <h5 className='text-uppercase fw-bolder mt-4'>Total Sale</h5>
-                <p className='text-uppercase fw-bolder'><strong>Rs-/ {spentAmount}</strong></p>
-              </div>
-              
-              <div className='col-3 card px-2 py-4 d-flex justify-content-center align-items-center bg-success'>
-                <h5 className='text-uppercase fw-bolder mt-4'>Total Purchasing</h5>
-                <p className='text-uppercase fw-bolder'><strong>Rs-/ {purchasing}</strong></p>
-              </div>
-              <div className='col-3 card px-2 py-4 d-flex justify-content-center align-items-center bg-danger'>
-                <h5 className='text-uppercase fw-bolder mt-4'>Difference</h5>
-                <p className='text-uppercase fw-bolder'><strong>Rs-/ {spentAmount - purchasing}</strong></p>
-              </div>
-            </div>}
+                        <CRow>
+                        <CCol sm={6} lg={3}>
+                            <CCard className="mb-4 bg-info">
+                                <CCardBody>
+                                    <div className="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <div className="h4 mb-0 text-white">{spentAmount}</div>
+                                            <div className="text-white">Total Sale</div>
+                                        </div>
+                                        <div className="h1 text-white">
+                                            <CIcon icon={cilGroup} size="lg" customClasses="fw-bold" />
+                                        </div>
+                                    </div>
+                                </CCardBody>
+                            </CCard>
+                        </CCol>
+                        <CCol sm={6} lg={3}>
+                            <CCard className="mb-4 bg-success">
+                                <CCardBody>
+                                    <div className="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <div className="h4 mb-0 text-white">{purchasing}</div>
+                                            <div className="text-white">Total Purchasing</div>
+                                        </div>
+                                        <div className="h1 text-white">
+                                            <CIcon icon={cilGroup} size="lg" customClasses="fw-bold" />
+                                        </div>
+                                    </div>
+                                </CCardBody>
+                            </CCard>
+                        </CCol>
+                        <CCol sm={6} lg={3}>
+                            <CCard className="mb-4 bg-danger">
+                                <CCardBody>
+                                    <div className="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <div className="h4 mb-0 text-white">{spentAmount - purchasing}</div>
+                                            <div className="text-white">Difference</div>
+                                        </div>
+                                        <div className="h1 text-white">
+                                            <CIcon icon={cilGroup} size="lg" customClasses="fw-bold" />
+                                        </div>
+                                    </div>
+                                </CCardBody>
+                            </CCard>
+                        </CCol>
+                    </CRow>}
           {orderList.length ? <div className="table-responsive">
             <table className="table table-striped table-bordered">
               <thead>

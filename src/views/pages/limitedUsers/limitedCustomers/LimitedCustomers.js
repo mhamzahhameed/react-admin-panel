@@ -208,7 +208,7 @@ const LimitedCustomers = () => {
   
   return (
     <div className="container">
-                 { data?.length && <CRow>
+          <CRow>
             <CCol sm={6} lg={3}>
           <CCard className="mb-4 bg-info">
             <CCardBody>
@@ -224,7 +224,7 @@ const LimitedCustomers = () => {
             </CCardBody>
           </CCard>
         </CCol>
-            </CRow>}
+            </CRow>
     <CModal alignment="center" visible={editModalVisible} onClose={() => setEditModalVisible(false)}>
       <CModalHeader>
         <CModalTitle>Edit Customer Details</CModalTitle>

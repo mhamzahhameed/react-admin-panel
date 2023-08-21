@@ -203,7 +203,7 @@ const UnverifiedUsers = () => {
                 <td>{item.tehsil}</td>
                 <td>
                     <div className='d-flex justify-content-between flex-wrap align-items-center' style={{ width: "390px" }}>
-                    <button className="btn btn-warning ms-2 text-light" onClick={() => handleVerify(item)}>
+                        <button className="btn btn-warning ms-2 text-light" onClick={() => handleVerify(item)}>
                             <CIcon icon={cilCheckCircle} size="sm" /> Verify
                         </button>
                         <button className="btn btn-info text-light" onClick={() => ViewModal(item)}>
@@ -231,23 +231,23 @@ const UnverifiedUsers = () => {
 
     return (
         loader ? <Loader /> : <div className="container">
-           { data?.length && <CRow>
-            <CCol sm={6} lg={3}>
-          <CCard className="mb-4 bg-info">
-            <CCardBody>
-              <div className="d-flex justify-content-between align-items-center">
-                <div>
-                  <div className="h4 mb-0 text-white">{data?.length}</div>
-                  <div className="text-white">Unverified Users</div>
-                </div>
-                <div className="h1 text-white">
-                  <CIcon icon={cilGroup} size="lg" customClasses="fw-bold" />
-                </div>
-              </div>
-            </CCardBody>
-          </CCard>
-        </CCol>
-            </CRow>}
+            <CRow>
+                <CCol sm={6} lg={3}>
+                    <CCard className="mb-4 bg-info">
+                        <CCardBody>
+                            <div className="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <div className="h4 mb-0 text-white">{data?.length}</div>
+                                    <div className="text-white">Unverified Users</div>
+                                </div>
+                                <div className="h1 text-white">
+                                    <CIcon icon={cilGroup} size="lg" customClasses="fw-bold" />
+                                </div>
+                            </div>
+                        </CCardBody>
+                    </CCard>
+                </CCol>
+            </CRow>
             <CModal alignment="center" visible={editModalVisible} onClose={() => setEditModalVisible(false)}>
                 <CModalHeader>
                     <CModalTitle>Edit Customer Details</CModalTitle>

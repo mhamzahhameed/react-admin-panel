@@ -1,6 +1,6 @@
 import { cilGroup, cilLockLocked, cilTrash, cilViewColumn } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
-import { CButton, CCard, CCardBody, CCol, CForm,  CFormInput, CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle, CRow } from '@coreui/react'
+import { CButton, CCard, CCardBody, CCol, CForm, CFormInput, CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle, CRow } from '@coreui/react'
 import React, { useEffect, useState } from 'react'
 import Swal from 'sweetalert2'
 import AxiosInstance from 'src/utils/axiosInstance'
@@ -16,34 +16,34 @@ const LimitedSehrShops = () => {
   const [editModalVisible, setEditModalVisible] = useState(false)
   const [viewModalVisible, setViewModalVisible] = useState(false)
   const [editFormData, setEditFormData] = useState({});
-  const [loader,setLoader] = useState(true);
+  const [loader, setLoader] = useState(true);
 
   useEffect(() => {
     fetchData()
     fetchCategoryList()
     // eslint-disable-next-line
-    }, [ searchValue ])
-    const fetchCategoryList = async() => {
-      try{
-        let list = await AxiosInstance.get('/api/category')
-          setCategoryList(list.data.categories)
-      }
-      catch (error) {
-        console.error(error)
-      }
+  }, [searchValue])
+  const fetchCategoryList = async () => {
+    try {
+      let list = await AxiosInstance.get('/api/category')
+      setCategoryList(list.data.categories)
     }
+    catch (error) {
+      console.error(error)
+    }
+  }
   const fetchData = async () => {
     try {
       let count = await AxiosInstance.get(`/api/user`)
       let businessCount = await AxiosInstance.get(`/api/business/all`)
       count = await count.data.total;
       businessCount = await businessCount.data.total;
-        let response = await AxiosInstance.get(`/api/user?limit=${count}`)
-        response = await response.data.users;
-        let business = await AxiosInstance.get(`/api/business/all?limit=${businessCount}`)
-        business = await business.data.businesses;
-        let sehrShops = business.filter(obj => obj.sehrCode !== null);
-        
+      let response = await AxiosInstance.get(`/api/user?limit=${count}`)
+      response = await response.data.users;
+      let business = await AxiosInstance.get(`/api/business/all?limit=${businessCount}`)
+      business = await business.data.businesses;
+      let sehrShops = business.filter(obj => obj.sehrCode !== null);
+
       for (const element of sehrShops) {
         const obj2 = element;
 
@@ -54,10 +54,10 @@ const LimitedSehrShops = () => {
 
         }
       }
-        console.log('sehrshops :', sehrShops);
-      
+      console.log('sehrshops :', sehrShops);
+
       // sehrShops = sehrShops.filter(obj => obj.hasOwnProperty("sehrCode"));
-      sehrShops = sehrShops.filter((customer)=> customer.isLocked === true)
+      sehrShops = sehrShops.filter((customer) => customer.isLocked === true)
       sehrShops.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
       sehrShops = sehrShops.map(obj => {
         const updatedObj = {};
@@ -75,30 +75,30 @@ const LimitedSehrShops = () => {
         "sehr package",
         "category",
         'staff code',
-        "province", 
+        "province",
         "division",
         "district",
         "tehsil",
         "action"
-    ])
+      ])
       const fetchedData = sehrShops
       const filteredData = searchValue
         ? fetchedData.filter((item) => {
-          
-         return item.ownerName.toLowerCase().includes(searchValue) ||
-         item.mobile.toLowerCase().includes(searchValue) ||
-         item.sehrCode.toLowerCase().includes(searchValue) ||
-         item.reward.toLowerCase().includes(searchValue) ||
-         item.businessName.toLowerCase().includes(searchValue) ||
-         item.division.toLowerCase().includes(searchValue) ||
-         item.province.toLowerCase().includes(searchValue) ||
-         item.tehsil.toLowerCase().includes(searchValue) ||
-         item.district.toLowerCase().includes(searchValue) ||
-         item.city.toLowerCase().includes(searchValue)
-        
+
+          return item.ownerName.toLowerCase().includes(searchValue) ||
+            item.mobile.toLowerCase().includes(searchValue) ||
+            item.sehrCode.toLowerCase().includes(searchValue) ||
+            item.reward.toLowerCase().includes(searchValue) ||
+            item.businessName.toLowerCase().includes(searchValue) ||
+            item.division.toLowerCase().includes(searchValue) ||
+            item.province.toLowerCase().includes(searchValue) ||
+            item.tehsil.toLowerCase().includes(searchValue) ||
+            item.district.toLowerCase().includes(searchValue) ||
+            item.city.toLowerCase().includes(searchValue)
+
         })
         : fetchedData
-        setLoader(false)
+      setLoader(false)
       setData(filteredData)
     } catch (error) {
       console.error(error)
@@ -108,36 +108,36 @@ const LimitedSehrShops = () => {
   const getPageNumbers = (currentPage, totalPages, displayRange = 3) => {
     let startPage = currentPage - Math.floor(displayRange / 2);
     let endPage = currentPage + Math.floor(displayRange / 2);
-  
+
     if (startPage < 1) {
       startPage = 1;
       endPage = Math.min(displayRange, totalPages);
     }
-  
+
     if (endPage > totalPages) {
       endPage = totalPages;
       startPage = Math.max(totalPages - displayRange + 1, 1);
     }
-  
+
     return Array.from({ length: endPage - startPage + 1 }, (_, index) => startPage + index);
   };
-   let endIndex = currentPage * perPage
-    const startIndex = endIndex - perPage
-    const diff = data.length - startIndex
-    if(diff < perPage) {
-      endIndex = startIndex + diff
-    }
+  let endIndex = currentPage * perPage
+  const startIndex = endIndex - perPage
+  const diff = data.length - startIndex
+  if (diff < perPage) {
+    endIndex = startIndex + diff
+  }
   // Function to calculate the current page's records
   const getCurrentPageData = () => data.slice(startIndex, endIndex)
-  
+
   // Function to handle page changes
   const handlePageChange = (pageNumber) => setCurrentPage(pageNumber)
 
-  const clickPageData = (value)=>{
+  const clickPageData = (value) => {
     setPerPage(value);
     setCurrentPage(1);
   }
-  
+
   // Function to handle previous page
   const goToPreviousPage = () => {
     if (currentPage > 1) {
@@ -156,11 +156,11 @@ const LimitedSehrShops = () => {
   //   setEditFormData(data);
   //   setEditModalVisible(true);
   // }
-  const ViewModal = (data)=>{
+  const ViewModal = (data) => {
     setEditFormData(data)
     setViewModalVisible(true);
   }
-  const handleDelete = (item)=>{
+  const handleDelete = (item) => {
     Swal.fire({
       title: 'Are you sure you want to delete this user?',
       text: 'You won\'t be able to revert this!',
@@ -169,8 +169,8 @@ const LimitedSehrShops = () => {
       confirmButtonText: 'Confirm',
       cancelButtonText: 'Cancel',
       reverseButtons: true,
-      
-    }).then(async(result) => {
+
+    }).then(async (result) => {
       if (result.isConfirmed) {
         await AxiosInstance.delete(`/api/business/${item?.id}`)
         await AxiosInstance.delete(`/api/user/${item?.userId}/delete`)
@@ -180,7 +180,7 @@ const LimitedSehrShops = () => {
   }
 
   // Function to set the user as limited or locked
-  const handleUnLimit = (item)=>{
+  const handleUnLimit = (item) => {
     Swal.fire({
       title: 'Are you sure you want to limit this user?',
       text: 'You would be able to revert this!',
@@ -189,7 +189,7 @@ const LimitedSehrShops = () => {
       confirmButtonText: 'Confirm',
       cancelButtonText: 'Cancel',
       reverseButtons: true,
-    }).then(async(result) => {
+    }).then(async (result) => {
       if (result.isConfirmed) {
         await AxiosInstance.post(`/api/user/${item?.userId}/unlock`)
         await fetchData()
@@ -203,39 +203,39 @@ const LimitedSehrShops = () => {
       icon: 'success',
     });
   };
-  
+
   // Render the current page's records
   const renderData = () => {
     const currentPageData = getCurrentPageData()
 
     return currentPageData.map((item, index) => (
       <tr key={item.id}>
-        <td>{index+1}</td>
+        <td>{index + 1}</td>
         <td>{item.ownerName}</td>
         <td>{item.businessName}</td>
         <td>{item.sehrCode}</td>
         <td>{item.mobile}</td>
         <td>{item.reward}</td>
-        <td>{(categoryList.filter((category)=> category.id === item.categoryId)[0].title)}</td>
+        <td>{(categoryList.filter((category) => category.id === item.categoryId)[0].title)}</td>
         <td>{item.city}</td>
         <td>{item.province}</td>
         <td>{item.division}</td>
         <td>{item.district}</td>
         <td>{item.tehsil}</td>
         <td>
-          <div className='d-flex justify-content-between flex-wrap' style={{ width:"290px" }}>
-          <button className="btn btn-info text-light" onClick={()=>ViewModal({...item,action: 'view'})}>
-            <CIcon icon={cilViewColumn} size="sm" /> View
-          </button>
-          {/* <button className="btn btn-success text-light" onClick={()=>EditModal({...item,action: 'edit'})}>
+          <div className='d-flex justify-content-between flex-wrap' style={{ width: "290px" }}>
+            <button className="btn btn-info text-light" onClick={() => ViewModal({ ...item, action: 'view' })}>
+              <CIcon icon={cilViewColumn} size="sm" /> View
+            </button>
+            {/* <button className="btn btn-success text-light" onClick={()=>EditModal({...item,action: 'edit'})}>
             <CIcon icon={cilPenAlt} size="sm" /> Update
           </button> */}
-          <button className="btn btn-warning ms-2 text-light" onClick={()=> handleUnLimit(item)}>
-            <CIcon icon={cilLockLocked} size="sm"/> UnLimit
-          </button>
-          <button className="btn btn-warning ms-2 text-light" onClick={()=> handleDelete(item)}>
-            <CIcon icon={cilTrash} size="sm" /> delete
-          </button>
+            <button className="btn btn-warning ms-2 text-light" onClick={() => handleUnLimit(item)}>
+              <CIcon icon={cilLockLocked} size="sm" /> UnLimit
+            </button>
+            <button className="btn btn-warning ms-2 text-light" onClick={() => handleDelete(item)}>
+              <CIcon icon={cilTrash} size="sm" /> delete
+            </button>
           </div>
         </td>
       </tr>
@@ -245,12 +245,12 @@ const LimitedSehrShops = () => {
   // Calculate total number of pages
   const totalPages = Math.ceil(data.length / perPage)
   // Generate an array of page numbers
-  const pageNumbers = getPageNumbers(currentPage,totalPages);
-  
+  const pageNumbers = getPageNumbers(currentPage, totalPages);
+
   return (
-    loader ? <Loader/> :<div className="container">
-                 { data?.length && <CRow>
-            <CCol sm={6} lg={3}>
+    loader ? <Loader /> : <div className="container">
+      <CRow>
+        <CCol sm={6} lg={3}>
           <CCard className="mb-4 bg-info">
             <CCardBody>
               <div className="d-flex justify-content-between align-items-center">
@@ -265,142 +265,142 @@ const LimitedSehrShops = () => {
             </CCardBody>
           </CCard>
         </CCol>
-            </CRow>}
-    <CModal alignment="center" visible={editModalVisible} onClose={() => setEditModalVisible(false)}>
-      <CModalHeader>
-        <CModalTitle>Edit Customer Details</CModalTitle>
-      </CModalHeader>
-      <CModalBody>
-      {editFormData.action === 'edit' ? <CForm>
-  <CFormInput
-    type="text"
-    id="ownerName"
-    label="Owner Name"
-    aria-describedby="ownerName"
-    value={editFormData?.ownerName|| '' }
-  onChange={(e) => setEditFormData({ ...editFormData, ownerName: e.target.value })}
-  />
-   <CFormInput
-    type="text"
-    id="businessName"
-    label="Business Name"
-    aria-describedby="businessName"
-    value={editFormData?.businessName || '' }
-  onChange={(e) => setEditFormData({ ...editFormData, businessName: e.target.value })}
-  />
-   <CFormInput
-    type="text"
-    id="sehrCode"
-    label="Sehr Code"
-    aria-describedby="sehrCode"
-    value={editFormData?.sehrCode || '' }
-  onChange={(e) => setEditFormData({ ...editFormData, sehrCode: e.target.value })}
-  />
-   <CFormInput
-    type="tel"
-    id="mobile"
-    label="Mobile Number"
-    aria-describedby="name"
-    value={editFormData.mobile || ''}
-  onChange={(e) => setEditFormData({ ...editFormData, mobile: e.target.value })}
-  />
-  <CFormInput
-    type="text"
-    id="category"
-    label="Category"
-    aria-describedby="category"
-    value={editFormData.category || ''}
-  onChange={(e) => setEditFormData({ ...editFormData, category: e.target.value })}
-  />
-  <CFormInput
-    type="text"
-    id="province"
-    label="Province"
-    aria-describedby="name"
-    value={editFormData.province || ''}
-  onChange={(e) => setEditFormData({ ...editFormData, province: e.target.value })}
-  />
-  <CFormInput
-    type="text"
-    id="division"
-    label="Division"
-    aria-describedby="name"
-    value={editFormData.division || ''}
-  onChange={(e) => setEditFormData({ ...editFormData, division: e.target.value })}
-  />
-  <CFormInput
-    type="text"
-    id="district"
-    label="District"
-    aria-describedby="name"
-    value={editFormData.district || ''}
-  onChange={(e) => setEditFormData({ ...editFormData, district: e.target.value })}
-  />
-  <CFormInput
-    type="text"
-    id="tehsil"
-    label="Tehsil"
-    aria-describedby="name"
-    value={editFormData.tehsil || ''}
-  onChange={(e) => setEditFormData({ ...editFormData, tehsil: e.target.value })}
-  />
-  
-</CForm> : ""}
-      </CModalBody>
-      <CModalFooter>
-        <CButton color="secondary" onClick={() => setEditModalVisible(false)}>
-          Close
-        </CButton>
-        <CButton color="primary" onClick={handleSaveChanges}>Save changes</CButton>
-      </CModalFooter>
-    </CModal>
-    <CModal alignment="center" visible={viewModalVisible} size='sm' onClose={() => setViewModalVisible(false)}>
-      <CModalHeader>
-        <CModalTitle>View LimitedSehrShop Details</CModalTitle>
-      </CModalHeader>
-      <CModalBody>
-      <CForm>
-        <CFormInput
+      </CRow>
+      <CModal alignment="center" visible={editModalVisible} onClose={() => setEditModalVisible(false)}>
+        <CModalHeader>
+          <CModalTitle>Edit Customer Details</CModalTitle>
+        </CModalHeader>
+        <CModalBody>
+          {editFormData.action === 'edit' ? <CForm>
+            <CFormInput
+              type="text"
+              id="ownerName"
+              label="Owner Name"
+              aria-describedby="ownerName"
+              value={editFormData?.ownerName || ''}
+              onChange={(e) => setEditFormData({ ...editFormData, ownerName: e.target.value })}
+            />
+            <CFormInput
+              type="text"
+              id="businessName"
+              label="Business Name"
+              aria-describedby="businessName"
+              value={editFormData?.businessName || ''}
+              onChange={(e) => setEditFormData({ ...editFormData, businessName: e.target.value })}
+            />
+            <CFormInput
+              type="text"
+              id="sehrCode"
+              label="Sehr Code"
+              aria-describedby="sehrCode"
+              value={editFormData?.sehrCode || ''}
+              onChange={(e) => setEditFormData({ ...editFormData, sehrCode: e.target.value })}
+            />
+            <CFormInput
+              type="tel"
+              id="mobile"
+              label="Mobile Number"
+              aria-describedby="name"
+              value={editFormData.mobile || ''}
+              onChange={(e) => setEditFormData({ ...editFormData, mobile: e.target.value })}
+            />
+            <CFormInput
+              type="text"
+              id="category"
+              label="Category"
+              aria-describedby="category"
+              value={editFormData.category || ''}
+              onChange={(e) => setEditFormData({ ...editFormData, category: e.target.value })}
+            />
+            <CFormInput
+              type="text"
+              id="province"
+              label="Province"
+              aria-describedby="name"
+              value={editFormData.province || ''}
+              onChange={(e) => setEditFormData({ ...editFormData, province: e.target.value })}
+            />
+            <CFormInput
+              type="text"
+              id="division"
+              label="Division"
+              aria-describedby="name"
+              value={editFormData.division || ''}
+              onChange={(e) => setEditFormData({ ...editFormData, division: e.target.value })}
+            />
+            <CFormInput
+              type="text"
+              id="district"
+              label="District"
+              aria-describedby="name"
+              value={editFormData.district || ''}
+              onChange={(e) => setEditFormData({ ...editFormData, district: e.target.value })}
+            />
+            <CFormInput
+              type="text"
+              id="tehsil"
+              label="Tehsil"
+              aria-describedby="name"
+              value={editFormData.tehsil || ''}
+              onChange={(e) => setEditFormData({ ...editFormData, tehsil: e.target.value })}
+            />
+
+          </CForm> : ""}
+        </CModalBody>
+        <CModalFooter>
+          <CButton color="secondary" onClick={() => setEditModalVisible(false)}>
+            Close
+          </CButton>
+          <CButton color="primary" onClick={handleSaveChanges}>Save changes</CButton>
+        </CModalFooter>
+      </CModal>
+      <CModal alignment="center" visible={viewModalVisible} size='sm' onClose={() => setViewModalVisible(false)}>
+        <CModalHeader>
+          <CModalTitle>View LimitedSehrShop Details</CModalTitle>
+        </CModalHeader>
+        <CModalBody>
+          <CForm>
+            <CFormInput
               type="text"
               id="ownerName"
               label="Owner Name"
               aria-describedby="name"
               value={editFormData.ownerName || ''}
               disabled
-        />
-        <CFormInput
+            />
+            <CFormInput
               type="text"
               id="businessName"
               label="Shop Name"
               aria-describedby="name"
               value={editFormData.businessName || ''}
               disabled
-        />
-        <CFormInput
+            />
+            <CFormInput
               type="text"
               id="sehrCode"
               label="Sehr Code"
               aria-describedby="name"
               value={editFormData.sehrCode || ''}
               disabled
-        />
-        <CFormInput
+            />
+            <CFormInput
               type="text"
               id="category"
               label="Category"
               aria-describedby="name"
-              value={(categoryList.filter((category)=> category.id === editFormData.categoryId)[0]?.title)}
+              value={(categoryList.filter((category) => category.id === editFormData.categoryId)[0]?.title)}
               disabled
-        />
-        <CFormInput
+            />
+            <CFormInput
               type="text"
               id="mobile"
               label="Cell"
               aria-describedby="name"
               value={editFormData.mobile || ''}
               disabled
-        />
-        {/* <CFormInput
+            />
+            {/* <CFormInput
               type="text"
               id="cnic"
               label="CNIC"
@@ -408,49 +408,49 @@ const LimitedSehrShops = () => {
               value={editFormData.cnic || ''}
               disabled
         /> */}
-        <CFormInput
+            <CFormInput
               type="text"
               id="tehsil"
               label="Tehsil"
               aria-describedby="name"
               value={editFormData.tehsil || ''}
               disabled
-        />
-        <CFormInput
+            />
+            <CFormInput
               type="text"
               id="district"
               label="District"
               aria-describedby="name"
               value={editFormData.district || ''}
               disabled
-        />
-        <CFormInput
+            />
+            <CFormInput
               type="text"
               id="division"
               label="Division"
               aria-describedby="name"
-              value={(editFormData.division? editFormData.division: 'Not defined') || ""}
+              value={(editFormData.division ? editFormData.division : 'Not defined') || ""}
               disabled
-        />
-        <CFormInput
+            />
+            <CFormInput
               type="text"
               id="province"
               label="Province"
               aria-describedby="name"
               value={editFormData.province || ''}
               disabled
-        />
-        <CFormInput
+            />
+            <CFormInput
               type="text"
               id="createdAt"
               label="Created At"
               aria-describedby="name"
               value={editFormData?.createdAt?.slice(0, 10) || ''}
               disabled
-        />
-        </CForm>
-      </CModalBody>
-    </CModal>
+            />
+          </CForm>
+        </CModalBody>
+      </CModal>
       <div className="card">
         <div className="card-header">Sehr Shops</div>
         <div className="card-body">
@@ -464,7 +464,7 @@ const LimitedSehrShops = () => {
                   value={searchValue}
                   onChange={(e) => setSearchValue(e.target.value)}
                 />
-                
+
               </div>
               <button className="btn btn-primary ms-2" onClick={() => setSearchValue('')}>
                 Clear
