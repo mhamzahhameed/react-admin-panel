@@ -122,7 +122,7 @@ const SalesBySehrShops = () => {
       setTotalPaid(totalPaid)
       setTotalOrders(salesReport?.totalOrders)
       setCommission(salesReport?.totalCommission)
-      setTotalSales(salesReport?.totalAmount)     
+      setTotalSales(salesReport?.totalAmount)
       setPaymentData(payments)
     } catch (error) {
       console.error(error)
@@ -318,21 +318,21 @@ const SalesBySehrShops = () => {
   return (
     loader ? <Loader /> : <div className="container">
       <CRow>
-      <CCol sm={6} lg={3}>
-      <CCard className="mb-4 bg-warning">
-      <CCardBody>
-        <div className="d-flex justify-content-between align-items-center">
-          <div>
-            <div className="h4 mb-0 text-white">{totalOrders}</div>
-            <div className="text-white">Total Orders</div>
-          </div>
-          <div className="h1 text-white">
-          <CIcon icon={cilCash} size="lg" customClasses="fw-bold"/>
-          </div>
-        </div>
-      </CCardBody>
-    </CCard>
-      </CCol>
+        <CCol sm={6} lg={3}>
+          <CCard className="mb-4 bg-warning">
+            <CCardBody>
+              <div className="d-flex justify-content-between align-items-center">
+                <div>
+                  <div className="h4 mb-0 text-white">{totalOrders}</div>
+                  <div className="text-white">Total Orders</div>
+                </div>
+                <div className="h1 text-white">
+                  <CIcon icon={cilCash} size="lg" customClasses="fw-bold" />
+                </div>
+              </div>
+            </CCardBody>
+          </CCard>
+        </CCol>
         <CCol sm={6} lg={3}>
           <CCard className="mb-4 bg-primary">
             <CCardBody>
@@ -349,35 +349,35 @@ const SalesBySehrShops = () => {
           </CCard>
         </CCol>
         <CCol sm={6} lg={3}>
-      <CCard className="mb-4 bg-danger">
-      <CCardBody>
-        <div className="d-flex justify-content-between align-items-center">
-          <div>
-            <div className="h4 mb-0 text-white"><strong>Rs/- </strong>{commission}</div>
-            <div className="text-white">Total Commission</div>
-          </div>
-          <div className="h1 text-white">
-          <CIcon icon={cilCash} size="lg" customClasses="fw-bold"/>
-          </div>
-        </div>
-      </CCardBody>
-    </CCard>
-      </CCol>
-      <CCol sm={6} lg={3}>
-        <CCard className="mb-4 bg-success">
-      <CCardBody>
-        <div className="d-flex justify-content-between align-items-center">
-          <div>
-            <div className="h4 mb-0 text-white"><strong>Rs/- </strong>{totalPaid}</div>
-            <div className="text-white">Paid Commission</div>
-          </div>
-          <div className="h1 text-white">
-          <CIcon icon={cilCash} size="lg" customClasses="fw-bold"/>
-          </div>
-        </div>
-      </CCardBody>
-    </CCard>
-      </CCol>
+          <CCard className="mb-4 bg-danger">
+            <CCardBody>
+              <div className="d-flex justify-content-between align-items-center">
+                <div>
+                  <div className="h4 mb-0 text-white"><strong>Rs/- </strong>{commission}</div>
+                  <div className="text-white">Total Commission</div>
+                </div>
+                <div className="h1 text-white">
+                  <CIcon icon={cilCash} size="lg" customClasses="fw-bold" />
+                </div>
+              </div>
+            </CCardBody>
+          </CCard>
+        </CCol>
+        <CCol sm={6} lg={3}>
+          <CCard className="mb-4 bg-success">
+            <CCardBody>
+              <div className="d-flex justify-content-between align-items-center">
+                <div>
+                  <div className="h4 mb-0 text-white"><strong>Rs/- </strong>{totalPaid}</div>
+                  <div className="text-white">Paid Commission</div>
+                </div>
+                <div className="h1 text-white">
+                  <CIcon icon={cilCash} size="lg" customClasses="fw-bold" />
+                </div>
+              </div>
+            </CCardBody>
+          </CCard>
+        </CCol>
       </CRow>
       <CModal alignment="center" visible={viewModalVisible} size='xl' onClose={() => {
         setViewModalVisible(false)

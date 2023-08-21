@@ -13,8 +13,8 @@ const ProgressBySehrShops = () => {
   const [purchasingtList, setPurchasingList] = useState([])
   const [purchasing, setPurchasing] = useState(0)
   const [spentAmount, setSpentAmount] = useState(0)
-//   const [paid, setPaid] = useState(0)
-//   const [totalCommission, setTotalCommission] = useState(0)
+  //   const [paid, setPaid] = useState(0)
+  //   const [totalCommission, setTotalCommission] = useState(0)
   // const [categoryList, setCategoryList] = useState([])
   const [currentPage, setCurrentPage] = useState(1)
   const [perPage, setPerPage] = useState(10)
@@ -51,8 +51,8 @@ const ProgressBySehrShops = () => {
       let business = await AxiosInstance.get(`/api/business/all?limit=${businessCount}`)
       business = await business.data.businesses;
       let sehrShops = business.filter(obj => obj.sehrCode !== null);
-      
-      
+
+
 
       for (const element of sehrShops) {
         const obj2 = element;
@@ -273,17 +273,17 @@ const ProgressBySehrShops = () => {
   useEffect(() => {
     const calculatePurchasing = () => {
       let purchasing = 0;
-      
-        (purchasingtList?.length &&
-            purchasingtList?.forEach((item) => {
-              if (item.status === 'accepted') {
-                purchasing += Number(item.amount);
-              }
-            })
-          )
+
+      (purchasingtList?.length &&
+        purchasingtList?.forEach((item) => {
+          if (item.status === 'accepted') {
+            purchasing += Number(item.amount);
+          }
+        })
+      )
       setPurchasing(purchasing !== 0 ? purchasing : 0);
 
-        }
+    }
     if (viewModalVisible) {
       // Calculate Paid commission when the modal is visible
       calculatePurchasing();
@@ -304,53 +304,53 @@ const ProgressBySehrShops = () => {
         </CModalHeader>
         <CModalBody>
           {spentAmount &&
-                        <CRow>
-                        <CCol sm={6} lg={3}>
-                            <CCard className="mb-4 bg-info">
-                                <CCardBody>
-                                    <div className="d-flex justify-content-between align-items-center">
-                                        <div>
-                                            <div className="h4 mb-0 text-white">{spentAmount}</div>
-                                            <div className="text-white">Total Sale</div>
-                                        </div>
-                                        <div className="h1 text-white">
-                                            <CIcon icon={cilGroup} size="lg" customClasses="fw-bold" />
-                                        </div>
-                                    </div>
-                                </CCardBody>
-                            </CCard>
-                        </CCol>
-                        <CCol sm={6} lg={3}>
-                            <CCard className="mb-4 bg-success">
-                                <CCardBody>
-                                    <div className="d-flex justify-content-between align-items-center">
-                                        <div>
-                                            <div className="h4 mb-0 text-white">{purchasing}</div>
-                                            <div className="text-white">Total Purchasing</div>
-                                        </div>
-                                        <div className="h1 text-white">
-                                            <CIcon icon={cilGroup} size="lg" customClasses="fw-bold" />
-                                        </div>
-                                    </div>
-                                </CCardBody>
-                            </CCard>
-                        </CCol>
-                        <CCol sm={6} lg={3}>
-                            <CCard className="mb-4 bg-danger">
-                                <CCardBody>
-                                    <div className="d-flex justify-content-between align-items-center">
-                                        <div>
-                                            <div className="h4 mb-0 text-white">{spentAmount - purchasing}</div>
-                                            <div className="text-white">Difference</div>
-                                        </div>
-                                        <div className="h1 text-white">
-                                            <CIcon icon={cilGroup} size="lg" customClasses="fw-bold" />
-                                        </div>
-                                    </div>
-                                </CCardBody>
-                            </CCard>
-                        </CCol>
-                    </CRow>}
+            <CRow>
+              <CCol sm={6} lg={3}>
+                <CCard className="mb-4 bg-info">
+                  <CCardBody>
+                    <div className="d-flex justify-content-between align-items-center">
+                      <div>
+                        <div className="h4 mb-0 text-white">{spentAmount}</div>
+                        <div className="text-white">Total Sale</div>
+                      </div>
+                      <div className="h1 text-white">
+                        <CIcon icon={cilGroup} size="lg" customClasses="fw-bold" />
+                      </div>
+                    </div>
+                  </CCardBody>
+                </CCard>
+              </CCol>
+              <CCol sm={6} lg={3}>
+                <CCard className="mb-4 bg-success">
+                  <CCardBody>
+                    <div className="d-flex justify-content-between align-items-center">
+                      <div>
+                        <div className="h4 mb-0 text-white">{purchasing}</div>
+                        <div className="text-white">Total Purchasing</div>
+                      </div>
+                      <div className="h1 text-white">
+                        <CIcon icon={cilGroup} size="lg" customClasses="fw-bold" />
+                      </div>
+                    </div>
+                  </CCardBody>
+                </CCard>
+              </CCol>
+              <CCol sm={6} lg={3}>
+                <CCard className="mb-4 bg-danger">
+                  <CCardBody>
+                    <div className="d-flex justify-content-between align-items-center">
+                      <div>
+                        <div className="h4 mb-0 text-white">{spentAmount - purchasing}</div>
+                        <div className="text-white">Difference</div>
+                      </div>
+                      <div className="h1 text-white">
+                        <CIcon icon={cilGroup} size="lg" customClasses="fw-bold" />
+                      </div>
+                    </div>
+                  </CCardBody>
+                </CCard>
+              </CCol>
+            </CRow>}
           {orderList.length ? <div className="table-responsive">
             <table className="table table-striped table-bordered">
               <thead>

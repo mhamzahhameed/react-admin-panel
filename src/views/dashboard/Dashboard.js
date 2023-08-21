@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
-import {useNavigate} from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 import {
-  
+
   CCard,
   CCardBody,
   CCardFooter,
@@ -18,7 +18,7 @@ import PaymentRequests from '../pages/requests/paymentRequests/PaymentRequests'
 import SehrCodeRequests from '../pages/requests/sehrCodeRequests/SehrCodeRequests'
 
 const Dashboard = () => {
-  
+
   // const [loader, setLoader] = useState(true)
   const [userdata, setUserData] = useState([])
   const [totalSehrData, setTotalSehrData] = useState([])
@@ -106,7 +106,7 @@ const Dashboard = () => {
       let payments = await AxiosInstance.get(`/api/shop/payments?limit=${requestCount}`)
       payments = await payments.data.payments
       let totalPayment = 0
-       totalPayment = payments.reduce((acc, item) => acc + Number(item.amount), 0);
+      totalPayment = payments.reduce((acc, item) => acc + Number(item.amount), 0);
       payments = payments.filter((payment) => payment.status === 'paid')
       let totalPaid = 0
       totalPaid = payments.reduce((acc, item) => acc + Number(item.amount), 0);
@@ -146,15 +146,15 @@ const Dashboard = () => {
     }
   }
   const progressExample = [
-    { title: 'SherShops', value: sehrdata?.length, percent: ((sehrdata.length / totalSehrData.length) * 100).toFixed(2), color: 'success',navigation: '/users/sehr-shop' },
-    { title: 'Limited SehrShops', value: limitedSehrShops?.length, percent: limitedSehrShops?.length ? ((limitedSehrShops.length / sehrdata.length) * 100).toFixed(2) : 0, color: 'info',navigation: '/limited-users/sehr-shops' },
-    { title: 'Limited Customers', value: limitedCustomers?.length, percent: limitedCustomers?.length ? ((limitedCustomers.length / customerdata.length) * 100).toFixed(2) : 0, color: 'warning',navigation: '/limited-users/customers' },
-    { title: 'Paid', value:'Rs/- ' + totalPaid, percent: ((totalPaid / totalPayment) * 100).toFixed(2), color: 'primary'},
+    { title: 'SherShops', value: sehrdata?.length, percent: ((sehrdata.length / totalSehrData.length) * 100).toFixed(2), color: 'success', navigation: '/users/sehr-shop' },
+    { title: 'Limited SehrShops', value: limitedSehrShops?.length, percent: limitedSehrShops?.length ? ((limitedSehrShops.length / sehrdata.length) * 100).toFixed(2) : 0, color: 'info', navigation: '/limited-users/sehr-shops' },
+    { title: 'Limited Customers', value: limitedCustomers?.length, percent: limitedCustomers?.length ? ((limitedCustomers.length / customerdata.length) * 100).toFixed(2) : 0, color: 'warning', navigation: '/limited-users/customers' },
+    { title: 'Paid', value: 'Rs/- ' + totalPaid, percent: ((totalPaid / totalPayment) * 100).toFixed(2), color: 'primary' },
   ]
 
   return (
     <>
-      <WidgetsDropdown users={userdata} customers={customerdata} shops={shopdata} sehrShops={sehrdata} totalSales = {totalSales} totalCommission = {totalCommission} totalOrders = {totalOrders} totalPaid = {totalPaid} />
+      <WidgetsDropdown users={userdata} customers={customerdata} shops={shopdata} sehrShops={sehrdata} totalSales={totalSales} totalCommission={totalCommission} totalOrders={totalOrders} totalPaid={totalPaid} />
       <CCard className="mb-4">
         <CCardBody>
           <CRow>
@@ -169,12 +169,12 @@ const Dashboard = () => {
         <CCardFooter>
           <CRow xs={{ cols: 1 }} md={{ cols: 5 }} className="text-center">
             {progressExample.map((item, index) => (
-              <CCol className="mb-sm-2 mb-0" key={index} style={cardStyle} onClick={()=> progressExample.length !== index ? navigate(item.navigation) : console.log('no redirection!')}>
+              <CCol className="mb-sm-2 mb-0" key={index} style={cardStyle} onClick={() => progressExample.length !== index ? navigate(item.navigation) : console.log('no redirection!')}>
                 <div className="text-medium-emphasis">{item.title}</div>
                 <strong>
                   {item.value} ({parseFloat(item.percent).toFixed(2)}%)
                 </strong>
-                <CProgress thin className="mt-2" color={item.color} value={parseFloat(item.percent)}/>
+                <CProgress thin className="mt-2" color={item.color} value={parseFloat(item.percent)} />
               </CCol>
             ))}
           </CRow>
@@ -189,7 +189,7 @@ const Dashboard = () => {
             <CCardHeader>Users by Education {' & '} Sehr Packages</CCardHeader>
             <CCardBody>
               <CRow>
-                <CCol xs={12} md={6} xl={6} onClick={()=> navigate('/education/user-by-education')}>
+                <CCol xs={12} md={6} xl={6} onClick={() => navigate('/education/user-by-education')}>
                   {educationList.map((item, index) => (
                     <div className="progress-group mb-4" key={index}>
                       <div className="progress-group-prepend">
@@ -197,13 +197,13 @@ const Dashboard = () => {
                       </div>
                       <div className="progress-group-bars">
                         <CProgress thin color="danger" value={((userdata?.filter((user) => user?.education === item.title).length) / userdata?.length) * 100} />
-                      <span>{userdata?.filter((user) => user?.education === item.title).length}</span>
+                        <span>{userdata?.filter((user) => user?.education === item.title).length}</span>
                       </div>
                     </div>
                   ))}
                 </CCol>
 
-                <CCol xs={12} md={6} xl={6} onClick={()=> navigate('/packages/user-list')}>
+                <CCol xs={12} md={6} xl={6} onClick={() => navigate('/packages/user-list')}>
                   {packageList.map((item, index) => (
                     <div className="progress-group mb-4" key={index}>
                       <div className="progress-group-prepend">
@@ -211,7 +211,7 @@ const Dashboard = () => {
                       </div>
                       <div className="progress-group-bars">
                         <CProgress thin color="info" value={((userdata?.filter((user) => user?.reward?.title === item.title).length) / userdata?.length) * 100} />
-                      <span>{userdata?.filter((user) => user?.reward?.title === item.title).length}</span>
+                        <span>{userdata?.filter((user) => user?.reward?.title === item.title).length}</span>
                       </div>
                     </div>
                   ))}
@@ -222,7 +222,7 @@ const Dashboard = () => {
         </CCol>
       </CRow>
       <CRow>
-        <CCol xs style={cardStyle} onClick={()=> navigate('/request/sehr-code-request')}>
+        <CCol xs style={cardStyle} onClick={() => navigate('/request/sehr-code-request')}>
           <CCard className="mb-4" >
             <CCardHeader>Requests</CCardHeader>
             <CCardBody>
@@ -231,7 +231,7 @@ const Dashboard = () => {
                   <SehrCodeRequests />
                 </CCol>
 
-                <CCol xs={12} md={6} xl={6} style={cardStyle} onClick={()=> navigate('/request/payment-request')} >
+                <CCol xs={12} md={6} xl={6} style={cardStyle} onClick={() => navigate('/request/payment-request')} >
                   <PaymentRequests />
                 </CCol>
               </CRow>
