@@ -1,6 +1,6 @@
 import { cilGroup, cilLockLocked, cilTrash, cilViewColumn } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
-import { CButton, CCard, CCardBody, CCol, CForm,  CFormInput,  CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle, CRow } from '@coreui/react'
+import { CButton, CCard, CCardBody, CCol, CForm, CFormInput, CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle, CRow } from '@coreui/react'
 import React, { useEffect, useState } from 'react'
 import AxiosInstance from 'src/utils/axiosInstance'
 import Swal from 'sweetalert2'
@@ -15,20 +15,20 @@ const Customers = () => {
   const [editModalVisible, setEditModalVisible] = useState(false)
   const [viewModalVisible, setViewModalVisible] = useState(false)
   const [editFormData, setEditFormData] = useState({});
-  const [loader,setLoader] = useState(true);
-  
+  const [loader, setLoader] = useState(true);
+
   useEffect(() => {
     fetchData()
     // eslint-disable-next-line
-    }, [ searchValue ])
+  }, [searchValue])
   const fetchData = async () => {
     try {
-        let response = await AxiosInstance.get(`/api/user?limit=0`)
-        response = await response.data.users;
-        let customer =   response.filter(obj => {
-          const userRole = obj.roles.find(roleObj => roleObj.role === 'user');
-          return userRole && obj.roles.length === 1;
-        });
+      let response = await AxiosInstance.get(`/api/user?limit=0`)
+      response = await response.data.users;
+      let customer = response.filter(obj => {
+        const userRole = obj.roles.find(roleObj => roleObj.role === 'user');
+        return userRole && obj.roles.length === 1;
+      });
       console.log('customers :', customer);
 
       setTitle([
@@ -37,12 +37,12 @@ const Customers = () => {
         "mobile number",
         "cnic",
         "sehr package",
-        "province", 
+        "province",
         "division",
         "district",
         "tehsil",
         "action"
-    ])
+      ])
       customer = customer?.filter(item => item.isLocked === false)
       customer = customer.filter((customer) => customer.verifiedAt !== null)
       customer.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
@@ -59,16 +59,17 @@ const Customers = () => {
       const fetchedData = customer
       const filteredData = searchValue
         ? fetchedData.filter((item) => {
-          const name = item.firstName+" "+item.lastName;
-         return name.toLowerCase().includes(searchValue) ||
-          item.mobile.toLowerCase().includes(searchValue) ||
-          item.cnic.toLowerCase().includes(searchValue) ||
-          item.tehsil.toLowerCase().includes(searchValue) ||
-          item.district.toLowerCase().includes(searchValue) ||
-          item.division.toLowerCase().includes(searchValue)
+          const name = item.firstName + " " + item.lastName;
+
+          return name.toLowerCase().includes(searchValue) ||
+            item.mobile.toLowerCase().includes(searchValue) ||
+            item.cnic.toLowerCase().includes(searchValue) ||
+            item.tehsil.toLowerCase().includes(searchValue) ||
+            item.district.toLowerCase().includes(searchValue) ||
+            item.division.toLowerCase().includes(searchValue)
         })
         : fetchedData
-        setLoader(false)
+      setLoader(false)
       setData(filteredData)
       console.log('data :', data)
     } catch (error) {
@@ -78,32 +79,32 @@ const Customers = () => {
   const getPageNumbers = (currentPage, totalPages, displayRange = 3) => {
     let startPage = currentPage - Math.floor(displayRange / 2);
     let endPage = currentPage + Math.floor(displayRange / 2);
-  
+
     if (startPage < 1) {
       startPage = 1;
       endPage = Math.min(displayRange, totalPages);
     }
-  
+
     if (endPage > totalPages) {
       endPage = totalPages;
       startPage = Math.max(totalPages - displayRange + 1, 1);
     }
-  
+
     return Array.from({ length: endPage - startPage + 1 }, (_, index) => startPage + index);
   };
-   let endIndex = currentPage * perPage
-    const startIndex = endIndex - perPage
-    const diff = data.length - startIndex
-    if(diff < perPage) {
-      endIndex = startIndex + diff
-    }
+  let endIndex = currentPage * perPage
+  const startIndex = endIndex - perPage
+  const diff = data.length - startIndex
+  if (diff < perPage) {
+    endIndex = startIndex + diff
+  }
   // Function to calculate the current page's records
   const getCurrentPageData = () => data.slice(startIndex, endIndex)
-  
+
   // Function to handle page changes
   const handlePageChange = (pageNumber) => setCurrentPage(pageNumber)
-  
-  const clickPageData = (value)=>{
+
+  const clickPageData = (value) => {
     setPerPage(value);
     setCurrentPage(1);
   }
@@ -126,11 +127,11 @@ const Customers = () => {
   //   setEditFormData(data);
   //   setEditModalVisible(true);
   // }
-  const ViewModal = (data)=>{
+  const ViewModal = (data) => {
     setEditFormData(data)
     setViewModalVisible(true);
   }
-  const handleDelete = (item)=>{
+  const handleDelete = (item) => {
     Swal.fire({
       title: 'Are you sure you want to delete this user?',
       text: 'You won\'t be able to revert this!',
@@ -139,7 +140,7 @@ const Customers = () => {
       confirmButtonText: 'Confirm',
       cancelButtonText: 'Cancel',
       reverseButtons: true,
-    }).then(async(result) => {
+    }).then(async (result) => {
       if (result.isConfirmed) {
         await AxiosInstance.delete(`/api/user/${item?.id}/delete`)
         await fetchData()
@@ -148,7 +149,7 @@ const Customers = () => {
   }
 
   // Function to set the user as limited
-  const handleLimit = (item)=>{
+  const handleLimit = (item) => {
     Swal.fire({
       title: 'Are you sure you want to limit this user?',
       text: 'You would be able to revert this!',
@@ -157,16 +158,16 @@ const Customers = () => {
       confirmButtonText: 'Confirm',
       cancelButtonText: 'Cancel',
       reverseButtons: true,
-    }).then(async(result) => {
+    }).then(async (result) => {
       if (result.isConfirmed) {
         await AxiosInstance.post(`/api/user/${item?.id}/lock`)
         await fetchData()
       }
     });
   }
-  
+
   // Handle Save Changes button onclicking
-  const handleSaveChanges = async() => {
+  const handleSaveChanges = async () => {
     // let response = await AxiosInstance.put('/api/user/update-profile',JSON.stringify(editFormData));
     // console.log(response);
     // setEditModalVisible(false);
@@ -178,29 +179,29 @@ const Customers = () => {
 
     return currentPageData.map((item, index) => (
       <tr key={index}>
-        <td>{index+1}</td>
-        <td>{item.firstName+" "+item.lastName}</td>
+        <td>{index + 1}</td>
+        <td>{item.firstName + " " + item.lastName}</td>
         <td>{item.mobile}</td>
         <td>{item.cnic}</td>
-        <td>{item.reward.title? item.reward.title : 'not subscribed yet' }</td>
+        <td>{item.reward.title ? item.reward.title : 'not subscribed yet'}</td>
         <td>{item.province}</td>
         <td>{item.division}</td>
         <td>{item.district}</td>
         <td>{item.tehsil}</td>
         <td>
-          <div className='d-flex justify-content-between flex-wrap' style={{ width:"270px" }}>
-          <button className="btn btn-info text-light" onClick={()=>ViewModal(item)}>
-            <CIcon icon={cilViewColumn} size="sm" /> View
-          </button>
-          {/* <button className="btn btn-success text-light" onClick={()=>EditModal({...item,action: 'edit'})}>
+          <div className='d-flex justify-content-between flex-wrap' style={{ width: "270px" }}>
+            <button className="btn btn-info text-light" onClick={() => ViewModal(item)}>
+              <CIcon icon={cilViewColumn} size="sm" /> View
+            </button>
+            {/* <button className="btn btn-success text-light" onClick={()=>EditModal({...item,action: 'edit'})}>
             <CIcon icon={cilPenAlt} size="sm" /> Update
           </button> */}
-          <button className="btn btn-warning ms-2 text-light" onClick={()=> handleLimit(item)}>
-            <CIcon icon={cilLockLocked} size="sm"/> Limit
-          </button>
-          <button className="btn btn-warning ms-2 text-light" onClick={()=> handleDelete(item)}>
-            <CIcon icon={cilTrash} size="sm"/> delete
-          </button>
+            <button className="btn btn-warning ms-2 text-light" onClick={() => handleLimit(item)}>
+              <CIcon icon={cilLockLocked} size="sm" /> Limit
+            </button>
+            <button className="btn btn-warning ms-2 text-light" onClick={() => handleDelete(item)}>
+              <CIcon icon={cilTrash} size="sm" /> delete
+            </button>
           </div>
         </td>
       </tr>
@@ -210,12 +211,12 @@ const Customers = () => {
   // Calculate total number of pages
   const totalPages = Math.ceil(data.length / perPage)
   // Generate an array of page numbers
-  const pageNumbers = getPageNumbers(currentPage,totalPages);
-  
+  const pageNumbers = getPageNumbers(currentPage, totalPages);
+
   return (
-    loader ? <Loader/> :<div className="container">
+    loader ? <Loader /> : <div className="container">
       <CRow>
-      <CCol sm={6} lg={3}>
+        <CCol sm={6} lg={3}>
           <CCard className="mb-4 bg-info" >
             <CCardBody>
               <div className="d-flex justify-content-between align-items-center">
@@ -231,161 +232,161 @@ const Customers = () => {
           </CCard>
         </CCol>
       </CRow>
-    <CModal alignment="center" visible={editModalVisible} onClose={() => setEditModalVisible(false)}>
-      <CModalHeader>
-        <CModalTitle>Edit Customer Details</CModalTitle>
-      </CModalHeader>
-      <CModalBody>
-      {editFormData.action === 'edit' ? <CForm>
-  <CFormInput
-    type="text"
-    id="name"
-    label="Firstname"
-    aria-describedby="name"
-    value={editFormData?.firstName|| '' }
-  onChange={(e) => setEditFormData({ ...editFormData, firstName: e.target.value })}
-  />
-   <CFormInput
-    type="text"
-    id="name"
-    label="Lastname"
-    aria-describedby="name"
-    value={editFormData?.lastName || '' }
-  onChange={(e) => setEditFormData({ ...editFormData, lastName: e.target.value })}
-  />
-   <CFormInput
-    type="tel"
-    id="mobile"
-    label="Mobile Number"
-    aria-describedby="name"
-    value={editFormData.mobile || ''}
-  onChange={(e) => setEditFormData({ ...editFormData, mobile: e.target.value })}
-  />
-  <CFormInput
-    type="text"
-    id="cnic"
-    label="CNIC"
-    aria-describedby="name"
-    value={editFormData.cnic || ''}
-  onChange={(e) => setEditFormData({ ...editFormData, cnic: e.target.value })}
-  />
-  <CFormInput
-    type="text"
-    id="province"
-    label="Province"
-    aria-describedby="name"
-    value={editFormData.province || ''}
-  onChange={(e) => setEditFormData({ ...editFormData, province: e.target.value })}
-  />
-  <CFormInput
-    type="text"
-    id="division"
-    label="Division"
-    aria-describedby="name"
-    value={editFormData.division || ''}
-  onChange={(e) => setEditFormData({ ...editFormData, division: e.target.value })}
-  />
-  <CFormInput
-    type="text"
-    id="district"
-    label="District"
-    aria-describedby="name"
-    value={editFormData.district || ''}
-  onChange={(e) => setEditFormData({ ...editFormData, district: e.target.value })}
-  />
-  <CFormInput
-    type="text"
-    id="tehsil"
-    label="Tehsil"
-    aria-describedby="name"
-    value={editFormData.tehsil || ''}
-  onChange={(e) => setEditFormData({ ...editFormData, tehsil: e.target.value })}
-  />
-  
-</CForm> : ""
-}
-      </CModalBody>
-      <CModalFooter>
-        <CButton color="secondary" onClick={() => setEditModalVisible(false)}>
-          Close
-        </CButton>
-        {editFormData.action === 'edit' ? <CButton color="primary" onClick={handleSaveChanges}>Save changes</CButton> : ""}
-      </CModalFooter>
-    </CModal>
-    <CModal alignment="center" visible={viewModalVisible} size='sm' onClose={() => setViewModalVisible(false)}>
-      <CModalHeader>
-        <CModalTitle>View Customer Details</CModalTitle>
-      </CModalHeader>
-      <CModalBody>
-      <CForm>
-        <CFormInput
+      <CModal alignment="center" visible={editModalVisible} onClose={() => setEditModalVisible(false)}>
+        <CModalHeader>
+          <CModalTitle>Edit Customer Details</CModalTitle>
+        </CModalHeader>
+        <CModalBody>
+          {editFormData.action === 'edit' ? <CForm>
+            <CFormInput
+              type="text"
+              id="name"
+              label="Firstname"
+              aria-describedby="name"
+              value={editFormData?.firstName || ''}
+              onChange={(e) => setEditFormData({ ...editFormData, firstName: e.target.value })}
+            />
+            <CFormInput
+              type="text"
+              id="name"
+              label="Lastname"
+              aria-describedby="name"
+              value={editFormData?.lastName || ''}
+              onChange={(e) => setEditFormData({ ...editFormData, lastName: e.target.value })}
+            />
+            <CFormInput
+              type="tel"
+              id="mobile"
+              label="Mobile Number"
+              aria-describedby="name"
+              value={editFormData.mobile || ''}
+              onChange={(e) => setEditFormData({ ...editFormData, mobile: e.target.value })}
+            />
+            <CFormInput
+              type="text"
+              id="cnic"
+              label="CNIC"
+              aria-describedby="name"
+              value={editFormData.cnic || ''}
+              onChange={(e) => setEditFormData({ ...editFormData, cnic: e.target.value })}
+            />
+            <CFormInput
+              type="text"
+              id="province"
+              label="Province"
+              aria-describedby="name"
+              value={editFormData.province || ''}
+              onChange={(e) => setEditFormData({ ...editFormData, province: e.target.value })}
+            />
+            <CFormInput
+              type="text"
+              id="division"
+              label="Division"
+              aria-describedby="name"
+              value={editFormData.division || ''}
+              onChange={(e) => setEditFormData({ ...editFormData, division: e.target.value })}
+            />
+            <CFormInput
+              type="text"
+              id="district"
+              label="District"
+              aria-describedby="name"
+              value={editFormData.district || ''}
+              onChange={(e) => setEditFormData({ ...editFormData, district: e.target.value })}
+            />
+            <CFormInput
+              type="text"
+              id="tehsil"
+              label="Tehsil"
+              aria-describedby="name"
+              value={editFormData.tehsil || ''}
+              onChange={(e) => setEditFormData({ ...editFormData, tehsil: e.target.value })}
+            />
+
+          </CForm> : ""
+          }
+        </CModalBody>
+        <CModalFooter>
+          <CButton color="secondary" onClick={() => setEditModalVisible(false)}>
+            Close
+          </CButton>
+          {editFormData.action === 'edit' ? <CButton color="primary" onClick={handleSaveChanges}>Save changes</CButton> : ""}
+        </CModalFooter>
+      </CModal>
+      <CModal alignment="center" visible={viewModalVisible} size='sm' onClose={() => setViewModalVisible(false)}>
+        <CModalHeader>
+          <CModalTitle>View Customer Details</CModalTitle>
+        </CModalHeader>
+        <CModalBody>
+          <CForm>
+            <CFormInput
               type="text"
               id="name"
               label="Name"
               aria-describedby="name"
               value={`${editFormData.firstName} ${editFormData.lastName}` || ''}
               disabled
-        />
-        <CFormInput
+            />
+            <CFormInput
               type="text"
               id="mobile"
               label="Cell"
               aria-describedby="name"
               value={editFormData.mobile || ''}
               disabled
-        />
-        <CFormInput
+            />
+            <CFormInput
               type="text"
               id="cnic"
               label="CNIC"
               aria-describedby="name"
               value={editFormData.cnic || ''}
               disabled
-        />
-        <CFormInput
+            />
+            <CFormInput
               type="text"
               id="tehsil"
               label="Tehsil"
               aria-describedby="name"
               value={editFormData.tehsil || ''}
               disabled
-        />
-        <CFormInput
+            />
+            <CFormInput
               type="text"
               id="district"
               label="District"
               aria-describedby="name"
               value={editFormData.district || ''}
               disabled
-        />
-        <CFormInput
+            />
+            <CFormInput
               type="text"
               id="division"
               label="Division"
               aria-describedby="name"
-              value={(editFormData.division? editFormData.division: 'Not defined') || ""}
+              value={(editFormData.division ? editFormData.division : 'Not defined') || ""}
               disabled
-        />
-        <CFormInput
+            />
+            <CFormInput
               type="text"
               id="province"
               label="Province"
               aria-describedby="name"
               value={editFormData.province || ''}
               disabled
-        />
-        <CFormInput
+            />
+            <CFormInput
               type="text"
               id="createdAt"
               label="Created At"
               aria-describedby="name"
               value={editFormData?.createdAt?.slice(0, 10) || ''}
               disabled
-        />
-        </CForm>
-      </CModalBody>
-    </CModal>
-    
+            />
+          </CForm>
+        </CModalBody>
+      </CModal>
+
       <div className="card">
         <div className="card-header">Customers</div>
         <div className="card-body">
@@ -399,7 +400,7 @@ const Customers = () => {
                   value={searchValue}
                   onChange={(e) => setSearchValue(e.target.value)}
                 />
-                
+
               </div>
               <button className="btn btn-primary ms-2" onClick={() => setSearchValue('')}>
                 Clear

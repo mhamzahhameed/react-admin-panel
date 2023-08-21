@@ -91,15 +91,9 @@ const PurchasingByShops = () => {
         ? fetchedData.filter((item) => {
 
           return item.ownerName.toLowerCase().includes(searchValue) ||
-            item.mobile.toLowerCase().includes(searchValue) ||
-            item.sehrCode.toLowerCase().includes(searchValue) ||
-            item.businessName.toLowerCase().includes(searchValue) ||
-            item.division.toLowerCase().includes(searchValue) ||
-            item.province.toLowerCase().includes(searchValue) ||
-            item.tehsil.toLowerCase().includes(searchValue) ||
-            item.district.toLowerCase().includes(searchValue) ||
-            item.category.toLowerCase().includes(searchValue)
-
+          item.businessName.toLowerCase().includes(searchValue) ||
+          item.mobile.toLowerCase().includes(searchValue) ||
+          item.reward.title.toLowerCase().includes(searchValue)
         })
         : fetchedData
       setLoader(false)

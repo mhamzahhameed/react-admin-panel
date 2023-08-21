@@ -61,12 +61,12 @@ const PurchasingByCustomers = () => {
       const filteredData = searchValue
         ? fetchedData.filter((item) => {
           const name = item.firstName + " " + item.lastName;
+
           return name.toLowerCase().includes(searchValue) ||
-            item.reward.title.toLowerCase().includes(searchValue) ||
             item.mobile.toLowerCase().includes(searchValue) ||
-            item.reward.salesTarget.toLowerCase().includes(searchValue)
-            // item.verifiedAt?.slice(0, 10).includes(searchValue)
-            // item.item.isLocked === true ? "limited" : "active".toLowerCase().includes(searchValue)
+            item.reward.title.toLowerCase().includes(searchValue) ||
+            item.cnic.toLowerCase().includes(searchValue)
+
         })
         : fetchedData
       setLoader(false)
@@ -145,8 +145,8 @@ const PurchasingByCustomers = () => {
           commission += Number(item.commission);
         });
 
-        setTotalCommission(commission !== 0 ? commission : 0);
-        setSpentAmount(amount !== 0 ?amount : 0);
+      setTotalCommission(commission !== 0 ? commission : 0);
+      setSpentAmount(amount !== 0 ? amount : 0);
     };
 
     if (viewModalVisible) {
@@ -155,7 +155,7 @@ const PurchasingByCustomers = () => {
     }
   }, [OrderList, viewModalVisible]);
 
-  
+
 
   // Handle Save Changes button onclicking
   const handleSaveChanges = async () => {
@@ -341,12 +341,12 @@ const PurchasingByCustomers = () => {
         setEditFormData({})
         setTotalCommission(0)
         setSpentAmount(0)
-        }}>
+      }}>
         <CModalHeader>
           <CModalTitle>View Orders Details</CModalTitle>
         </CModalHeader>
         <CModalBody>
-        {spentAmount && 
+          {spentAmount &&
             <div className='Cotainer d-flex justify-content-between my-5 mx-2'>
               <div className='col-2 card px-2 py-4 d-flex justify-content-center align-items-center bg-warning'>
                 <h5 className='text-uppercase fw-bolder mt-4'>Target </h5>
@@ -358,7 +358,7 @@ const PurchasingByCustomers = () => {
               </div>
               <div className='col-2 card px-2 py-4 d-flex justify-content-center align-items-center bg-danger'>
                 <h5 className='text-uppercase fw-bolder mt-4'>Remaining</h5>
-                <p className='text-uppercase fw-bolder'><strong>Rs-/ {editFormData?.reward?.salesTarget - spentAmount }</strong></p>
+                <p className='text-uppercase fw-bolder'><strong>Rs-/ {editFormData?.reward?.salesTarget - spentAmount}</strong></p>
               </div>
               <div className='col-2 card px-2 py-4 d-flex justify-content-center align-items-center bg-success'>
                 <h5 className='text-uppercase fw-bolder mt-4'>Commission</h5>
@@ -368,7 +368,7 @@ const PurchasingByCustomers = () => {
                 <h5 className='text-uppercase fw-bolder mt-4'>Progress</h5>
                 <p className='text-uppercase fw-bolder'><strong>{((spentAmount / editFormData?.reward?.salesTarget) * 100).toFixed(5)} %</strong></p>
               </div>
-          </div>}
+            </div>}
           {OrderList.length ? <div className="table-responsive">
             <table className="table table-striped table-bordered">
               <thead>
