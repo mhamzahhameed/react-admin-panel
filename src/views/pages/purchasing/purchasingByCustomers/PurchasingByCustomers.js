@@ -44,7 +44,7 @@ const PurchasingByCustomers = () => {
         "Joining date",
         "status",
         "target",
-        'purchasing',
+        'total purchasing',
         "details"
       ])
       customer = customer?.filter(item => item.reward !== null)

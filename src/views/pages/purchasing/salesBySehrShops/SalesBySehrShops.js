@@ -98,7 +98,7 @@ const SalesBySehrShops = () => {
         "joining date",
         "status",
         "Target",
-        'sale',
+        'total sale',
         "Details"
       ])
       const fetchedData = sehrShops

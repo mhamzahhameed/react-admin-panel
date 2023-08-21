@@ -83,7 +83,7 @@ const PurchasingByShops = () => {
         "joining date",
         "status",
         "Target",
-        'purchasing',
+        'total purchasing',
         "Details"
       ])
       const fetchedData = shops

@@ -75,7 +75,7 @@ const PaymentsBySehrShops = () => {
         "joining date",
         "status",
         "Target",
-        'payment',
+        'totol payment',
         "Details"
       ])
       const fetchedData = sehrShops

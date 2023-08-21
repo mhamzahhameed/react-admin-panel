@@ -82,9 +82,6 @@ const ProgressBySehrShops = () => {
         "shop name",
         "sehr code",
         "sehr package",
-        "cell",
-        "joining date",
-        "status",
         "Target",
         "Details"
       ])
@@ -172,9 +169,6 @@ const ProgressBySehrShops = () => {
         <td>{item.businessName}</td>
         <td>{item.sehrCode}</td>
         <td>{item.reward.title}</td>
-        <td>{item.mobile}</td>
-        <td>{item.verifiedAt?.slice(0, 10)}</td>
-        <td>{item.isLocked === true ? "limited" : "active"}</td>
         <td>{item.reward.salesTarget}</td>
 
         <td>
@@ -306,7 +300,7 @@ const ProgressBySehrShops = () => {
         setSpentAmount(0)
       }}>
         <CModalHeader>
-          <CModalTitle>Sales Detail</CModalTitle>
+          <CModalTitle>Progress</CModalTitle>
         </CModalHeader>
         <CModalBody>
           {spentAmount &&
@@ -316,7 +310,7 @@ const ProgressBySehrShops = () => {
                 <p className='text-uppercase fw-bolder'><strong>Rs-/ {spentAmount}</strong></p>
               </div>
               
-              <div className='col-3 card px-2 py-4 d-flex justify-content-center align-items-center bg-secondary'>
+              <div className='col-3 card px-2 py-4 d-flex justify-content-center align-items-center bg-success'>
                 <h5 className='text-uppercase fw-bolder mt-4'>purchasing</h5>
                 <p className='text-uppercase fw-bolder'><strong>Rs-/ {purchasing}</strong></p>
               </div>
