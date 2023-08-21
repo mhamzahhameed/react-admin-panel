@@ -106,6 +106,12 @@ const _nav = [
   },
   {
     component: CNavItem,
+    name: 'Progress by Sehr Shops',
+    to: '/purchasing/progress-by-sehr-shops',
+    icon: <CIcon icon={cilCart} customClassName="nav-icon" />,
+  },
+  {
+    component: CNavItem,
     name: 'Payments by Sehr Shops',
     to: '/purchasing/payments-by-sehr-shops',
     icon: <CIcon icon={cilMoney} customClassName="nav-icon" />,

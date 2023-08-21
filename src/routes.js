@@ -23,6 +23,7 @@ import PurchasingByShops from './views/pages/purchasing/purchasingByShops/Purcha
 import PaymentsBySehrShops from './views/pages/purchasing/paymentsBySehrShops/PaymentsBySehrShops'
 import SalesBySehrShops from './views/pages/purchasing/salesBySehrShops/SalesBySehrShops'
 import UnverifiedUsers from './views/pages/users/unVerifiedUsers/UnVerifiedUsers'
+import ProgressBySehrShops from './views/pages/purchasing/progressBySehrShops/ProgressBySehrShops'
 const Dashboard = React.lazy(() => import('./views/dashboard/Dashboard'))
 const Colors = React.lazy(() => import('./views/theme/colors/Colors'))
 const Typography = React.lazy(() => import('./views/theme/typography/Typography'))
@@ -86,6 +87,7 @@ const routes = [
   { path: '/purchasing/purchasing-by-shops', name: 'Pusrchasing by Shops', element: PurchasingByShops, exact: true },
   { path: '/purchasing/purchasing-by-sehr-shops', name: 'Pusrchasing by Sehr Shops', element: PurchasingBySehrShops, exact: true },
   { path: '/purchasing/payments-by-sehr-shops', name: 'Payments by Sehr Shops', element: PaymentsBySehrShops, exact: true },
+  { path: '/purchasing/progress-by-sehr-shops', name: 'Progress by Sehr Shops', element: ProgressBySehrShops, exact: true },
   { path: '/purchasing/sales-by-sehr-shops', name: 'Sales by Sehr Shops', element: SalesBySehrShops, exact: true },
   { path: '/request/sehr-code-request', name: 'Sehr Code Request', element: SehrCodeRequests, exact: true },
   { path: '/request/payment-request', name: 'Payment Request', element: PaymentRequests, exact: true },

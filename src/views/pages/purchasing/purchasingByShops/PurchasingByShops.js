@@ -83,6 +83,7 @@ const PurchasingByShops = () => {
         "joining date",
         "status",
         "Target",
+        'purchasing',
         "Details"
       ])
       const fetchedData = shops
@@ -244,6 +245,7 @@ const PurchasingByShops = () => {
         <td>{item.verifiedAt?.slice(0, 10)}</td>
         <td>{item.isLocked === true ? "limited" : "active"}</td>
         <td>{item.reward.salesTarget}</td>
+        <td><span>N/A</span></td>
 
         <td>
           <div className='d-flex justify-content-between flex-wrap' style={{ width: "80px" }}>

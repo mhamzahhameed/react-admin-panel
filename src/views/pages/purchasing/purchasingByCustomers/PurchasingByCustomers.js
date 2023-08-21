@@ -44,6 +44,7 @@ const PurchasingByCustomers = () => {
         "Joining date",
         "status",
         "target",
+        'purchasing',
         "details"
       ])
       customer = customer?.filter(item => item.reward !== null)
@@ -176,6 +177,7 @@ const PurchasingByCustomers = () => {
         <td>{item.verifiedAt?.slice(0, 10)}</td>
         <td>{item.isLocked === true ? "limited" : "active"}</td>
         <td>{item.reward.salesTarget}</td>
+        <td><span>N/A</span></td>
         <td>
           <div className='d-flex justify-content-between flex-wrap' style={{ width: "80px" }}>
             <button className="btn btn-info text-light" onClick={() => ViewModal(item)}>
