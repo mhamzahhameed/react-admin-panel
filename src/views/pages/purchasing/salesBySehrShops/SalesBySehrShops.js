@@ -63,7 +63,7 @@ const SalesBySehrShops = () => {
       payments = payments.filter((payment) => payment.status === 'paid')
       let totalPaid = 0
       totalPaid = payments.reduce((acc, item) => acc + Number(item.amount), 0);
-      let salesReport = await AxiosInstance.get(`/api/shop/all-sales-report`)
+      let salesReport = await AxiosInstance.get(`/api/shop/all-sales-report?startDate=2023-07-14&status=accepted`)
       salesReport = await salesReport.data
 
       for (const element of sehrShops) {

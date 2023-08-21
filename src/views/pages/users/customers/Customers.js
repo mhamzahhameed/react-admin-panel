@@ -1,6 +1,6 @@
-import { cilLockLocked, cilTrash, cilViewColumn } from '@coreui/icons'
+import { cilGroup, cilLockLocked, cilTrash, cilViewColumn } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
-import { CButton, CForm,  CFormInput,  CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle } from '@coreui/react'
+import { CButton, CCard, CCardBody, CCol, CForm,  CFormInput,  CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle, CRow } from '@coreui/react'
 import React, { useEffect, useState } from 'react'
 import AxiosInstance from 'src/utils/axiosInstance'
 import Swal from 'sweetalert2'
@@ -214,6 +214,23 @@ const Customers = () => {
   
   return (
     loader ? <Loader/> :<div className="container">
+      <CRow>
+      <CCol sm={6} lg={3}>
+          <CCard className="mb-4 bg-info" >
+            <CCardBody>
+              <div className="d-flex justify-content-between align-items-center">
+                <div>
+                  <div className="h4 mb-0 text-white">{data?.length}</div>
+                  <div className="text-white">Customers</div>
+                </div>
+                <div className="h1 text-white">
+                  <CIcon icon={cilGroup} size="lg" customClasses="fw-bold" />
+                </div>
+              </div>
+            </CCardBody>
+          </CCard>
+        </CCol>
+      </CRow>
     <CModal alignment="center" visible={editModalVisible} onClose={() => setEditModalVisible(false)}>
       <CModalHeader>
         <CModalTitle>Edit Customer Details</CModalTitle>

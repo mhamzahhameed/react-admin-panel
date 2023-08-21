@@ -99,7 +99,7 @@ const Dashboard = () => {
       response = await response.data.users;
       let business = await AxiosInstance.get(`/api/business/all?limit=${businessCount}`)
       business = await business.data.businesses;
-      let salesReport = await AxiosInstance.get(`/api/shop/all-sales-report`)
+      let salesReport = await AxiosInstance.get(`/api/shop/all-sales-report?startDate=2023-07-14&status=accepted`)
       salesReport = await salesReport.data
       let requestCount = await AxiosInstance.get('/api/shop/payments')
       requestCount = await requestCount.data.total

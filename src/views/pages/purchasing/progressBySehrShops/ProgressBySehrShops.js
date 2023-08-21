@@ -306,16 +306,16 @@ const ProgressBySehrShops = () => {
           {spentAmount &&
             <div className='Cotainer d-flex justify-content-between my-5 mx-2'>
               <div className='col-3 card px-2 py-4 d-flex justify-content-center align-items-center bg-info'>
-                <h5 className='text-uppercase fw-bolder mt-4'>Sale</h5>
+                <h5 className='text-uppercase fw-bolder mt-4'>Total Sale</h5>
                 <p className='text-uppercase fw-bolder'><strong>Rs-/ {spentAmount}</strong></p>
               </div>
               
               <div className='col-3 card px-2 py-4 d-flex justify-content-center align-items-center bg-success'>
-                <h5 className='text-uppercase fw-bolder mt-4'>purchasing</h5>
+                <h5 className='text-uppercase fw-bolder mt-4'>Total Purchasing</h5>
                 <p className='text-uppercase fw-bolder'><strong>Rs-/ {purchasing}</strong></p>
               </div>
               <div className='col-3 card px-2 py-4 d-flex justify-content-center align-items-center bg-danger'>
-                <h5 className='text-uppercase fw-bolder mt-4'>Remaining</h5>
+                <h5 className='text-uppercase fw-bolder mt-4'>Difference</h5>
                 <p className='text-uppercase fw-bolder'><strong>Rs-/ {spentAmount - purchasing}</strong></p>
               </div>
             </div>}
