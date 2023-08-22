@@ -1,7 +1,7 @@
 import { cilCash, cilViewColumn } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
 import { CCard, CCardBody, CCol, CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle, CRow } from '@coreui/react'
-import React, { useCallback, useEffect, useState } from 'react'
+import React, {  useEffect, useState } from 'react'
 import AxiosInstance from 'src/utils/axiosInstance'
 import Loader from '../../../../components/Loader'
 // import Swal from 'sweetalert2'
@@ -39,7 +39,6 @@ const SalesBySehrShops = () => {
 
   useEffect(() => {
     fetchData()
-
     // eslint-disable-next-line
   }, [searchValue])
 
@@ -424,16 +423,12 @@ const SalesBySehrShops = () => {
   //   // eslint-disable-next-line
   // }, [currentPage]);
 
-useCallback(()=>{
-  fetchAndUpdateTotalSales()
-  // eslint-disable-next-line
-},[currentPage])
 useEffect(()=>{
   fetchAndUpdateTotalSales()
   // eslint-disable-next-line
-},[2])
+},[currentPage])
 
-// fetchAndUpdateTotalSales()
+fetchAndUpdateTotalSales()
 
   return (
     loader ? <Loader /> : <div className="container">
