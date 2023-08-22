@@ -215,7 +215,7 @@ const LimitedCustomers = () => {
               <div className="d-flex justify-content-between align-items-center">
                 <div>
                   <div className="h4 mb-0 text-white">{data?.length}</div>
-                  <div className="text-white">Unverified Users</div>
+                  <div className="text-white">Total</div>
                 </div>
                 <div className="h1 text-white">
                   <CIcon icon={cilGroup} size="lg" customClasses="fw-bold" />
