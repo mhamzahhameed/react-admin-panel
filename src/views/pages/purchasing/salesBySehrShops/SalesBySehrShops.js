@@ -136,7 +136,6 @@ const SalesBySehrShops = () => {
       setCommission(salesReport?.totalCommission)
       setTotalSales(salesReport?.totalAmount)
       setPaymentData(payments)
-      fetchAndUpdateTotalSales()
     } catch (error) {
       console.error(error)
     }
@@ -427,8 +426,10 @@ useEffect(()=>{
   fetchAndUpdateTotalSales()
   // eslint-disable-next-line
 },[currentPage])
+setTimeout(() => {
+  fetchAndUpdateTotalSales()
+}, "5 second");
 
-fetchAndUpdateTotalSales()
 
   return (
     loader ? <Loader /> : <div className="container">
