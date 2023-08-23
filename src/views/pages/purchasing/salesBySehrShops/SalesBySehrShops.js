@@ -94,6 +94,8 @@ const SalesBySehrShops = () => {
         "status",
         "Target",
         'total sale',
+        'total commission',
+        'total orders',
         "Details"
       ])
       const fetchedData = sehrShops
@@ -175,7 +177,9 @@ const SalesBySehrShops = () => {
         const response = await AxiosInstance.get(`/api/shop/orders/${item.sehrCode}`);
         const acceptedOrders = response?.data.orders.filter(order => order.status === 'accepted');
         const totalSale = acceptedOrders.reduce((total, order) => total + Number(order.amount), 0);
-        return totalSale;
+        const totalCommission = acceptedOrders.filter(order => order.commissionStatus === "pending").reduce((total, order) => total + Number(order.commission), 0)
+        const totalOrders = acceptedOrders?.length
+        return [totalSale, totalCommission, totalOrders];
       })
     );
 
@@ -208,7 +212,9 @@ const SalesBySehrShops = () => {
             <td>{item.verifiedAt?.slice(0, 10)}</td>
             <td>{item.isLocked === true ? "limited" : "active"}</td>
             <td>{item.reward.salesTarget}</td>
-            <td><span>{item.totalSale}</span></td>
+            <td><span>{item.totalSale[0]}</span></td>
+            <td><span>{item.totalSale[1]}</span></td>
+            <td><span>{item.totalSale[2]}</span></td>
 
             <td>
               <span className='d-flex justify-content-between flex-wrap' style={{ width: "80px" }}>
