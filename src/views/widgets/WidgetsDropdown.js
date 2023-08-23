@@ -82,7 +82,7 @@ const WidgetsDropdown = (props) => {
       </CRow>
       <CRow>
         <CCol sm={6} lg={3}>
-          <CCard className="mb-4 bg-warning" style={cardStyle}>
+          <CCard className="mb-4 bg-warning" style={cardStyle} onClick={() => navigate("/purchasing/sales-by-sehr-shops")}>
             <CCardBody>
               <div className="d-flex justify-content-between align-items-center">
                 <div>
@@ -97,7 +97,7 @@ const WidgetsDropdown = (props) => {
           </CCard>
         </CCol>
         <CCol sm={6} lg={3}>
-          <CCard className="mb-4 bg-primary" style={cardStyle}>
+          <CCard className="mb-4 bg-primary" style={cardStyle} onClick={() => navigate("/purchasing/sales-by-sehr-shops")}>
             <CCardBody>
               <div className="d-flex justify-content-between align-items-center">
                 <div>
@@ -112,7 +112,7 @@ const WidgetsDropdown = (props) => {
           </CCard>
         </CCol>
         <CCol sm={6} lg={3}>
-          <CCard className="mb-4 bg-danger" style={cardStyle}>
+          <CCard className="mb-4 bg-danger" style={cardStyle} onClick={() => navigate("/purchasing/sales-by-sehr-shops")}>
             <CCardBody>
               <div className="d-flex justify-content-between align-items-center">
                 <div>
@@ -127,7 +127,7 @@ const WidgetsDropdown = (props) => {
           </CCard>
         </CCol>
         <CCol sm={6} lg={3}>
-          <CCard className="mb-4 bg-success" style={cardStyle} onClick={() => navigate("/users/sehr-shop")}>
+          <CCard className="mb-4 bg-success" style={cardStyle} onClick={() => navigate("/purchasing/payments-by-sehr-shops")}>
             <CCardBody>
               <div className="d-flex justify-content-between align-items-center">
                 <div>

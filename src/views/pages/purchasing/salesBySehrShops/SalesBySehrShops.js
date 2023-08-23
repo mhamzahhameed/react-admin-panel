@@ -4,6 +4,7 @@ import { CCard, CCardBody, CCol, CModal, CModalBody, CModalFooter, CModalHeader,
 import React, { useEffect, useState } from 'react'
 import AxiosInstance from 'src/utils/axiosInstance'
 import Loader from '../../../../components/Loader'
+import { useNavigate } from 'react-router-dom'
 // import Swal from 'sweetalert2'
 const SalesBySehrShops = () => {
   const [title, setTitle] = useState([])
@@ -30,6 +31,8 @@ const SalesBySehrShops = () => {
   const [shopPerPage, setShopPerPage] = useState(5)
   const [loader, setLoader] = useState(true);
   const [updatedCurrentpageData, setUpdatedCurrentpageData] = useState([]);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchData()
@@ -380,7 +383,7 @@ const SalesBySehrShops = () => {
           </CCard>
         </CCol>
         <CCol sm={6} lg={3}>
-          <CCard className="mb-4 bg-success">
+          <CCard className="mb-4 bg-success" onClick={() => navigate("/purchasing/payments-by-sehr-shops")}>
             <CCardBody>
               <div className="d-flex justify-content-between align-items-center">
                 <div>

@@ -1,12 +1,13 @@
-import { cilViewColumn } from '@coreui/icons'
+import { cilCash, cilViewColumn } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
-import {  CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle } from '@coreui/react'
+import {  CCard, CCardBody, CCol, CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle, CRow } from '@coreui/react'
 import React, { useEffect, useState } from 'react'
 import AxiosInstance from 'src/utils/axiosInstance'
 import Loader from '../../../../components/Loader'
 const PaymentsBySehrShops = () => {
   const [title, setTitle] = useState([])
   const [paymentTitle] = useState(['#', 'shop name', "sehrcode", 'payment', "status","transaction id", 'transaction date'])
+  const [totalPayment, setTotalPayment] = useState(0)
   const [data, setData] = useState([])
   const [paymentdata, setPaymentData] = useState([])
   const [paymentList, setPaymentList] = useState([])
@@ -42,6 +43,8 @@ const PaymentsBySehrShops = () => {
       requestCount = await requestCount.data.total
       let payments = await AxiosInstance.get(`/api/shop/payments?limit=${requestCount}`)
       payments = await payments.data.payments
+      let totalPayment = 0
+      totalPayment = payments.reduce((acc, item) => acc + Number(item.amount), 0);
 
       for (const element of sehrShops) {
         const obj2 = element;
@@ -93,6 +96,7 @@ const PaymentsBySehrShops = () => {
       setLoader(false)
       setData(filteredData)
       setPaymentData(payments)
+      setTotalPayment(totalPayment)
     } catch (error) {
       console.error(error)
     }
@@ -236,6 +240,23 @@ const PaymentsBySehrShops = () => {
 
   return (
     loader ? <Loader /> : <div className="container">
+      <CRow>
+      <CCol sm={6} lg={4}>
+          <CCard className="mb-4 bg-success">
+            <CCardBody>
+              <div className="d-flex justify-content-between align-items-center">
+                <div>
+                  <div className="h4 mb-0 text-white"><strong>Rs/- </strong>{totalPayment}</div>
+                  <div className="text-white">Paid Commission</div>
+                </div>
+                <div className="h1 text-white">
+                  <CIcon icon={cilCash} size="lg" customClasses="fw-bold" />
+                </div>
+              </div>
+            </CCardBody>
+          </CCard>
+        </CCol>
+      </CRow>
       <CModal alignment="center" visible={viewPaymentVisible} size='xl' onClose={() => {
         setViewPaymentVisible(false)
         setEditFormData({})
