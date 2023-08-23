@@ -1,7 +1,7 @@
 import { cilCash, cilViewColumn } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
 import { CCard, CCardBody, CCol, CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle, CRow } from '@coreui/react'
-import React, {  useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import AxiosInstance from 'src/utils/axiosInstance'
 import Loader from '../../../../components/Loader'
 // import Swal from 'sweetalert2'
@@ -10,7 +10,7 @@ const SalesBySehrShops = () => {
   const [shopTitle] = useState(['#', 'shop name', "sehrcode", 'customer', 'payment', "status", "commission", 'transaction date'])
   const [orderList, setOrderList] = useState([])
   const [data, setData] = useState([])
-  const [isLoading, setIsLoading] = useState(true); // Initial loading state
+  const [isLoading, setIsLoading] = useState(true)
   const [paymentList, setPaymentList] = useState([])
   const [paymentData, setPaymentData] = useState([])
   const [spentAmount, setSpentAmount] = useState(0)
@@ -21,7 +21,6 @@ const SalesBySehrShops = () => {
   const [totalPaid, setTotalPaid] = useState(0)
 
   const [totalCommission, setTotalCommission] = useState(0)
-  // const [categoryList, setCategoryList] = useState([])
   const [currentPage, setCurrentPage] = useState(1)
   const [perPage, setPerPage] = useState(10)
   const [searchValue, setSearchValue] = useState('')
@@ -32,27 +31,11 @@ const SalesBySehrShops = () => {
   const [loader, setLoader] = useState(true);
   const [updatedCurrentpageData, setUpdatedCurrentpageData] = useState([]);
 
-
-
-
-
-
   useEffect(() => {
     fetchData()
     // eslint-disable-next-line
   }, [searchValue])
 
-
-
-  // const fetchCategoryList = async () => {
-  //   try {
-  //     let list = await AxiosInstance.get('/api/category')
-  //     setCategoryList(await list.data.categories)
-  //   }
-  //   catch (error) {
-  //     console.error(error)
-  //   }
-  // }
   const fetchData = async () => {
     try {
       let count = await AxiosInstance.get(`/api/user`)
@@ -73,9 +56,7 @@ const SalesBySehrShops = () => {
       totalPaid = payments.reduce((acc, item) => acc + Number(item.amount), 0);
       let salesReport = await AxiosInstance.get(`/api/shop/all-sales-report?startDate=2023-07-14&status=accepted`)
       salesReport = await salesReport.data
-      // let bulkReport = await AxiosInstance.get(`/api/shop/bulk-sales-report?sehrCodes[]=11110002&status=accepted&startDate=2023-07-14`)
-      // bulkReport = await bulkReport.data
-      // console.log('bulkreport :', bulkReport)
+
 
       for (const element of sehrShops) {
         const obj2 = element;
@@ -112,11 +93,6 @@ const SalesBySehrShops = () => {
         'total sale',
         "Details"
       ])
-
-      // sehrShops = sehrShops.map(obj => ({
-      //   ...obj,
-      //   totalSale: 0, // Initialize with 0 or any default value
-      // }));
       const fetchedData = sehrShops
       const filteredData = searchValue
         ? fetchedData.filter((item) => {
@@ -210,7 +186,6 @@ const SalesBySehrShops = () => {
 
   // Render the current page's records
   const renderData = () => {
-    
     if (isLoading || !updatedCurrentpageData.length) {
       return (
         <tr>
@@ -244,56 +219,6 @@ const SalesBySehrShops = () => {
       </tbody>
     );
   };
-
-  // ... (the rest of your code)
-
-  // const renderData = () => {
-  //   const currentPageData = getCurrentPageData()
-  //       // Loop through each item in the current page and make API calls
-  //       const apiResponses = []; 
-  //       currentPageData?.forEach(async(item)=> {
-  //         const response = await AxiosInstance.get(`/api/shop/orders/${item.sehrCode}`);
-  //         const acceptedOrders = await response?.data.orders.filter(order => order.status === 'accepted');
-  //         const totalSale = await acceptedOrders?.reduce((total, order) => total + Number(order.amount), 0);
-  //         apiResponses?.push(totalSale);
-  //       })
-
-  //       console.log('apiResponse : ',apiResponses);
-
-  //       // Update the total sale column with API responses
-  //       const updatedCurrentpageData = currentPageData?.map((item, index) => ({
-  //         ...item,
-  //         totalSale: apiResponses[index], // Default to 0 if there's no response
-  //       }));
-  //       console.log('updatedCurrentpageData : ',updatedCurrentpageData);
-
-  //   return (!(apiResponses.filter(item => item === number) && updatedCurrentpageData.filter(item=> item.totalSale !== number))) ? currentPageData?.map((item, index) => ({
-  //     ...item,
-  //     totalSale: apiResponses[index], // Default to 0 if there's no response
-  //   })) : updatedCurrentpageData?.map((item, index) => (
-  // <tr key={item.id}>
-  //   <td>{index + 1}</td>
-  //   <td>{item.ownerName}</td>
-  //   <td>{item.businessName}</td>
-  //   <td>{item.sehrCode}</td>
-  //   <td>{item.reward.title}</td>
-  //   <td>{item.mobile}</td>
-  //   <td>{item.verifiedAt?.slice(0, 10)}</td>
-  //   <td>{item.isLocked === true ? "limited" : "active"}</td>
-  //   <td>{item.reward.salesTarget}</td>
-  //   <td><span>{item.totalSale}</span></td>
-
-  //   <td>
-  //     <div className='d-flex justify-content-between flex-wrap' style={{ width: "80px" }}>
-  //       <button className="btn btn-info text-light" onClick={() => ViewModal({ ...item, action: 'view' })}>
-  //         <CIcon icon={cilViewColumn} size="sm" /> View Orders
-  //       </button>
-  //     </div>
-  //   </td>
-  // </tr>
-  //   ))
-  // }
-
 
   const ViewModal = async (item) => {
     let orderData = await AxiosInstance.get(`/api/shop/orders/${item.sehrCode}`);
@@ -371,9 +296,6 @@ const SalesBySehrShops = () => {
           }
         })
       )
-
-
-
       setTotalCommission(commission !== 0 ? commission : 0);
       setSpentAmount(amount !== 0 ? amount : 0);
     };
@@ -401,35 +323,13 @@ const SalesBySehrShops = () => {
     }
   }, [paymentList, viewModalVisible])
 
-
-  // eslint-disable-next-line
-  // useEffect(() => {
-  //   const fetchDataForCurrentPage = async () => {
-  //     try {
-  //       // Get the data for the current page
-  //       const currentPageData = getCurrentPageData();
-
-
-  //       console.log('update data: ',updatedData)
-  //       setData(updatedData);
-  //     } catch (error) {
-  //       console.error(error);
-  //     }
-  //   };
-  //   if(setCurrentPage){
-  //     fetchDataForCurrentPage()
-  //   }
-  //   // eslint-disable-next-line
-  // }, [currentPage]);
-
-useEffect(()=>{
-  fetchAndUpdateTotalSales()
-  // eslint-disable-next-line
-},[currentPage])
-setTimeout(() => {
-  fetchAndUpdateTotalSales()
-}, "5 second");
-
+  useEffect(() => {
+    fetchAndUpdateTotalSales()
+    // eslint-disable-next-line
+  }, [currentPage])
+  setTimeout(() => {
+    fetchAndUpdateTotalSales()
+  }, "5 second");
 
   return (
     loader ? <Loader /> : <div className="container">

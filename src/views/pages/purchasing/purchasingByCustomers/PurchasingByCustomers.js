@@ -21,6 +21,8 @@ const PurchasingByCustomers = () => {
   const [shopCurrentPage, setShopCurrentPage] = useState(1)
   const [shopPerPage, setShopPerPage] = useState(5)
   const [loader, setLoader] = useState(true);
+  const [updatedCurrentpageData, setUpdatedCurrentpageData] = useState([])
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
     fetchData()
@@ -123,6 +125,25 @@ const PurchasingByCustomers = () => {
       setCurrentPage(currentPage + 1)
     }
   }
+
+  const fetchAndUpdateTotalSales = async () => {
+    const currentPageData = getCurrentPageData();
+    const apiResponses = await Promise.all(
+      currentPageData?.map(async (item) => {
+        const response = await AxiosInstance.get(`/api/shop/${item.id}/orders`);
+        const acceptedOrders = response?.data.orders.filter(order => order.status === 'accepted');
+        const totalSale = acceptedOrders.reduce((total, order) => total + Number(order.amount), 0);
+        return totalSale;
+      })
+    );
+
+    const updatedData = currentPageData?.map((item, index) => ({
+      ...item,
+      totalSale: apiResponses[index],
+    }));
+    setUpdatedCurrentpageData(updatedData);
+    setIsLoading(false); // Set loading state to false after data is fetched
+  };
   // const EditModal = (data)=>{
   //   setEditFormData(data);
   //   setEditModalVisible(true);
@@ -166,37 +187,52 @@ const PurchasingByCustomers = () => {
   };
   // Render the current page's records
   const renderData = () => {
-    const currentPageData = getCurrentPageData()
+    if (isLoading || !updatedCurrentpageData.length) {
+      return (
+        <tr>
+          <td colSpan={10}>Loading...</td>
+        </tr>);
+    }
+    return (
+      <tbody>
+        {updatedCurrentpageData?.map((item, index) => (
+          <tr key={index}>
+            <td>{index + 1}</td>
+            <td>{item.firstName + " " + item.lastName}</td>
+            <td>{item.reward.title}</td>
+            <td>{item.mobile}</td>
+            <td>{item.verifiedAt?.slice(0, 10)}</td>
+            <td>{item.isLocked === true ? "limited" : "active"}</td>
+            <td>{item.reward.salesTarget}</td>
+            <td><span>{item.totalSale}</span></td>
+            <td>
+              <div className='d-flex justify-content-between flex-wrap' style={{ width: "80px" }}>
+                <button className="btn btn-info text-light" onClick={() => ViewModal(item)}>
+                  <CIcon icon={cilViewColumn} size="sm" /> View Orders
+                </button>
+                {/* <button className="btn btn-success text-light" onClick={()=>EditModal({...item,action: 'edit'})}>
+                  <CIcon icon={cilPenAlt} size="sm" /> Update
+                </button> */}
+                {/* <button className="btn btn-warning ms-2 text-light" onClick={()=> handleLimit(item)}>
+                  <CIcon icon={cilLockLocked} size="sm"/> Limit
+                </button>
+                <button className="btn btn-warning ms-2 text-light" onClick={()=> handleDelete(item)}>
+                  <CIcon icon={cilTrash} size="sm"/> delete
+                </button> */}
+              </div>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    );
+  };
+  // const renderData = () => {
+  //   const currentPageData = getCurrentPageData()
 
-    return currentPageData.map((item, index) => (
-      <tr key={index}>
-        <td>{index + 1}</td>
-        <td>{item.firstName + " " + item.lastName}</td>
-        <td>{item.reward.title}</td>
-        <td>{item.mobile}</td>
-        <td>{item.verifiedAt?.slice(0, 10)}</td>
-        <td>{item.isLocked === true ? "limited" : "active"}</td>
-        <td>{item.reward.salesTarget}</td>
-        <td><span>N/A</span></td>
-        <td>
-          <div className='d-flex justify-content-between flex-wrap' style={{ width: "80px" }}>
-            <button className="btn btn-info text-light" onClick={() => ViewModal(item)}>
-              <CIcon icon={cilViewColumn} size="sm" /> View Orders
-            </button>
-            {/* <button className="btn btn-success text-light" onClick={()=>EditModal({...item,action: 'edit'})}>
-            <CIcon icon={cilPenAlt} size="sm" /> Update
-          </button> */}
-            {/* <button className="btn btn-warning ms-2 text-light" onClick={()=> handleLimit(item)}>
-            <CIcon icon={cilLockLocked} size="sm"/> Limit
-          </button>
-          <button className="btn btn-warning ms-2 text-light" onClick={()=> handleDelete(item)}>
-            <CIcon icon={cilTrash} size="sm"/> delete
-          </button> */}
-          </div>
-        </td>
-      </tr>
-    ))
-  }
+  //   return currentPageData.map((item, index) => (
+
+  //   ))
+  // }
 
   const getShopCurrentPageData = () => OrderList?.slice(shopStartIndex, shopEndIndex)
   let shopEndIndex = shopCurrentPage * shopPerPage
@@ -252,6 +288,14 @@ const PurchasingByCustomers = () => {
   const totalPages = Math.ceil(data.length / perPage)
   // Generate an array of page numbers
   const pageNumbers = getPageNumbers(currentPage, totalPages);
+
+  useEffect(() => {
+    fetchAndUpdateTotalSales()
+    // eslint-disable-next-line
+  }, [currentPage])
+  setTimeout(() => {
+    fetchAndUpdateTotalSales()
+  }, "5 second");
 
   return (
     loader ? <Loader /> : <div className="container">
@@ -475,7 +519,7 @@ const PurchasingByCustomers = () => {
                   })}
                 </tr>
               </thead>
-              <tbody>{renderData()}</tbody>
+              {renderData()}
             </table>
           </div>
         </div>

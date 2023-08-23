@@ -7,12 +7,12 @@ import Loader from '../../../../components/Loader'
 // import Swal from 'sweetalert2'
 const PurchasingBySehrShops = () => {
   const [title, setTitle] = useState([])
-  const [shopTitle] = useState(['#', 'shop name', "sehrcode", 'payment', "status","commission", 'transaction date'])
+  const [shopTitle] = useState(['#', 'shop name', "sehrcode", 'payment', "status", "commission", 'transaction date'])
   const [orderList, setOrderList] = useState([])
+  const [isLoading, setIsLoading] = useState(true)
   const [data, setData] = useState([])
   const [spentAmount, setSpentAmount] = useState(0)
   const [totalCommission, setTotalCommission] = useState(0)
-  // const [categoryList, setCategoryList] = useState([])
   const [currentPage, setCurrentPage] = useState(1)
   const [perPage, setPerPage] = useState(10)
   const [searchValue, setSearchValue] = useState('')
@@ -21,6 +21,7 @@ const PurchasingBySehrShops = () => {
   const [shopCurrentPage, setShopCurrentPage] = useState(1)
   const [shopPerPage, setShopPerPage] = useState(5)
   const [loader, setLoader] = useState(true);
+  const [updatedCurrentpageData, setUpdatedCurrentpageData] = useState([]);
 
 
   useEffect(() => {
@@ -79,10 +80,10 @@ const PurchasingBySehrShops = () => {
         ? fetchedData.filter((item) => {
 
           return item.ownerName.toLowerCase().includes(searchValue) ||
-          item.mobile.toLowerCase().includes(searchValue) ||
-          item.sehrCode.toLowerCase().includes(searchValue) ||
-          item.reward.title.toLowerCase().includes(searchValue) ||
-          item.businessName.toLowerCase().includes(searchValue)
+            item.mobile.toLowerCase().includes(searchValue) ||
+            item.sehrCode.toLowerCase().includes(searchValue) ||
+            item.reward.title.toLowerCase().includes(searchValue) ||
+            item.businessName.toLowerCase().includes(searchValue)
 
         })
         : fetchedData
@@ -141,35 +142,62 @@ const PurchasingBySehrShops = () => {
     }
   }
 
+  const fetchAndUpdateTotalSales = async () => {
+    const currentPageData = getCurrentPageData();
+    const apiResponses = await Promise.all(
+      currentPageData?.map(async (item) => {
+        const response = await AxiosInstance.get(`/api/shop/${item.userId}/orders`);
+        const acceptedOrders = response?.data.orders.filter(order => order.status === 'accepted');
+        const totalSale = acceptedOrders.reduce((total, order) => total + Number(order.amount), 0);
+        return totalSale;
+      })
+    );
+
+    const updatedData = currentPageData?.map((item, index) => ({
+      ...item,
+      totalSale: apiResponses[index],
+    }));
+    setUpdatedCurrentpageData(updatedData);
+    setIsLoading(false); // Set loading state to false after data is fetched
+  };
+
 
   // Render the current page's records
   const renderData = () => {
-    const currentPageData = getCurrentPageData()
+    if (isLoading || !updatedCurrentpageData.length) {
+      return (
+        <tr>
+          <td colSpan={10}>Loading...</td>
+        </tr>);
+    }
+    return (
+      <tbody>
+        {updatedCurrentpageData?.map((item, index) => (
+          <tr key={item.id}>
+            <td>{index + 1}</td>
+            <td>{item.ownerName}</td>
+            <td>{item.businessName}</td>
+            <td>{item.sehrCode}</td>
+            <td>{item.reward.title}</td>
+            <td>{item.mobile}</td>
+            <td>{item.verifiedAt?.slice(0, 10)}</td>
+            <td>{item.isLocked === true ? "limited" : "active"}</td>
+            <td>{item.reward.salesTarget}</td>
+            <td><span>{item.totalSale}</span></td>
 
-    return currentPageData.map((item, index) => (
-      <tr key={item.id}>
-        <td>{index + 1}</td>
-        <td>{item.ownerName}</td>
-        <td>{item.businessName}</td>
-        <td>{item.sehrCode}</td>
-        <td>{item.reward.title}</td>
-        <td>{item.mobile}</td>
-        <td>{item.verifiedAt?.slice(0, 10)}</td>
-        <td>{item.isLocked === true ? "limited" : "active"}</td>
-        <td>{item.reward.salesTarget}</td>
-        <td><span>N/A</span></td>
-
-        <td>
-          <div className='d-flex justify-content-between flex-wrap' style={{ width: "80px" }}>
-            <button className="btn btn-info text-light" onClick={() => ViewModal({ ...item, action: 'view' })}>
-              <CIcon icon={cilViewColumn} size="sm" /> View Orders
-            </button>
-          </div>
-        </td>
-      </tr>
-    ))
+            <td>
+              <span className='d-flex justify-content-between flex-wrap' style={{ width: "80px" }}>
+                <button className="btn btn-info text-light" onClick={() => ViewModal(item)}>
+                  <CIcon icon={cilViewColumn} size="sm" /> View Orders
+                </button>
+              </span>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    );
   }
-  
+
 
   const ViewModal = async (item) => {
     let orderData = await AxiosInstance.get(`/api/shop/${item.userId}/orders`);
@@ -239,14 +267,14 @@ const PurchasingBySehrShops = () => {
 
       orderList.length &&
         orderList.forEach((item) => {
-        if (item.status !== 'rejected'){
-          amount += Number(item.amount);
-          commission += Number(item.commission);
-        }
-      });
+          if (item.status !== 'rejected') {
+            amount += Number(item.amount);
+            commission += Number(item.commission);
+          }
+        });
 
       setTotalCommission(commission !== 0 ? commission : 0);
-      setSpentAmount(amount !== 0 ?amount : 0);
+      setSpentAmount(amount !== 0 ? amount : 0);
     };
 
     if (viewModalVisible) {
@@ -254,6 +282,14 @@ const PurchasingBySehrShops = () => {
       calculateSpentAmount();
     }
   }, [orderList, viewModalVisible]);
+
+  useEffect(() => {
+    fetchAndUpdateTotalSales()
+    // eslint-disable-next-line
+  }, [currentPage])
+  setTimeout(() => {
+    fetchAndUpdateTotalSales()
+  }, "5 second");
 
 
   return (
@@ -263,12 +299,12 @@ const PurchasingBySehrShops = () => {
         setEditFormData({})
         setTotalCommission(0)
         setSpentAmount(0)
-        }}>
+      }}>
         <CModalHeader>
           <CModalTitle> Purchasing Details</CModalTitle>
         </CModalHeader>
         <CModalBody>
-          {spentAmount && 
+          {spentAmount &&
             <div className='Cotainer d-flex justify-content-between my-5 mx-2'>
               <div className='col-2 card px-2 py-4 d-flex justify-content-center align-items-center bg-warning'>
                 <h5 className='text-uppercase fw-bolder mt-4'>Target </h5>
@@ -280,7 +316,7 @@ const PurchasingBySehrShops = () => {
               </div>
               <div className='col-2 card px-2 py-4 d-flex justify-content-center align-items-center bg-danger'>
                 <h5 className='text-uppercase fw-bolder mt-4'>Remaining</h5>
-                <p className='text-uppercase fw-bolder'><strong>Rs-/ {editFormData?.reward?.salesTarget - spentAmount }</strong></p>
+                <p className='text-uppercase fw-bolder'><strong>Rs-/ {editFormData?.reward?.salesTarget - spentAmount}</strong></p>
               </div>
               <div className='col-2 card px-2 py-4 d-flex justify-content-center align-items-center bg-success'>
                 <h5 className='text-uppercase fw-bolder mt-4'>Commission</h5>
@@ -294,7 +330,7 @@ const PurchasingBySehrShops = () => {
                 <h5 className='text-uppercase fw-bolder mt-4'>Orders</h5>
                 <p className='text-uppercase fw-bolder'><strong>{orderList?.length} </strong></p>
               </div>
-          </div>}
+            </div>}
           {orderList.length ? <div className="table-responsive">
             <table className="table table-striped table-bordered">
               <thead>
@@ -400,7 +436,7 @@ const PurchasingBySehrShops = () => {
                   })}
                 </tr>
               </thead>
-              <tbody>{renderData()}</tbody>
+              {renderData()}
             </table>
           </div>
         </div>

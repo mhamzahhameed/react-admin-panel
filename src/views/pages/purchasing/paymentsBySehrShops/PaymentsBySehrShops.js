@@ -15,12 +15,12 @@ const PaymentsBySehrShops = () => {
   const [searchValue, setSearchValue] = useState('')
   const [viewPaymentVisible, setViewPaymentVisible] = useState(false)
   const [editFormData, setEditFormData] = useState({});
+
   // eslint-disable-next-line
   const [shopCurrentPage, setShopCurrentPage] = useState(1)
   const [paymentCurrentPage, setPaymentCurrentPage] = useState(1)
   const [paymentPerPage, setPaymentPerPage] = useState(5)
   const [loader, setLoader] = useState(true);
-
 
   useEffect(() => {
     fetchData()
@@ -161,7 +161,7 @@ const PaymentsBySehrShops = () => {
         <td>{item.verifiedAt?.slice(0, 10)}</td>
         <td>{item.isLocked === true ? "limited" : "active"}</td>
         <td>{item.reward.salesTarget}</td>
-        <td><span>N/A</span></td>
+        <td><span>{paymentdata?.filter((payment)=> payment.business.id === item.id).reduce((acc, item) => acc + Number(item.amount), 0)}</span></td>
 
         <td>
           <div className='d-flex justify-content-between flex-wrap' style={{ width: "80px" }}>
@@ -175,7 +175,7 @@ const PaymentsBySehrShops = () => {
   }
 
   const PaymentModal = async (item) => {
-    setPaymentList(paymentdata?.filter((payment)=> payment.business.id === item.id).filter((payment)=> payment.status !== 'pending'))
+    setPaymentList(paymentdata?.filter((payment)=> payment.business.id === item.id).filter((payment)=> payment.status === 'paid'))
     setEditFormData(item);
     setViewPaymentVisible(true);
   };

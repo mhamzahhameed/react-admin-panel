@@ -13,7 +13,7 @@ const PurchasingByShops = () => {
   const [data, setData] = useState([])
   const [spentAmount, setSpentAmount] = useState(0)
   const [totalCommission, setTotalCommission] = useState(0)
-  // const [categoryList, setCategoryList] = useState([])
+  const [isLoading, setIsLoading] = useState(true)
   const [currentPage, setCurrentPage] = useState(1)
   const [perPage, setPerPage] = useState(10)
   const [searchValue, setSearchValue] = useState('')
@@ -23,6 +23,8 @@ const PurchasingByShops = () => {
   const [loader, setLoader] = useState(true);
   const [shopCurrentPage, setShopCurrentPage] = useState(1)
   const [shopPerPage, setShopPerPage] = useState(5)
+  const [updatedCurrentpageData, setUpdatedCurrentpageData] = useState([]);
+
 
   useEffect(() => {
     fetchData()
@@ -91,9 +93,9 @@ const PurchasingByShops = () => {
         ? fetchedData.filter((item) => {
 
           return item.ownerName.toLowerCase().includes(searchValue) ||
-          item.businessName.toLowerCase().includes(searchValue) ||
-          item.mobile.toLowerCase().includes(searchValue) ||
-          item.reward.title.toLowerCase().includes(searchValue)
+            item.businessName.toLowerCase().includes(searchValue) ||
+            item.mobile.toLowerCase().includes(searchValue) ||
+            item.reward.title.toLowerCase().includes(searchValue)
         })
         : fetchedData
       setLoader(false)
@@ -150,6 +152,25 @@ const PurchasingByShops = () => {
       setCurrentPage(currentPage + 1)
     }
   }
+
+  const fetchAndUpdateTotalSales = async () => {
+    const currentPageData = getCurrentPageData();
+    const apiResponses = await Promise.all(
+      currentPageData?.map(async (item) => {
+        const response = await AxiosInstance.get(`/api/shop/${item.userId}/orders`);
+        const acceptedOrders = response?.data.orders.filter(order => order.status === 'accepted');
+        const totalSale = acceptedOrders.reduce((total, order) => total + Number(order.amount), 0);
+        return totalSale;
+      })
+    );
+
+    const updatedData = currentPageData?.map((item, index) => ({
+      ...item,
+      totalSale: apiResponses[index],
+    }));
+    setUpdatedCurrentpageData(updatedData);
+    setIsLoading(false); // Set loading state to false after data is fetched
+  };
   // const EditModal = (data)=>{
   //   setEditFormData(data);
   //   setEditModalVisible(true);
@@ -172,8 +193,8 @@ const PurchasingByShops = () => {
           commission += Number(item.commission);
         });
 
-        setTotalCommission(commission !== 0 ? commission : 0);
-        setSpentAmount(amount !== 0 ?amount : 0);
+      setTotalCommission(commission !== 0 ? commission : 0);
+      setSpentAmount(amount !== 0 ? amount : 0);
     };
 
     if (viewModalVisible) {
@@ -227,39 +248,54 @@ const PurchasingByShops = () => {
 
   // Render the current page's records
   const renderData = () => {
-    const currentPageData = getCurrentPageData()
+    if (isLoading || !updatedCurrentpageData.length) {
+      return (
+        <tr>
+          <td colSpan={10}>Loading...</td>
+        </tr>);
+    }
+    return (
+      <tbody>
+        {updatedCurrentpageData?.map((item, index) => (
+          <tr key={item.id}>
+            <td>{index + 1}</td>
+            <td>{item.ownerName}</td>
+            <td>{item.businessName}</td>
+            <td>{item.reward.title}</td>
+            <td>{item.mobile}</td>
+            <td>{item.verifiedAt?.slice(0, 10)}</td>
+            <td>{item.isLocked === true ? "limited" : "active"}</td>
+            <td>{item.reward.salesTarget}</td>
+            <td><span>{item.totalSale}</span></td>
 
-    return currentPageData.map((item, index) => (
-      <tr key={item.id}>
-        <td>{index + 1}</td>
-        <td>{item.ownerName}</td>
-        <td>{item.businessName}</td>
-        <td>{item.reward.title}</td>
-        <td>{item.mobile}</td>
-        <td>{item.verifiedAt?.slice(0, 10)}</td>
-        <td>{item.isLocked === true ? "limited" : "active"}</td>
-        <td>{item.reward.salesTarget}</td>
-        <td><span>N/A</span></td>
-
-        <td>
-          <div className='d-flex justify-content-between flex-wrap' style={{ width: "80px" }}>
-            <button className="btn btn-info text-light" onClick={() => ViewModal(item)}>
-              <CIcon icon={cilViewColumn} size="sm" /> View Orders
-            </button>
-            {/* <button className="btn btn-success text-light" onClick={()=>EditModal({...item,action: 'edit'})}>
-            <CIcon icon={cilPenAlt} size="sm" /> Update
-          </button> */}
-            {/* <button className="btn btn-warning ms-2 text-light" onClick={() => handleLimit(item)}>
-              <CIcon icon={cilLockLocked} size="sm" /> Limit
-            </button>
-            <button className="btn btn-warning ms-2 text-light" onClick={() => handleDelete(item)}>
-              <CIcon icon={cilTrash} size="sm" /> delete
+            <td>
+              <div className='d-flex justify-content-between flex-wrap' style={{ width: "80px" }}>
+                <button className="btn btn-info text-light" onClick={() => ViewModal(item)}>
+                  <CIcon icon={cilViewColumn} size="sm" /> View Orders
+                </button>
+                {/* <button className="btn btn-success text-light" onClick={()=>EditModal({...item,action: 'edit'})}>
+              <CIcon icon={cilPenAlt} size="sm" /> Update
             </button> */}
-          </div>
-        </td>
-      </tr>
-    ))
-  }
+                {/* <button className="btn btn-warning ms-2 text-light" onClick={() => handleLimit(item)}>
+                <CIcon icon={cilLockLocked} size="sm" /> Limit
+              </button>
+              <button className="btn btn-warning ms-2 text-light" onClick={() => handleDelete(item)}>
+                <CIcon icon={cilTrash} size="sm" /> delete
+              </button> */}
+              </div>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    );
+  };
+  // const renderData = () => {
+  //   const currentPageData = getCurrentPageData()
+
+  //   return currentPageData.map((item, index) => (
+
+  //   ))
+  // }
 
   const getShopCurrentPageData = () => OrderList?.slice(shopStartIndex, shopEndIndex)
   let shopEndIndex = shopCurrentPage * shopPerPage
@@ -311,6 +347,14 @@ const PurchasingByShops = () => {
   const totalPages = Math.ceil(data.length / perPage)
   // Generate an array of page numbers
   const pageNumbers = getPageNumbers(currentPage, totalPages);
+
+  useEffect(() => {
+    fetchAndUpdateTotalSales()
+    // eslint-disable-next-line
+  }, [currentPage])
+  setTimeout(() => {
+    fetchAndUpdateTotalSales()
+  }, "5 second");
 
   return (
     loader ? <Loader /> : <div className="container">
@@ -407,12 +451,12 @@ const PurchasingByShops = () => {
         setEditFormData({})
         setTotalCommission(0)
         setSpentAmount(0)
-        }}>
+      }}>
         <CModalHeader>
           <CModalTitle>View Orders Details</CModalTitle>
         </CModalHeader>
         <CModalBody>
-        {spentAmount && 
+          {spentAmount &&
             <div className='Cotainer d-flex justify-content-between my-5 mx-2'>
               <div className='col-2 card px-2 py-4 d-flex justify-content-center align-items-center bg-warning'>
                 <h5 className='text-uppercase fw-bolder mt-4'>Target </h5>
@@ -424,7 +468,7 @@ const PurchasingByShops = () => {
               </div>
               <div className='col-2 card px-2 py-4 d-flex justify-content-center align-items-center bg-danger'>
                 <h5 className='text-uppercase fw-bolder mt-4'>Remaining</h5>
-                <p className='text-uppercase fw-bolder'><strong>Rs-/ {editFormData?.reward?.salesTarget - spentAmount }</strong></p>
+                <p className='text-uppercase fw-bolder'><strong>Rs-/ {editFormData?.reward?.salesTarget - spentAmount}</strong></p>
               </div>
               <div className='col-2 card px-2 py-4 d-flex justify-content-center align-items-center bg-success'>
                 <h5 className='text-uppercase fw-bolder mt-4'>Commission</h5>
@@ -434,7 +478,7 @@ const PurchasingByShops = () => {
                 <h5 className='text-uppercase fw-bolder mt-4'>Progress</h5>
                 <p className='text-uppercase fw-bolder'><strong>{((spentAmount / editFormData?.reward?.salesTarget) * 100).toFixed(5)} %</strong></p>
               </div>
-          </div>}
+            </div>}
           {OrderList.length ? <div className="table-responsive">
             <table className="table table-striped table-bordered">
               <thead>
@@ -540,7 +584,7 @@ const PurchasingByShops = () => {
                   })}
                 </tr>
               </thead>
-              <tbody>{renderData()}</tbody>
+              {renderData()}
             </table>
           </div>
         </div>
